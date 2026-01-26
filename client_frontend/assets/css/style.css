@@ -1,0 +1,254 @@
+/* Google Fonts Import - Poppins for that 'Fun/Modern' look */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #6C5DD3;
+    /* Fun Purple/Blue */
+    --secondary-color: #FD7E14;
+    /* Playful Orange */
+    --bg-color: #F7F8FC;
+    --sidebar-width: 260px;
+    --card-radius: 20px;
+    --btn-radius: 50px;
+    /* Pill shape */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: #444;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+    width: var(--sidebar-width);
+    background-color: #ffffff;
+    border-radius: var(--card-radius);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    /* Soft shadow */
+    transition: margin-left 0.3s;
+}
+
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-brand i {
+    font-size: 1.8rem;
+    margin-right: 10px;
+    background: rgba(108, 93, 211, 0.1);
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.nav-link {
+    color: #808191;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+    background-color: rgba(108, 93, 211, 0.05);
+}
+
+.nav-link.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(108, 93, 211, 0.3);
+}
+
+.nav-link i {
+    width: 24px;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: calc(var(--sidebar-width) + 40px);
+    padding: 20px;
+    padding-right: 40px;
+    min-height: 100vh;
+}
+
+/* Top Navbar */
+.top-navbar {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+}
+
+.search-bar {
+    background: #fff;
+    padding: 10px 20px;
+    border-radius: var(--btn-radius);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.02);
+    display: flex;
+    align-items: center;
+    width: 350px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    margin-left: 10px;
+    font-family: inherit;
+    color: #444;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Cards */
+.card-custom {
+    background: #fff;
+    border: none;
+    border-radius: var(--card-radius);
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.03);
+    margin-bottom: 25px;
+    padding: 25px;
+    transition: transform 0.3s ease;
+}
+
+.card-custom:hover {
+    transform: translateY(-5px);
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Stats Cards */
+.stat-card {
+    display: flex;
+    align-items: center;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-right: 20px;
+}
+
+/* Fun Background Colors */
+.bg-primary-light {
+    background: #E2E0F5;
+    color: var(--primary-color);
+}
+
+.bg-success-light {
+    background: #E0F5E8;
+    color: #2CBF6E;
+}
+
+.bg-info-light {
+    background: #E0F2F5;
+    color: #3BB1C2;
+}
+
+.bg-warning-light {
+    background: #FFF4E0;
+    color: #FD7E14;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stat-label {
+    color: #808191;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: var(--btn-radius);
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(108, 93, 211, 0.2);
+    transition: transform 0.2s;
+}
+
+.btn-primary-custom:hover {
+    background-color: #5a4cb4;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.btn-light {
+    border-radius: var(--btn-radius);
+    padding: 10px 20px;
+}
+
+/* Badges */
+.badge {
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .sidebar {
+        left: -300px;
+        top: 0;
+        bottom: 0;
+        border-radius: 0;
+        transition: left 0.3s;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding-right: 20px;
+    }
+
+    .search-bar {
+        width: auto;
+    }
+}

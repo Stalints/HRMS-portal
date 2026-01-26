@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks - HR Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .task-column {
+            background: #f8f9fa;
+            border-radius: 1rem;
+            padding: 1rem;
+            min-height: 500px;
+        }
+
+        .task-card {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            cursor: move;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .task-meta {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-rocket-takeoff-fill"></i>
+            HR Portal
+        </div>
+        <div class="d-flex flex-column h-100">
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item"><a href="index.html" class="nav-link"><i
+                            class="bi bi-grid-fill"></i><span>Dashboard</span></a></li>
+                <li class="nav-item"><a href="projects.html" class="nav-link"><i
+                            class="bi bi-briefcase-fill"></i><span>Projects</span></a></li>
+                <li class="nav-item"><a href="tasks.html" class="nav-link active"><i
+                            class="bi bi-check-square-fill"></i><span>Tasks</span></a></li>
+                <li class="nav-item"><a href="invoices.html" class="nav-link"><i
+                            class="bi bi-receipt"></i><span>Invoices</span></a></li>
+                <li class="nav-item"><a href="contracts.html" class="nav-link"><i
+                            class="bi bi-file-earmark-text-fill"></i><span>Contracts</span></a></li>
+                <li class="nav-item"><a href="chat.html" class="nav-link"><i
+                            class="bi bi-chat-dots-fill"></i><span>Messages</span></a></li>
+                <li class="nav-item"><a href="support.html" class="nav-link"><i class="bi bi-headset"></i><span>Support
+                            Tickets</span></a></li>
+                <li class="nav-item"><a href="knowledge.html" class="nav-link"><i
+                            class="bi bi-book-half"></i><span>Knowledge Base</span></a></li>
+            </ul>
+            <ul class="nav flex-column mt-auto mb-5">
+                <li class="nav-item"><a href="profile.html" class="nav-link"><i class="bi bi-person-fill"></i><span>My
+                            Profile</span></a></li>
+                <li class="nav-item"><a href="#" class="nav-link text-danger"><i
+                            class="bi bi-box-arrow-right"></i><span>Logout</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="top-navbar">
+            <button class="btn btn-light d-lg-none" id="sidebarToggle"><i class="bi bi-list fs-4"></i></button>
+            <div class="search-bar d-none d-md-flex"><i class="bi bi-search text-muted"></i><input type="text"
+                    placeholder="Search tasks..."></div>
+            <div class="user-profile">
+                <div class="notification-badge me-3"><i class="bi bi-bell fs-5 text-secondary"></i><span
+                        class="notification-dot"></span></div>
+                <img src="https://ui-avatars.com/api/?name=Client+User&background=4e73df&color=fff" alt="User"
+                    class="user-img">
+            </div>
+        </header>
+
+        <div class="container-fluid fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Task Board</h2>
+                <button class="btn btn-primary-custom"><i class="bi bi-plus-lg me-2"></i>New Task</button>
+            </div>
+
+            <div class="row g-4">
+                <!-- To Do Column -->
+                <div class="col-md-4">
+                    <div class="task-column">
+                        <h6 class="text-uppercase text-secondary fw-bold mb-3 d-flex justify-content-between">
+                            To Do <span class="badge bg-secondary rounded-pill">3</span>
+                        </h6>
+
+                        <div class="task-card">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">High
+                                    Priority</span>
+                                <i class="bi bi-three-dots text-muted"></i>
+                            </div>
+                            <h6 class="fw-bold">Review Homepage Design</h6>
+                            <p class="text-muted small mb-2">Check the attached Figma file and provide feedback.</p>
+                            <div class="d-flex justify-content-between align-items-center task-meta mt-3">
+                                <div><i class="bi bi-paperclip me-1"></i> 2</div>
+                                <div><i class="bi bi-clock me-1"></i> Oct 25</div>
+                            </div>
+                        </div>
+
+                        <div class="task-card">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">Normal</span>
+                                <i class="bi bi-three-dots text-muted"></i>
+                            </div>
+                            <h6 class="fw-bold">Send Brand Assets</h6>
+                            <p class="text-muted small mb-2">Logo files in SVG and PNG formats needed.</p>
+                            <div class="d-flex justify-content-between align-items-center task-meta mt-3">
+                                <div><i class="bi bi-chat-left-text me-1"></i> 1</div>
+                                <div><i class="bi bi-clock me-1"></i> Oct 26</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="col-md-4">
+                    <div class="task-column">
+                        <h6 class="text-uppercase text-primary fw-bold mb-3 d-flex justify-content-between">
+                            In Progress <span class="badge bg-primary rounded-pill">2</span>
+                        </h6>
+
+                        <div class="task-card">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill">Urgent</span>
+                                <i class="bi bi-three-dots text-muted"></i>
+                            </div>
+                            <h6 class="fw-bold">Content for About Page</h6>
+                            <p class="text-muted small mb-2">Drafting text for the company history section.</p>
+                            <div class="d-flex justify-content-between align-items-center task-meta mt-3">
+                                <div class="text-primary"><i class="bi bi-person-circle me-1"></i> You</div>
+                                <div><i class="bi bi-clock me-1"></i> Today</div>
+                            </div>
+                        </div>
+
+                        <div class="task-card">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">Normal</span>
+                                <i class="bi bi-three-dots text-muted"></i>
+                            </div>
+                            <h6 class="fw-bold">Approve Wireframes</h6>
+                            <p class="text-muted small mb-2">Awaiting final sign-off on the dashboard wires.</p>
+                            <div class="d-flex justify-content-between align-items-center task-meta mt-3">
+                                <div><i class="bi bi-chat-left-text me-1"></i> 5</div>
+                                <div><i class="bi bi-clock me-1"></i> Oct 24</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Column -->
+                <div class="col-md-4">
+                    <div class="task-column">
+                        <h6 class="text-uppercase text-success fw-bold mb-3 d-flex justify-content-between">
+                            Done <span class="badge bg-success rounded-pill">4</span>
+                        </h6>
+
+                        <div class="task-card text-muted">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill">Done</span>
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            </div>
+                            <h6 class="fw-bold text-decoration-line-through">Initial Meeting</h6>
+                            <p class="small mb-2">Project kickoff requirement gathering.</p>
+                            <div class="d-flex justify-content-between align-items-center task-meta mt-3">
+                                <div></div>
+                                <div><i class="bi bi-calendar-check me-1"></i> Oct 20</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
+</body>
+
+</html>
