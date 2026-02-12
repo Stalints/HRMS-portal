@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Portal | Team Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <!-- Shared dashboard styles -->
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="d-flex">
+      <!-- Sidebar (same as dashboard, with Team Management active) -->
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+        <div class="mb-4">
+          <div class="d-flex align-items-center mb-2">
+            <div
+              class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
+              style="width: 36px; height: 36px"
+            >
+              HR
+            </div>
+            <div>
+              <div class="fw-semibold small">HR Portal</div>
+              <div class="text-secondary small">Team Management</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-2 sidebar-heading">Main</div>
+        <ul class="nav nav-pills flex-column mb-3 gap-1">
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="index.html">
+              <span class="me-2">🏠</span> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active d-flex align-items-center" href="#">
+              <span class="me-2">👥</span> Team Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="attendance.html">
+              <span class="me-2">⏱️</span> Time Cards / Attendance
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="leave.html">
+              <span class="me-2">📝</span> Leave Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="announcements.html">
+              <span class="me-2">📢</span> Announcements
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="events.html">
+              <span class="me-2">📅</span> Event Calendar
+            </a>
+          </li>
+        </ul>
+
+        <div class="mb-2 sidebar-heading">Personal & Tools</div>
+        <ul class="nav nav-pills flex-column mb-3 gap-1">
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="notes.html">
+              <span class="me-2">🗒️</span> Notes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="timeline.html">
+              <span class="me-2">📊</span> Timeline
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="help.html">
+              <span class="me-2">📚</span> Help Articles
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="todo.html">
+              <span class="me-2">✅</span> Personal To-Do List
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="notifications.html">
+              <span class="me-2">🔔</span> Notifications
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="settings.html">
+              <span class="me-2">⚙️</span> Settings / Security
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main content -->
+      <div class="flex-grow-1 content-wrapper d-flex flex-column">
+        <!-- Top navbar -->
+        <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
+          <div class="container-fluid px-0">
+            <button
+              class="navbar-toggler me-2"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#topNav"
+              aria-controls="topNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-lg-none" href="index.html">
+              <span>HR Portal</span>
+            </a>
+
+            <div class="collapse navbar-collapse" id="topNav">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <span class="nav-link disabled">Logged in as: <strong>HR</strong></span>
+                </li>
+              </ul>
+
+              <div class="d-flex align-items-center gap-3">
+                <button
+                  type="button"
+                  class="btn btn-light position-relative rounded-circle p-2"
+                  aria-label="Notifications"
+                >
+                  🔔
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  >
+                    2
+                  </span>
+                </button>
+                <div class="dropdown">
+                  <button
+                    class="btn btn-outline-secondary d-flex align-items-center gap-2"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span
+                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
+                      style="width: 32px; height: 32px"
+                      >HR</span
+                    >
+                    <span class="d-none d-sm-inline small">HR Admin</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">HR Admin</h6></li>
+                    <li><a class="dropdown-item" href="settings.html">Settings &amp; Security</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Page content -->
+        <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h1 class="h4 mb-1">Team Management</h1>
+              <p class="text-muted small mb-0">
+                Manage team members and assign roles across the HR Portal.
+              </p>
+            </div>
+            <span class="badge text-bg-light d-none d-md-inline"></span>
+          </div>
+
+          <!-- Action bar -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary btn-sm" type="button">
+                + Add Team Member
+              </button>
+            </div>
+            <form class="d-flex gap-2" role="search">
+              <input
+                class="form-control form-control-sm"
+                type="search"
+                placeholder="Search by name or email"
+                aria-label="Search team"
+                style="min-width: 220px"
+              />
+            </form>
+          </div>
+
+          <!-- Team members table + side content -->
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-8">
+              <div class="card border-0 shadow-sm">
+                <div
+                  class="card-header d-flex justify-content-between align-items-center align-items-center"
+                >
+                  <h2 class="h6 mb-0">Team Members</h2>
+                  <span class="badge bg-secondary-subtle text-secondary">Static sample data</span>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Role</th>
+                          <th scope="col">Status</th>
+                          <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody class="small">
+                        <tr>
+                          <td>
+                            <strong>Aarav Patel</strong>
+                          </td>
+                          <td>aarav.patel@company.com</td>
+                          <td>
+                            <span class="badge bg-primary-subtle text-primary">HR</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-success-subtle text-success">Active</span>
+                          </td>
+                          <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button type="button" class="btn btn-outline-secondary">View</button>
+                              <button type="button" class="btn btn-outline-secondary">Edit</button>
+                              <button type="button" class="btn btn-outline-danger">
+                                Deactivate
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Mia Rodriguez</strong>
+                          </td>
+                          <td>mia.rodriguez@company.com</td>
+                          <td>
+                            <span class="badge bg-info-subtle text-info">Manager</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-success-subtle text-success">Active</span>
+                          </td>
+                          <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button type="button" class="btn btn-outline-secondary">View</button>
+                              <button type="button" class="btn btn-outline-secondary">Edit</button>
+                              <button type="button" class="btn btn-outline-danger">
+                                Deactivate
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Daniel Lee</strong>
+                          </td>
+                          <td>daniel.lee@company.com</td>
+                          <td>
+                            <span class="badge bg-secondary-subtle text-secondary">Employee</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                          </td>
+                          <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button type="button" class="btn btn-outline-secondary">View</button>
+                              <button type="button" class="btn btn-outline-secondary">Edit</button>
+                              <button type="button" class="btn btn-outline-success">
+                                Activate
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Sara Chen</strong>
+                          </td>
+                          <td>sara.chen@company.com</td>
+                          <td>
+                            <span class="badge bg-secondary-subtle text-secondary">Employee</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-success-subtle text-success">Active</span>
+                          </td>
+                          <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button type="button" class="btn btn-outline-secondary">View</button>
+                              <button type="button" class="btn btn-outline-secondary">Edit</button>
+                              <button type="button" class="btn btn-outline-danger">
+                                Deactivate
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+              <!-- Add team member form (UI only) -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header">
+                  <h2 class="h6 mb-0">Add Team Member</h2>
+                </div>
+                <div class="card-body">
+                  <form class="small">
+                    <div class="mb-2">
+                      <label for="fullName" class="form-label">Full Name</label>
+                      <input
+                        type="text"
+                        id="fullName"
+                        class="form-control form-control-sm"
+                        placeholder="Enter full name"
+                      />
+                    </div>
+                    <div class="mb-2">
+                      <label for="email" class="form-label">Email</label>
+                      <input
+                        type="email"
+                        id="email"
+                        class="form-control form-control-sm"
+                        placeholder="name@company.com"
+                      />
+                    </div>
+                    <div class="mb-2">
+                      <label for="role" class="form-label">Role</label>
+                      <select id="role" class="form-select form-select-sm">
+                        <option value="hr">HR</option>
+                        <option value="manager">Manager</option>
+                        <option value="employee">Employee</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="status" class="form-label">Status</label>
+                      <select id="status" class="form-select form-select-sm">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm w-100">
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Roles & permissions -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header">
+                  <h2 class="h6 mb-0">Roles &amp; Permissions</h2>
+                </div>
+                <div class="card-body small">
+                  <ul class="list-unstyled mb-2">
+                    <li class="mb-1">
+                      <strong>HR</strong> → Full access to HR modules, team management, and settings.
+                    </li>
+                    <li class="mb-1">
+                      <strong>Manager</strong> → Limited access to their team’s information and
+                      approvals.
+                    </li>
+                    <li>
+                      <strong>Employee</strong> → Basic access to their own profile, requests, and
+                      notifications.
+                    </li>
+                  </ul>
+                  <hr />
+                  <h3 class="h6">Dashboard Access</h3>
+                  <p class="mb-0">
+                    Dashboard widgets and navigation are shown based on the assigned role. HR sees
+                    full HR analytics, managers see team-focused metrics, and employees see only
+                    personal information and actions.
+                  </p>
+                </div>
+              </div>
+
+              <!-- HR internal notes -->
+              <div class="card border-0 shadow-sm" id="notes">
+                <div class="card-header">
+                  <h2 class="h6 mb-0">HR Internal Notes</h2>
+                </div>
+                <div class="card-body small">
+                  <p class="text-muted">
+                    Use this space for internal comments or follow-ups related to team changes. This
+                    is a frontend-only placeholder; no data is saved.
+                  </p>
+                  <textarea
+                    class="form-control form-control-sm"
+                    rows="3"
+                    placeholder="Type internal notes for HR reference..."
+                  ></textarea>
+                  <div class="form-text">
+                    Secure login and actions are protected with reCAPTCHA.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Placeholder sections to mirror navigation (UI only) -->
+          <section id="timecards" class="mt-2">
+            <h2 class="h6 mb-1">Time Cards / Attendance (linked module)</h2>
+            <p class="text-muted small mb-0">
+              Detailed attendance management lives in the dedicated Attendance module.
+            </p>
+          </section>
+
+          <section id="leave" class="mt-3">
+            <h2 class="h6 mb-1">Leave Management (linked module)</h2>
+            <p class="text-muted small mb-0">
+              Approve and review leave requests in the Leave Management module.
+            </p>
+          </section>
+
+          <section id="announcements" class="mt-3">
+            <h2 class="h6 mb-1">Announcements (linked module)</h2>
+            <p class="text-muted small mb-0">
+              Publish HR announcements and policy updates from the Announcements page.
+            </p>
+          </section>
+
+          <section id="events" class="mt-3">
+            <h2 class="h6 mb-1">Event Calendar (linked module)</h2>
+            <p class="text-muted small mb-0">
+              Manage HR and team events from the Event Calendar module.
+            </p>
+          </section>
+
+          <section id="timeline" class="mt-3">
+            <h2 class="h6 mb-1">Timeline</h2>
+            <p class="text-muted small mb-0">
+              Visual view of key HR actions and changes (to be implemented as a separate feature).
+            </p>
+          </section>
+
+          <section id="knowledge" class="mt-3">
+            <h2 class="h6 mb-1">Help Articles (Internal Knowledge Base)</h2>
+            <p class="text-muted small mb-0">
+              Link to internal HR SOPs and guides for handling team changes.
+            </p>
+          </section>
+
+          <section id="todo" class="mt-3">
+            <h2 class="h6 mb-1">Personal To-Do List</h2>
+            <p class="text-muted small mb-0">
+              Track HR tasks related to team updates.
+            </p>
+          </section>
+
+          <section id="notifications" class="mt-3">
+            <h2 class="h6 mb-1">Notifications</h2>
+            <p class="text-muted small mb-0">
+              HR will receive notifications when team members are added, deactivated, or reassigned.
+            </p>
+          </section>
+
+          <section id="settings" class="mt-3 mb-4">
+            <h2 class="h6 mb-1">Settings / Security</h2>
+            <p class="text-muted small mb-0">
+              Role-based access, secure login, and reCAPTCHA are enforced at the authentication
+              level (UI text only in this version).
+            </p>
+          </section>
+        </main>
+
+        <footer class="border-top bg-white py-2 px-3 px-lg-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>© <span id="year"></span> HR Portal • Team Management Module</span>
+            <span class="text-muted">Secure login · reCAPTCHA mentioned for UI only</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
+
