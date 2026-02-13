@@ -1,0 +1,331 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Payments | HR Portal</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .navbar-brand {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .navbar span {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* Header */
+        h2 {
+            font-weight: 600;
+        }
+
+        /* Summary Cards */
+        .summary-card {
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ffffff, #e0f2fe);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .summary-card h3,
+        .summary-card h5 {
+            font-weight: 600;
+        }
+
+        /* Icon Circle */
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Payment Cards */
+        .payment-card {
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ffffff, #f0f4ff);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s, opacity 0.3s;
+            text-align: left;
+            opacity: 0;
+        }
+
+        .payment-card.show {
+            opacity: 1;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+        }
+
+        .payment-card h5 {
+            font-weight: 600;
+        }
+
+        .payment-card h4 {
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .payment-card .badge {
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .payment-card i {
+            font-size: 0.95rem;
+            color: #1e3a8a;
+        }
+
+        /* Add Payment Button */
+        .btn-success {
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+
+        .btn-success:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 20px;
+        }
+
+        .modal-header h5 {
+            font-weight: 600;
+        }
+
+        /* Form inputs */
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-building me-2"></i> HR Portal
+            </a>
+            <span>
+                <i class="bi bi-person-circle me-1"></i> Client
+            </span>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Payments</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                <i class="bi bi-plus-circle me-1"></i> Add Payment
+            </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card summary-card shadow-sm border-0 p-3 position-relative">
+                    <div class="icon-circle bg-success text-white mb-2">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Total Paid</h6>
+                    <h3 class="fw-bold text-success" id="totalPaid">$4,200</h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card summary-card shadow-sm border-0 p-3 position-relative">
+                    <div class="icon-circle bg-warning text-white mb-2">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Pending Payments</h6>
+                    <h3 class="fw-bold text-warning" id="pendingPayments">$1,300</h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card summary-card shadow-sm border-0 p-3 position-relative">
+                    <div class="icon-circle bg-info text-white mb-2">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Last Payment</h6>
+                    <h5 class="fw-bold" id="lastPayment">₹1,200</h5>
+                    <small class="text-muted" id="lastPaymentDate">12 Jan 2026</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments List -->
+        <div class="row g-4" id="paymentCards">
+            <!-- Sample Payment Card -->
+            <div class="col-md-6">
+                <div class="card payment-card show shadow-sm border-0 p-3 position-relative">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold">PAY-201</h5>
+                        <span class="badge bg-success">Completed</span>
+                    </div>
+                    <p class="mb-1 text-muted"><strong>Invoice:</strong> INV-101</p>
+                    <p class="mb-1"><i class="bi bi-credit-card me-1 text-primary"></i> Credit Card</p>
+                    <p class="mb-2"><i class="bi bi-calendar-event me-1 text-secondary"></i> 2026-01-12</p>
+                    <h4 class="text-end fw-bold text-primary">$1,200</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Payment Modal -->
+        <div class="modal fade" id="addPaymentModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content p-3">
+                    <div class="modal-header border-0">
+                        <h5>Add Payment</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="paymentForm">
+                            <div class="mb-3">
+                                <label class="form-label">Payment ID</label>
+                                <input type="text" class="form-control" id="payId" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Invoice ID</label>
+                                <input type="text" class="form-control" id="invoiceId" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Payment Method</label>
+                                <select class="form-select" id="method">
+                                    <option>Credit Card</option>
+                                    <option>UPI</option>
+                                    <option>Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Payment Date</label>
+                                <input type="date" class="form-control" id="date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="status">
+                                    <option>Completed</option>
+                                    <option>Pending</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Save Payment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            const form = document.getElementById("paymentForm");
+            const cards = document.getElementById("paymentCards");
+            const totalPaidEl = document.getElementById("totalPaid");
+            const pendingEl = document.getElementById("pendingPayments");
+            const lastPaymentEl = document.getElementById("lastPayment");
+            const lastPaymentDateEl = document.getElementById("lastPaymentDate");
+
+            let totalPaid = 4200;
+            let pending = 1300;
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const payId = document.getElementById("payId").value;
+                const invId = document.getElementById("invoiceId").value;
+                const amt = parseFloat(document.getElementById("amount").value);
+                const method = document.getElementById("method").value;
+                const date = document.getElementById("date").value;
+                const status = document.getElementById("status").value;
+
+                const badge = status === "Completed" ? "bg-success" : "bg-warning text-dark";
+
+                let icon = "bi-credit-card";
+                if (method === "UPI") icon = "bi-phone";
+                else if (method === "Bank Transfer") icon = "bi-bank";
+
+                const newCard = document.createElement("div");
+                newCard.className = "col-md-6";
+                newCard.innerHTML = `
+                    <div class="card payment-card shadow-sm border-0 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5>${payId}</h5>
+                            <span class="badge ${badge}">${status}</span>
+                        </div>
+                        <p class="mb-1 text-muted">Invoice: ${invId}</p>
+                        <p class="mb-1"><i class="bi ${icon} me-1"></i> ${method}</p>
+                        <p class="mb-2"><i class="bi bi-calendar-event me-1"></i> ${date}</p>
+                        <h4 class="text-end">$${amt}</h4>
+                    </div>
+                `;
+                cards.appendChild(newCard);
+
+                // Animate new card
+                setTimeout(() => newCard.querySelector(".payment-card").classList.add("show"), 10);
+
+                // Update summary
+                if (status === "Completed") {
+                    totalPaid += amt;
+                    totalPaidEl.textContent = "$" + totalPaid.toLocaleString();
+                } else {
+                    pending += amt;
+                    pendingEl.textContent = "$" + pending.toLocaleString();
+                }
+
+                lastPaymentEl.textContent = "$" + amt.toLocaleString();
+                lastPaymentDateEl.textContent = new Date(date).toLocaleDateString('en-GB');
+
+                bootstrap.Modal.getInstance(document.getElementById("addPaymentModal")).hide();
+                form.reset();
+            });
+        </script>
+
+</body>
+
+</html>

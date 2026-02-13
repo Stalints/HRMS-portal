@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Support | HR Portal</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8fafc;
+        }
+
+        .ticket-card {
+            border-left: 5px solid #dc2626;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        }
+
+        .status-open {
+            border-color: #dc2626;
+        }
+
+        .status-resolved {
+            border-color: #16a34a;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            border-radius: 50px;
+            padding: 12px 22px;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar shadow-sm" style="background:#1e3a8a;">
+        <div class="container">
+            <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="index.html">
+                <i class="bi bi-building me-2"></i>
+                HR Portal
+            </a>
+
+            <span class="text-white-50">
+                <i class="bi bi-person-circle me-1"></i> Client
+            </span>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-semibold">Support Tickets</h2>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ticketModal">
+                <i class="bi bi-life-preserver me-1"></i> Raise Ticket
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="mb-4 d-flex gap-2">
+            <button class="btn btn-outline-danger btn-sm" onclick="filterTickets('open')">Open</button>
+            <button class="btn btn-outline-success btn-sm" onclick="filterTickets('resolved')">Resolved</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="filterTickets('all')">All</button>
+        </div>
+
+        <!-- Ticket Feed -->
+        <div id="ticketFeed" class="d-flex flex-column gap-3">
+
+            <div class="card shadow-sm ticket-card status-open open"
+                onclick="openTicket('SUP-101','Open','High','Login','Unable to login to the HR Portal dashboard.')">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>Login Issue</strong>
+                        <span class="badge bg-danger">Open</span>
+                    </div>
+                    <p class="text-muted mb-1">Ticket ID: SUP-101</p>
+                    <p>Unable to login to the HR Portal dashboard.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm ticket-card status-resolved resolved"
+                onclick="openTicket('SUP-102','Resolved','Medium','Payment','Payment receipt was missing earlier.')">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>Payment Confirmation</strong>
+                        <span class="badge bg-success">Resolved</span>
+                    </div>
+                    <p class="text-muted mb-1">Ticket ID: SUP-102</p>
+                    <p>Payment receipt was missing earlier.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Floating Button
+<button class="btn btn-danger floating-btn" data-bs-toggle="modal" data-bs-target="#ticketModal">
+    <i class="bi bi-plus-lg"></i> New Ticket
+</button> -->
+
+    <!-- Raise Ticket Modal -->
+    <div class="modal fade" id="ticketModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Raise Support Ticket</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="ticketForm">
+                        <div class="mb-3">
+                            <label class="form-label">Issue Title</label>
+                            <input type="text" class="form-control" id="issueTitle" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="category">
+                                <option>Login</option>
+                                <option>Invoice</option>
+                                <option>Payment</option>
+                                <option>Project</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="priority">
+                                <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" rows="4" id="description" required></textarea>
+                        </div>
+
+                        <button class="btn btn-danger w-100">Submit Ticket</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Detail Modal -->
+    <div class="modal fade" id="ticketDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ticket Details</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p><strong>Ticket ID:</strong> <span id="detailId"></span></p>
+                    <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+                    <p><strong>Priority:</strong> <span id="detailPriority"></span></p>
+                    <p><strong>Category:</strong> <span id="detailCategory"></span></p>
+                    <hr>
+                    <p id="detailDescription"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function openTicket(id, status, priority, category, description) {
+            detailId.innerText = id;
+            detailStatus.innerText = status;
+            detailPriority.innerText = priority;
+            detailCategory.innerText = category;
+            detailDescription.innerText = description;
+
+            new bootstrap.Modal(document.getElementById("ticketDetailModal")).show();
+        }
+
+        function filterTickets(type) {
+            document.querySelectorAll(".ticket-card").forEach(card => {
+                if (type === "all") {
+                    card.style.display = "block";
+                } else if (!card.classList.contains(type)) {
+                    card.style.display = "none";
+                } else {
+                    card.style.display = "block";
+                }
+            });
+        }
+
+        document.getElementById("ticketForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const title = issueTitle.value;
+            const desc = description.value;
+            const id = "SUP-" + Math.floor(Math.random() * 900 + 100);
+
+            ticketFeed.innerHTML =
+                `
+    <div class="card shadow-sm ticket-card status-open open"
+         onclick="openTicket('${id}','Open','${priority.value}','${category.value}','${desc}')">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <strong>${title}</strong>
+                <span class="badge bg-danger">Open</span>
+            </div>
+            <p class="text-muted mb-1">Ticket ID: ${id}</p>
+            <p>${desc}</p>
+        </div>
+    </div>
+    ` + ticketFeed.innerHTML;
+
+            bootstrap.Modal.getInstance(document.getElementById("ticketModal")).hide();
+            this.reset();
+        });
+    </script>
+
+</body>
+
+</html>
