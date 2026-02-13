@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HR Portal | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", sans-serif;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-width: 950px;
+      width: 100%;
+      transition: 0.3s ease;
+    }
+
+    .login-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .left-panel {
+      background: linear-gradient(135deg, #f4f7fc, #e8f0ff);
+      padding: 50px 40px;
+    }
+
+    .right-panel {
+      padding: 50px 40px;
+    }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 700;
+      color: #2a5298;
+    }
+
+    .about-text {
+      color: #555;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    .form-control, .form-select {
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 0.2rem rgba(42,82,152,0.25);
+      border-color: #2a5298;
+    }
+
+    .input-group-text {
+      background: #2a5298;
+      color: white;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .btn-primary {
+      background: #2a5298;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      transition: 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #1e3c72;
+      transform: scale(1.03);
+    }
+
+    .toggle-links a {
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      color: #2a5298;
+    }
+
+    .toggle-links a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card row g-0">
+
+  <!-- Left / About Us -->
+  <div class="col-md-5 left-panel">
+    <div class="brand"><i class="bi bi-buildings"></i> HRMS Portal</div>
+    <p class="about-text">
+      Secure and modern workforce management system for HR, Employees, and Clients.
+      Role-based dashboards ensure proper access and security.
+    </p>
+    <ul class="about-text">
+      <li><i class="bi bi-check-circle-fill text-primary"></i> HR Management</li>
+      <li><i class="bi bi-check-circle-fill text-primary"></i> Employee Self Service</li>
+      <li><i class="bi bi-check-circle-fill text-primary"></i> Client Access</li>
+    </ul>
+  </div>
+
+  <!-- Right / Login & Signup -->
+  <div class="col-md-7 right-panel">
+
+    <h4 id="formTitle"><i class="bi bi-box-arrow-in-right"></i> Sign In</h4>
+
+    <form id="authForm" onsubmit="handleLogin(event)">
+
+      <!-- Role Dropdown -->
+      <div class="mb-3">
+        <label class="form-label">Login As</label>
+        <select class="form-select" id="role" required>
+          <option value="">Select Role</option>
+          <option value="hr">HR</option>
+          <option value="client">Client</option>
+          <option value="employee">Employee</option>
+        </select>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+          <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+          <input type="password" class="form-control" id="password" placeholder="Enter password" required>
+        </div>
+      </div>
+
+      <!-- Confirm Password (Signup Only) -->
+      <div class="mb-3 hidden" id="confirmPasswordDiv">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+          <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm password">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" id="submitBtn">Continue</button>
+    </form>
+
+    <div class="text-center mt-3 toggle-links">
+      <span id="toggleText">Don't have an account?</span>
+      <a onclick="toggleForm()" id="toggleLink"> Sign Up</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let isLogin = true;
+
+  function toggleForm() {
+    isLogin = !isLogin;
+
+    document.getElementById('formTitle').innerHTML = isLogin
+      ? '<i class="bi bi-box-arrow-in-right"></i> Sign In'
+      : '<i class="bi bi-person-plus-fill"></i> Sign Up';
+
+    document.getElementById('submitBtn').innerText = isLogin
+      ? 'Continue'
+      : 'Create Account';
+
+    document.getElementById('toggleText').innerText = isLogin
+      ? "Don't have an account?"
+      : "Already have an account?";
+
+    document.getElementById('toggleLink').innerText = isLogin
+      ? ' Sign Up'
+      : ' Sign In';
+
+    document.getElementById('confirmPasswordDiv').classList.toggle('hidden');
+  }
+
+  function handleLogin(event) {
+    event.preventDefault();
+
+    const role = document.getElementById('role').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (!role) {
+      alert('Please select a role');
+      return;
+    }
+
+    if (!isLogin) {
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      alert('Account created successfully!');
+    }
+
+    // Simulated role-based redirect
+    if (role === 'hr') {
+      window.location.href = 'hr-dashboard.html';
+    } else if (role === 'client') {
+      window.location.href = 'client-dashboard.html';
+    } else if (role === 'employee') {
+      window.location.href = 'employee-dashboard.html';
+    }
+  }
+</script>
+
+</body>
+</html>
