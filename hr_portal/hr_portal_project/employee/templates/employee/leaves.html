@@ -1,0 +1,82 @@
+
+{% extends 'employee/base.html' %}
+{% block page_title %}Leave Management{% endblock %}
+
+{% block content %}
+
+<!-- APPLY LEAVE CARD -->
+<div class="card leave-card">
+
+    <div class="leave-header">
+        <div>
+            <h3>Apply Leave</h3>
+            <p>Submit your leave request below.</p>
+        </div>
+    </div>
+
+    <form method="POST" class="leave-form">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="start_date" required>
+            </div>
+
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="end_date" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Reason</label>
+            <textarea name="reason" rows="4"
+                placeholder="Explain the reason for your leave..." required></textarea>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <button type="submit" class="btn-primary">
+                Apply Leave
+            </button>
+        </div>
+
+    </form>
+</div>
+
+
+<div class="card">
+    <h3>My Leave Requests</h3>
+
+    <table class="leave-table">
+        <thead>
+            <tr>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+            <tr>
+                <td>{{ leave.start_date }}</td>
+                <td>{{ leave.end_date }}</td>
+                <td>{{ leave.reason }}</td>
+                <td>
+                    <span class="status {{ leave.status|lower }}">
+                        {{ leave.status }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align:center;">No leave requests found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'employee_dashboard' %}">Back to Dashboard</a>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'employee/base.html' %}
+{% block page_title %}My Tasks{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <h3>My Assigned Tasks</h3>
+        <p>Track your assigned work and deadlines.</p>
+    </div>
+
+    <table class="task-table">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Due Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.due_date|date:"M d, Y" }}</td>
+                <td>
+                    <span class="status {{ task.status|lower }}">
+                        {{ task.status }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center;">
+                    No tasks assigned.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
