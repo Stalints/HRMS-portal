@@ -1,0 +1,80 @@
+{% extends 'employee/base.html' %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+
+<!-- PROFILE HEADER -->
+<div class="card" style="display:flex; align-items:center; gap:25px;">
+
+    <!-- Profile Image -->
+   <!-- Profile Image -->
+{% if profile.profile_image %}
+    <img src="{{ profile.profile_image.url }}"
+         style="
+            width:120px;
+            height:120px;
+            border-radius:50%;
+            object-fit:cover;
+            border:4px solid #e0e7ff;">
+{% else %}
+    <div style="
+        width:120px;
+        height:120px;
+        border-radius:50%;
+        background:#e0e7ff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:42px;
+        color:#2563eb;
+        font-weight:bold;">
+        {{ request.user.username|slice:":1"|upper }}
+    </div>
+{% endif %}
+
+
+    <!-- Basic Info -->
+    <div>
+        <h2 style="margin-bottom:6px;">
+            {{ request.user.get_full_name|default:request.user.username }}
+        </h2>
+        <p style="color:#475569; font-size:15px;">
+            {{ profile.designation }}
+        </p>
+        <p style="color:#64748b; font-size:14px;">
+            {{ profile.department }} Department
+        </p>
+    </div>
+
+</div>
+
+<br>
+
+<!-- DETAILS SECTION -->
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+
+    <!-- PERSONAL DETAILS -->
+    <div class="card">
+        <h3>Personal Information</h3>
+        <hr>
+
+        <p><strong>Email:</strong><br>{{ request.user.email }}</p>
+        <p><strong>Username:</strong><br>{{ request.user.username }}</p>
+    </div>
+
+    <!-- WORK DETAILS -->
+    <div class="card">
+        <h3>Work Information</h3>
+        <hr>
+
+        <p><strong>Employee ID:</strong><br>{{ profile.emp_id }}</p>
+        <p><strong>Date of Joining:</strong><br>{{ profile.date_joined }}</p>
+        <p><strong>Status:</strong><br>
+            <span style="color:#16a34a; font-weight:600;">Active</span>
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}
