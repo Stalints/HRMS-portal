@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoices | HR Portal</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
+
+    <style>
+        /* --- Invoice Card --- */
+        .invoice-card {
+            background-color: #ffffff;
+            /* solid background to prevent flicker */
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.1);
+            overflow: hidden;
+            transition: all 0.4s ease;
+            will-change: transform;
+        }
+
+        /* --- Table Fix --- */
+        #invoiceTable {
+            transform: translateZ(0);
+            /* GPU layer */
+        }
+
+        .table-hover tbody tr {
+            transition: background-color 0.4s ease;
+            backface-visibility: hidden;
+            /* reduces flicker */
+            will-change: transform, opacity;
+        }
+    </style>
+
+
+    <style>
+        .invoice-card {
+            will-change: transform;
+            transform: translateZ(0);
+            /* Force GPU acceleration */
+        }
+
+        #invoiceTable {
+            will-change: contents;
+            /* Hint to browser that table contents may change */
+        }
+
+        .table-hover tbody tr {
+            transition: none;
+            /* Disable hover flicker */
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #1e3a8a;">
+        <div class="container">
+            <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="{% url 'index' %}">
+                <i class="bi bi-building me-2"></i>
+                HR Portal
+            </a>
+
+            <span class="text-white-50 d-flex align-items-center">
+                <i class="bi bi-person-circle me-1"></i> Client
+            </span>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="container my-5 ">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Invoices</h2>
+            <!-- Button triggers modal -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
+                <i class="bi bi-plus-circle me-1"></i> New Invoice
+            </button>
+        </div>
+
+        <!-- Invoice Table -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0" id="invoiceTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Client</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Amount ($)</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Existing invoices -->
+                        <tr>
+                            <td>INV-101</td>
+                            <td>ABC Corp</td>
+                            <td>2026-01-10</td>
+                            <td>2026-02-10</td>
+                            <td>$1200</td>
+                            <td><span class="badge bg-success">Paid</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Invoice Modal -->
+    <div class="modal fade" id="newInvoiceModal" tabindex="-1" aria-labelledby="newInvoiceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newInvoiceModalLabel">Create New Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newInvoiceForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="invoiceID" class="form-label">Invoice ID</label>
+                                <input type="text" class="form-control" id="invoiceID" placeholder="INV-102" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="clientName" class="form-label">Client Name</label>
+                                <input type="text" class="form-control" id="clientName" placeholder="Enter client name"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="issueDate" class="form-label">Issue Date</label>
+                                <input type="date" class="form-control" id="issueDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dueDate" class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="dueDate" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="invoiceDesc" class="form-label">Description</label>
+                                <textarea class="form-control" id="invoiceDesc" rows="2"
+                                    placeholder="Describe the services or items"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="subtotal" class="form-label">Subtotal ($)</label>
+                                <input type="number" class="form-control" id="subtotal" min="0" step="0.01" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="tax" class="form-label">Tax (%)</label>
+                                <input type="number" class="form-control" id="tax" min="0" step="0.01" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="total" class="form-label">Total ($)</label>
+                                <input type="number" class="form-control" id="total" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" required>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Paid">Paid</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-4">Add Invoice</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JS to calculate total and add invoice dynamically -->
+    <script>
+        const subtotal = document.getElementById('subtotal');
+        const tax = document.getElementById('tax');
+        const total = document.getElementById('total');
+
+        function updateTotal() {
+            const sub = parseFloat(subtotal.value) || 0;
+            const t = parseFloat(tax.value) || 0;
+            total.value = (sub + (sub * t / 100)).toFixed(2);
+        }
+
+        subtotal.addEventListener('input', updateTotal);
+        tax.addEventListener('input', updateTotal);
+
+        // Form submission
+        const form = document.getElementById('newInvoiceForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const invoiceTable = document.getElementById('invoiceTable').querySelector('tbody');
+
+            const invoiceID = document.getElementById('invoiceID').value;
+            const clientName = document.getElementById('clientName').value;
+            const issueDate = document.getElementById('issueDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const totalAmount = document.getElementById('total').value;
+            const status = document.getElementById('status').value;
+
+            // Create new row
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+            <td>${invoiceID}</td>
+            <td>${clientName}</td>
+            <td>${issueDate}</td>
+            <td>${dueDate}</td>
+            <td>$${totalAmount}</td>
+            <td><span class="badge ${status === 'Paid' ? 'bg-success' : 'bg-warning text-dark'}">${status}</span></td>
+            <td><button class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</button></td>
+        `;
+
+            // Append row
+            invoiceTable.appendChild(newRow);
+
+            // Close modal and reset
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newInvoiceModal'));
+            modal.hide();
+            form.reset();
+            total.value = '';
+        });
+    </script>
+
+</body>
+
+</html>

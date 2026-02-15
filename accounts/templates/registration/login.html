@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HR Portal | Login / Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", sans-serif;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-width: 950px;
+      width: 100%;
+      transition: 0.3s ease;
+    }
+
+    .login-card:hover { transform: translateY(-5px); }
+
+    .left-panel {
+      background: linear-gradient(135deg, #f4f7fc, #e8f0ff);
+      padding: 50px 40px;
+    }
+
+    .right-panel { padding: 50px 40px; }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 700;
+      color: #2a5298;
+    }
+
+    .about-text { color: #555; margin-top: 20px; line-height: 1.6; }
+
+    .form-control, .form-select { border-radius: 10px; padding: 10px; }
+
+    .input-group-text {
+      background: #2a5298;
+      color: white;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .btn-primary {
+      background: #2a5298;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      transition: 0.3s ease;
+    }
+
+    .btn-primary:hover { background: #1e3c72; transform: scale(1.03); }
+
+    .toggle-links a { cursor: pointer; font-weight: 500; color: #2a5298; }
+    .toggle-links a:hover { text-decoration: underline; }
+
+    .hidden { display: none; }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    body.dark {
+      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    }
+
+    body.dark .login-card { background: rgba(30,30,30,0.95); color: #fff; }
+    body.dark .left-panel { background: rgba(255,255,255,0.05); }
+    body.dark .input-group-text { background:#1e3c72; }
+  </style>
+</head>
+<body>
+
+<div class="theme-toggle" onclick="toggleTheme()">
+  <i class="bi bi-moon-fill"></i>
+</div>
+
+<div class="login-card row g-0">
+
+  <!-- Left Panel -->
+  <div class="col-md-5 left-panel">
+    <div class="brand"><i class="bi bi-buildings"></i> HRMS Portal</div>
+    <p class="about-text">
+      Secure and modern workforce management system with role-based access.
+    </p>
+    <ul class="about-text">
+      <li><i class="bi bi-check-circle-fill text-primary"></i> HR Management</li>
+      <li><i class="bi bi-check-circle-fill text-primary"></i> Employee Self Service</li>
+      <li><i class="bi bi-check-circle-fill text-primary"></i> Client Access</li>
+    </ul>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="col-md-7 right-panel">
+
+    <h4 id="formTitle"><i class="bi bi-box-arrow-in-right"></i> Sign In</h4>
+
+    <!-- Django messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Login / HR Signup form -->
+    <form method="POST" id="authForm" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div class="mb-3" id="roleDiv">
+        <label>Login As</label>
+        <select name="role" class="form-select" required>
+          <option value="">Select Role</option>
+          <option value="HR">HR</option>
+          <option value="CLIENT">Client</option>
+          <option value="EMPLOYEE">Employee</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label>Email</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label>Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+          <input type="password" id="password" name="password" class="form-control" required>
+          <span class="input-group-text" style="cursor:pointer" onclick="togglePassword()">
+            <i class="bi bi-eye"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="mb-3 hidden" id="confirmPasswordDiv">
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" class="form-control">
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+        <span id="btnText">Continue</span>
+        <span class="spinner-border spinner-border-sm hidden" id="loader"></span>
+      </button>
+    </form>
+
+    <div class="text-center mt-3 toggle-links">
+      <span id="toggleText">Don't have an account?</span>
+      <a onclick="toggleForm()" id="toggleLink"> Sign Up</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let isLogin = true;
+
+function toggleForm(){
+  isLogin = !isLogin;
+  const form = document.getElementById('authForm');
+  const confirmDiv = document.getElementById('confirmPasswordDiv');
+  const formTitle = document.getElementById('formTitle');
+  const toggleText = document.getElementById('toggleText');
+  const toggleLink = document.getElementById('toggleLink');
+
+  if(isLogin){
+    formTitle.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Sign In';
+    toggleText.innerText = "Don't have an account?";
+    toggleLink.innerText = " Sign Up";
+    confirmDiv.classList.add('hidden');
+    form.action = "{% url 'login' %}";
+    document.getElementById('roleDiv').classList.remove('hidden');
+  } else {
+    formTitle.innerHTML = '<i class="bi bi-person-plus-fill"></i> HR Sign Up';
+    toggleText.innerText = "Already have an account?";
+    toggleLink.innerText = " Sign In";
+    confirmDiv.classList.remove('hidden');
+    form.action = "{% url 'hr_signup' %}"; // Action goes to HR signup view
+    // Only allow HR role for signup
+    const roleSelect = document.querySelector('select[name="role"]');
+    roleSelect.innerHTML = '<option value="HR">HR</option>';
+    document.getElementById('roleDiv').classList.remove('hidden');
+  }
+}
+
+function togglePassword(){
+  const pwd = document.getElementById('password');
+  pwd.type = pwd.type==='password'?'text':'password';
+}
+
+function toggleTheme(){ document.body.classList.toggle('dark'); }
+
+// Spinner
+const form = document.getElementById('authForm');
+form.addEventListener('submit',()=>{
+  document.getElementById('loader').classList.remove('hidden');
+  document.getElementById('btnText').innerText='Processing...';
+});
+</script>
+
+</body>
+</html>
