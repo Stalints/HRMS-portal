@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -13,7 +14,7 @@
       crossorigin="anonymous"
     />
     <!-- Dashboard custom CSS -->
-    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
   </head>
   <body>
     <div class="d-flex">
@@ -42,17 +43,17 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="team.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
               <span class="me-2">👥</span> Team Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="attendance.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="leave.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
               <span class="me-2">📝</span> Leave Management
             </a>
           </li>
