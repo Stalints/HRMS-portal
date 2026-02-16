@@ -325,16 +325,17 @@
 <div class="sidebar">
     <h2>HR Portal</h2>
 
-    <a href="{% url 'employee_dashboard' %}">Dashboard</a>
-    <a href="{% url 'employee_profile' %}">My Profile</a>
-    <a href="{% url 'employee_leaves' %}">Leaves</a>
-    <a href="{% url 'attendance_history' %}">Attendance</a>
-    <a href="{% url 'employee_announcements' %}">Annoucements</a>
-    <a href="{% url 'employee_tasks' %}">Tasks</a>
+    <!-- ✅ FIXED: Added employee namespace -->
+    <a href="{% url 'employee:employee_dashboard' %}">Dashboard</a>
+    <a href="{% url 'employee:employee_profile' %}">My Profile</a>
+    <a href="{% url 'employee:employee_leaves' %}">Leaves</a>
+    <a href="{% url 'employee:attendance_history' %}">Attendance</a>
+    <a href="{% url 'employee:employee_announcements' %}">Announcements</a>
+    <a href="{% url 'employee:employee_tasks' %}">Tasks</a>
 
-    
+    <!-- ✅ FIXED: logout is inside accounts app -->
+    <a href="{% url 'accounts:logout' %}" class="logout">Logout</a>
 
-    <a href="{% url 'logout' %}" class="logout">Logout</a>
 </div>
 
 <div class="main">

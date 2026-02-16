@@ -13,11 +13,13 @@
 <div class="card">
     <h3>Today's Attendance</h3>
     <br>
-    <a href="{% url 'clock_in' %}" class="btn-primary">
+    <!-- ✅ Updated URL to use employee namespace -->
+    <a href="{% url 'employee:clock_in' %}" class="btn-primary">
         🟢 Clock In
     </a>
 
-    <a href="{% url 'clock_out' %}" 
+    <!-- ✅ Updated URL to use employee namespace -->
+    <a href="{% url 'employee:clock_out' %}" 
        class="btn-primary" 
        style="background:#dc2626;">
         🔴 Clock Out
@@ -55,9 +57,10 @@
 <div class="card">
     <h3>Quick Actions</h3>
     <br>
-    <a href="{% url 'employee_leaves' %}">➕ Apply Leave</a> |
-    <a href="#">📅 Attendance</a> |
-    <a href="#">📢 Announcements</a>
+    <!-- ✅ Updated URLs to use employee namespace -->
+    <a href="{% url 'employee:employee_leaves' %}">➕ Apply Leave</a> |
+    <a href="{% url 'employee:attendance_history' %}">📅 Attendance</a> |
+    <a href="{% url 'employee:employee_announcements' %}">📢 Announcements</a>
 </div>
 
 {% endblock %}

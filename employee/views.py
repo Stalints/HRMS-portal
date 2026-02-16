@@ -104,7 +104,7 @@ def clock_in(request):
         )
         messages.success(request, "Clock In marked successfully.")
 
-    return redirect('employee_dashboard')
+    return redirect('employee:employee_dashboard')
 
 
 def clock_out(request):
@@ -124,7 +124,7 @@ def clock_out(request):
         attendance.save()
         messages.success(request, "Clock Out saved successfully.")
 
-    return redirect('employee_dashboard')
+    return redirect('employee:employee_dashboard')
 
 from django.utils import timezone
 from .models import Attendance

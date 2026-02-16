@@ -195,14 +195,14 @@ function toggleForm(){
     toggleText.innerText = "Don't have an account?";
     toggleLink.innerText = " Sign Up";
     confirmDiv.classList.add('hidden');
-    form.action = "{% url 'login' %}";
+    form.action = "{% url 'accounts:hr_signup' %}";
     document.getElementById('roleDiv').classList.remove('hidden');
   } else {
     formTitle.innerHTML = '<i class="bi bi-person-plus-fill"></i> HR Sign Up';
     toggleText.innerText = "Already have an account?";
     toggleLink.innerText = " Sign In";
     confirmDiv.classList.remove('hidden');
-    form.action = "{% url 'hr_signup' %}"; // Action goes to HR signup view
+    form.action = "{% url 'accounts:hr_signup' %}"; // <-- Use namespace
     // Only allow HR role for signup
     const roleSelect = document.querySelector('select[name="role"]');
     roleSelect.innerHTML = '<option value="HR">HR</option>';

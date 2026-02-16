@@ -3,20 +3,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 
+
 def login_view(request):
     # 🔁 Redirect if already logged in
     if request.user.is_authenticated:
         if request.user.groups.filter(name="HR").exists():
-            return redirect("hr_dashboard")
+            return redirect("hr:dashboard")
         elif request.user.groups.filter(name="CLIENT").exists():
-            return redirect("client_dashboard")
+            return redirect("core:client_dashboard")
         elif request.user.groups.filter(name="EMPLOYEE").exists():
-            return redirect("employee_dashboard")
+            return redirect("employee:employee_dashboard")
 
     if request.method == "POST":
-        email = request.POST.get("email").lower()  # normalize email to lowercase
+        email = request.POST.get("email").lower()
         password = request.POST.get("password")
-        role = request.POST.get("role")
+        role = request.POST.get("role").upper()
 
         # 🔹 Find first user by email
         user = User.objects.filter(email=email).first()
@@ -24,7 +25,7 @@ def login_view(request):
             messages.error(request, "Invalid email or password")
             return render(request, "registration/login.html")
 
-        # 🔹 Check role
+        # ✅ Check role using GROUPS
         if not user.groups.filter(name=role).exists():
             messages.error(request, f"User is not assigned to role: {role}")
             return render(request, "registration/login.html")
@@ -42,11 +43,11 @@ def login_view(request):
 
             # 🔁 Role-based redirect
             if role == "HR":
-                return redirect("hr_dashboard")
+                return redirect("hr:dashboard")
             elif role == "CLIENT":
-                return redirect("client_dashboard")
+                return redirect("core:client_dashboard")
             elif role == "EMPLOYEE":
-                return redirect("employee_dashboard")
+                return redirect("employee:employee_dashboard")
 
         messages.error(request, "Invalid email or password")
 

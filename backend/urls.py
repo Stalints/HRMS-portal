@@ -24,6 +24,7 @@ from django.shortcuts import redirect
 from django.contrib.auth import views as auth_views
 from accounts.views_password import password_change_done_logout
 
+# Redirect root URL to login page
 def home_redirect(request):
     return redirect("login")
 
@@ -52,14 +53,22 @@ urlpatterns = [
         name='password_change_done'
     ),
 
-    # App URLs → custom login/logout (must come **before** built-in auth URLs)
+    # Accounts → custom login/logout/signup (must come before built-in auth URLs)
     path('accounts/', include('accounts.urls')),
 
-    # Built-in auth URLs → only for other auth paths like password reset
+    # Built-in auth URLs → for password reset, etc.
     path('accounts/', include('django.contrib.auth.urls')),
 
-    # Other app URLs
-    path('client/', include('core.urls')),
+    # Client module
+    path('client/', include(('core.urls', 'core'), namespace='core')),
+
+    # Employee module ✅ Add this
+    path('employee/', include(('employee.urls', 'employee'), namespace='employee')),
+
+    # HR module
+    path('hr/', include(('hr.urls', 'hr'), namespace='hr')),
+
 ]
+
 
 
