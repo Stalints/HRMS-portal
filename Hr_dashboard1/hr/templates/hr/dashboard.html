@@ -38,28 +38,43 @@
         <div class="mb-2 sidebar-heading">Main</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link active d-flex align-items-center" href="#">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'hr:dashboard' %}">
               <span class="me-2">🏠</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'team_list' %}active{% endif %}" href="{% url 'hr:team_list' %}">
               <span class="me-2">👥</span> Team Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'attendance_list' %}active{% endif %}" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'leave_dashboard' %}active{% endif %}" href="{% url 'hr:leave_dashboard' %}">
               <span class="me-2">📝</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="announcements.html">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}" href="{% url 'hr:announcement_list' %}">
               <span class="me-2">📢</span> Announcements
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'project_list' %}active{% endif %}" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'client_list' %}active{% endif %}" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
             </a>
           </li>
           <li class="nav-item">
@@ -173,6 +188,7 @@
 
         <!-- Dashboard content -->
         <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
+          {% block content %}
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h1 class="h4 mb-1">HR Dashboard</h1>
@@ -361,28 +377,27 @@
               <div class="card border-0 shadow-sm h-100" id="announcements">
                 <div class="card-header card-header-small d-flex justify-content-between">
                   <h2 class="h6 mb-0">Announcements Preview</h2>
-                  <span class="badge bg-primary-subtle text-primary">Active: 3</span>
+                  <span class="badge bg-primary-subtle text-primary">Active: {{ active_announcements_count|default:0 }}</span>
                 </div>
                 <div class="card-body small">
-                  <h3 class="fs-6 mb-1">Hybrid Work Policy Refresh</h3>
-                  <div class="text-muted mb-2">Published on: 18 Jan 2026</div>
-                  <p class="mb-2">
-                    Starting next quarter, teams will follow updated hybrid work guidelines with
-                    minimum in-office days and clarified eligibility rules.
-                  </p>
-                  <span class="badge bg-info-subtle text-info me-1">Policy</span>
-                  <span class="badge bg-secondary-subtle text-secondary">Company-wide</span>
-                  <hr />
-                  <ul class="list-unstyled mb-0">
-                    <li class="mb-1">
-                      <strong>Payroll Cut-off Reminder</strong>
-                      <span class="text-muted d-block">Published on: 15 Jan 2026</span>
-                    </li>
-                    <li>
-                      <strong>New Wellness Program</strong>
-                      <span class="text-muted d-block">Published on: 10 Jan 2026</span>
-                    </li>
-                  </ul>
+                  {% if active_announcements %}
+                    {% with first=active_announcements.0 rest=active_announcements|slice:'1:' %}
+                      <h3 class="fs-6 mb-1">{{ first.title }}</h3>
+                      <div class="text-muted mb-2">Published on: {{ first.publish_date }}</div>
+                      <p class="mb-2">{{ first.message }}</p>
+                      <hr />
+                      <ul class="list-unstyled mb-0">
+                        {% for a in rest %}
+                          <li class="mb-1">
+                            <strong>{{ a.title }}</strong>
+                            <span class="text-muted d-block">Published on: {{ a.publish_date }}</span>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endwith %}
+                  {% else %}
+                    <div class="text-muted">No active announcements.</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -480,6 +495,7 @@
               Secure access with reCAPTCHA (UI mention only)
             </span>
           </section>
+          {% endblock %}
         </main>
 
         <footer class="border-top bg-white py-2 px-3 px-lg-4">

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password   
 
 from .models import Attendance
-from .models import LeaveCategory
+from .models import LeaveCategory, Announcement, Project, Task, Client
 
 User = get_user_model()
 
@@ -109,6 +109,94 @@ class TeamMemberEditForm(forms.ModelForm):
 
 
 class LeaveCategoryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "days_per_year" in self.fields:
+            self.fields["days_per_year"].required = False
+
     class Meta:
         model = LeaveCategory
         fields = ["name", "description", "days_per_year"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Category name"}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Description (optional)"}),
+            "days_per_year": forms.NumberInput(attrs={"class": "form-control form-control-sm", "placeholder": "Days per year"}),
+        }
+
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ["title", "message", "publish_date"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Enter announcement title"}),
+            "message": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Enter announcement message or description"}),
+            "publish_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+        }
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = [
+            "name",
+            "client_name",
+            "start_date",
+            "deadline",
+            "status",
+            "progress_percentage",
+            "description",
+        ]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Project name"}),
+            "client_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Client name"}),
+            "start_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "deadline": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "progress_percentage": forms.NumberInput(attrs={"class": "form-control form-control-sm", "min": 0, "max": 100}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Describe the project"}),
+        }
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = [
+            "title",
+            "project",
+            "assigned_to",
+            "due_date",
+            "priority",
+            "status",
+            "description",
+        ]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Task title"}),
+            "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "assigned_to": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Assignee name"}),
+            "due_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "priority": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Task details"}),
+        }
+
+
+class ClientForm(forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = [
+            "company_name",
+            "contact_person",
+            "email",
+            "phone",
+            "address",
+            "status",
+        ]
+        widgets = {
+            "company_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Company name"}),
+            "contact_person": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Contact person"}),
+            "email": forms.EmailInput(attrs={"class": "form-control form-control-sm", "placeholder": "email@example.com"}),
+            "phone": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Phone number"}),
+            "address": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Address"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
