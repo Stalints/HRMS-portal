@@ -7,8 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
-from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm
-from .models import Attendance, Status, LeaveRequest, LeaveCategory
+from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm
+from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus
 from .forms import LeaveCategoryForm
 
 
@@ -20,7 +20,11 @@ User = get_user_model()
 # =====================
 
 def dashboard(request):
-    return render(request, "hr/dashboard.html")
+    active_announcements = Announcement.objects.filter(status=AnnouncementStatus.ACTIVE).order_by("-publish_date", "-created_at")[:5]
+    return render(request, "hr/dashboard.html", {
+        "active_announcements": active_announcements,
+        "active_announcements_count": active_announcements.count(),
+    })
 
 
 # =====================
@@ -186,9 +190,10 @@ def leave_dashboard(request):
         "approved_count": leaves.filter(status="Approved").count(),
         "pending_count": leaves.filter(status="Pending").count(),
         "rejected_count": leaves.filter(status="Rejected").count(),
+        "cat_form": LeaveCategoryForm(),
     }
 
-    return render(request, "leave.html", context)
+    return render(request, "hr/leave.html", context)
 
 
 
@@ -205,6 +210,190 @@ def approve_leave(request, pk):
     return redirect("hr:leave_dashboard")
 
 
+# =====================
+# ANNOUNCEMENTS
+# =====================
+
+def announcement_list(request):
+    if request.method == "POST":
+        form = AnnouncementForm(request.POST)
+        if form.is_valid():
+            ann = form.save(commit=False)
+            if request.user.is_authenticated:
+                ann.created_by = request.user
+            ann.save()
+            messages.success(request, "Announcement created.")
+            return redirect("hr:announcement_list")
+    else:
+        form = AnnouncementForm()
+
+    announcements = Announcement.objects.all().order_by("-publish_date", "-created_at")
+    return render(request, "hr/announcements.html", {
+        "form": form,
+        "announcements": announcements,
+    })
+
+
+def announcement_edit(request, pk):
+    ann = get_object_or_404(Announcement, pk=pk)
+    if request.method == "POST":
+        form = AnnouncementForm(request.POST, instance=ann)
+        status_value = request.POST.get("status")
+        if form.is_valid():
+            obj = form.save(commit=False)
+            if status_value in dict(AnnouncementStatus.choices):
+                obj.status = status_value
+            obj.save()
+            messages.success(request, "Announcement updated.")
+            return redirect("hr:announcement_list")
+    else:
+        form = AnnouncementForm(instance=ann)
+
+    return render(request, "hr/announcement_form.html", {
+        "form": form,
+        "announcement": ann,
+        "status_choices": AnnouncementStatus.choices
+    })
+
+
+def announcement_delete(request, pk):
+    ann = get_object_or_404(Announcement, pk=pk)
+    if request.method == "POST":
+        ann.delete()
+        messages.success(request, "Announcement deleted.")
+        return redirect("hr:announcement_list")
+    return render(request, "hr/announcement_delete_confirm.html", {"announcement": ann})
+
+
+# =====================
+# PROJECTS
+# =====================
+
+def project_list(request):
+    projects = Project.objects.all()
+    return render(request, "hr/projects.html", {"projects": projects})
+
+
+def project_create(request):
+    if request.method == "POST":
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Project created successfully.")
+            return redirect("hr:project_list")
+    else:
+        form = ProjectForm()
+    return render(request, "hr/project_form.html", {"form": form, "is_edit": False})
+
+
+def project_detail(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    return render(request, "hr/project_detail.html", {"project": project})
+
+
+def project_update(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    if request.method == "POST":
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Project updated successfully.")
+            return redirect("hr:project_detail", pk=project.pk)
+    else:
+        form = ProjectForm(instance=project)
+    return render(request, "hr/project_form.html", {"form": form, "is_edit": True, "project": project})
+
+
+def project_delete(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    if request.method == "POST":
+        project.delete()
+        messages.success(request, "Project deleted.")
+        return redirect("hr:project_list")
+    return render(request, "hr/project_delete_confirm.html", {"project": project})
+
+
+# =====================
+# TASKS
+# =====================
+
+def task_list(request):
+    status_filter = request.GET.get("status")
+    tasks = Task.objects.select_related("project").all()
+    if status_filter in dict(TaskStatus.choices).keys():
+        tasks = tasks.filter(status=status_filter)
+    form = TaskForm()
+    return render(request, "hr/tasks.html", {"tasks": tasks, "form": form, "status_filter": status_filter})
+
+
+def task_create(request):
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Task created.")
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    return redirect("hr:task_list")
+
+
+def task_update(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    if request.method == "POST":
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Task updated.")
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    return redirect("hr:task_list")
+
+
+def task_delete(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    if request.method == "POST":
+        task.delete()
+        messages.success(request, "Task deleted.")
+    return redirect("hr:task_list")
+
+
+def client_list(request):
+    clients = Client.objects.all()
+    form = ClientForm()
+    return render(request, "hr/clients.html", {"clients": clients, "form": form})
+
+
+def client_create(request):
+    if request.method == "POST":
+        form = ClientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Client added.")
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    return redirect("hr:client_list")
+
+
+def client_update(request, pk):
+    client = get_object_or_404(Client, pk=pk)
+    if request.method == "POST":
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Client updated.")
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    return redirect("hr:client_list")
+
+
+def client_delete(request, pk):
+    client = get_object_or_404(Client, pk=pk)
+    if request.method == "POST":
+        client.delete()
+        messages.success(request, "Client deleted.")
+    return redirect("hr:client_list")
+
+
 def reject_leave(request, pk):
     leave = get_object_or_404(LeaveRequest, pk=pk)
     leave.status = "Rejected"
@@ -219,16 +408,19 @@ def reject_leave(request, pk):
 
 
 def add_leave_category_ajax(request):
+    # Deprecated AJAX handler retained for compatibility if referenced elsewhere.
+    # Prefer add_leave_category view for non-API form handling.
+    return redirect("hr:add_leave_category")
+
+
+def add_leave_category(request):
     if request.method == "POST":
         form = LeaveCategoryForm(request.POST)
         if form.is_valid():
-            cat = form.save()
-            return JsonResponse({
-                "success": True,
-                "name": cat.name,
-                "days": cat.days_per_year
-            })
-        else:
-            return JsonResponse({"success": False, "errors": form.errors})
+            form.save()
+            messages.success(request, "Leave category added.")
+            return redirect("hr:leave_dashboard")
+    else:
+        form = LeaveCategoryForm()
 
-    return JsonResponse({"success": False})
+    return render(request, "hr/leave_category_form.html", {"form": form})

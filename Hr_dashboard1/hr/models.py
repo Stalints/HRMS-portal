@@ -123,3 +123,114 @@ class LeaveRequest(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+# -------------------------
+# ANNOUNCEMENTS
+# -------------------------
+
+class AnnouncementStatus(models.TextChoices):
+    ACTIVE = 'ACTIVE', 'Active'
+    EXPIRED = 'EXPIRED', 'Expired'
+
+
+class Announcement(models.Model):
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    publish_date = models.DateField()
+    status = models.CharField(max_length=20, choices=AnnouncementStatus.choices, default=AnnouncementStatus.ACTIVE)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="announcements"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-publish_date', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+# -------------------------
+# PROJECTS
+# -------------------------
+
+class ProjectStatus(models.TextChoices):
+    PENDING = "Pending", "Pending"
+    IN_PROGRESS = "In Progress", "In Progress"
+    COMPLETED = "Completed", "Completed"
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=255)
+    client_name = models.CharField(max_length=255)
+    start_date = models.DateField()
+    deadline = models.DateField()
+    status = models.CharField(max_length=20, choices=ProjectStatus.choices, default=ProjectStatus.PENDING)
+    progress_percentage = models.IntegerField(default=0)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+# -------------------------
+# TASKS
+# -------------------------
+
+class TaskPriority(models.TextChoices):
+    LOW = "Low", "Low"
+    MEDIUM = "Medium", "Medium"
+    HIGH = "High", "High"
+
+
+class TaskStatus(models.TextChoices):
+    PENDING = "Pending", "Pending"
+    IN_PROGRESS = "In Progress", "In Progress"
+    COMPLETED = "Completed", "Completed"
+
+
+class Task(models.Model):
+    title = models.CharField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
+    assigned_to = models.CharField(max_length=255)
+    due_date = models.DateField()
+    priority = models.CharField(max_length=10, choices=TaskPriority.choices, default=TaskPriority.MEDIUM)
+    status = models.CharField(max_length=20, choices=TaskStatus.choices, default=TaskStatus.PENDING)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+
+class ClientStatus(models.TextChoices):
+    ACTIVE = "Active", "Active"
+    INACTIVE = "Inactive", "Inactive"
+
+
+class Client(models.Model):
+    company_name = models.CharField(max_length=255)
+    contact_person = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=50)
+    address = models.TextField()
+    status = models.CharField(max_length=10, choices=ClientStatus.choices, default=ClientStatus.ACTIVE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.company_name

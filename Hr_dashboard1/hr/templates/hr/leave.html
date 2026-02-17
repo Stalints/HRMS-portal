@@ -60,8 +60,23 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="announcements.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
               <span class="me-2">📢</span> Announcements
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
             </a>
           </li>
           <li class="nav-item">
@@ -320,8 +335,8 @@
 
                             <td class="text-end">
                               <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-success">Approve</button>
-                                <button class="btn btn-outline-danger">Reject</button>
+                                <a href="{% url 'hr:approve_leave' leave.pk %}" class="btn btn-outline-success">Approve</a>
+                                <a href="{% url 'hr:reject_leave' leave.pk %}" class="btn btn-outline-danger">Reject</a>
                               </div>
                             </td>
                           </tr>
@@ -347,8 +362,10 @@
                   <button
                     type="button"
                     class="btn btn-sm btn-outline-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#addCategoryModal">
+                    data-bs-toggle="collapse"
+                    data-bs-target="#addCategoryForm"
+                    aria-expanded="false"
+                    aria-controls="addCategoryForm">
                     + Add Leave Category
                   </button>
 
@@ -356,6 +373,24 @@
                 </div>
 
                 <div class="card-body small">
+                  <div class="collapse mb-3" id="addCategoryForm">
+                    <form method="post" action="{% url 'hr:add_leave_category' %}" class="small">
+                      {% csrf_token %}
+                      <div class="mb-2">
+                        <label for="{{ cat_form.name.id_for_label }}" class="form-label">Name</label>
+                        {{ cat_form.name }}
+                      </div>
+                      <div class="mb-2">
+                        <label for="{{ cat_form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ cat_form.description }}
+                      </div>
+                      <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#addCategoryForm">Cancel</button>
+                      </div>
+                    </form>
+                    <hr />
+                  </div>
                   <ul class="list-group list-group-flush mb-2">
                     {% for cat in categories %}
                       <li class="list-group-item px-0 d-flex justify-content-between">
