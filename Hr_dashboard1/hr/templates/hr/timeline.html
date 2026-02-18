@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Portal | Timeline</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <!-- Shared dashboard styles -->
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+        <div class="mb-4">
+          <div class="d-flex align-items-center mb-2">
+            <div
+              class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
+              style="width: 36px; height: 36px"
+            >
+              HR
+            </div>
+            <div>
+              <div class="fw-semibold small">HR Portal</div>
+              <div class="text-secondary small">Timeline</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-2 sidebar-heading">Main</div>
+        <ul class="nav nav-pills flex-column mb-3 gap-1">
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="index.html">
+              <span class="me-2">🏠</span> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="team.html">
+              <span class="me-2">👥</span> Team Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="attendance.html">
+              <span class="me-2">⏱️</span> Time Cards / Attendance
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="leave.html">
+              <span class="me-2">📝</span> Leave Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="announcements.html">
+              <span class="me-2">📢</span> Announcements
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="events.html">
+              <span class="me-2">📅</span> Event Calendar
+            </a>
+          </li>
+        </ul>
+
+        <div class="mb-2 sidebar-heading">Personal & Tools</div>
+        <ul class="nav nav-pills flex-column mb-3 gap-1">
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="notes.html">
+              <span class="me-2">🗒️</span> Notes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active d-flex align-items-center" href="timeline.html">
+              <span class="me-2">📊</span> Timeline
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="help.html">
+              <span class="me-2">📚</span> Help Articles
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="todo.html">
+              <span class="me-2">✅</span> Personal To-Do List
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="notifications.html">
+              <span class="me-2">🔔</span> Notifications
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="settings.html">
+              <span class="me-2">⚙️</span> Settings / Security
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main content -->
+      <div class="flex-grow-1 content-wrapper d-flex flex-column">
+        <!-- Top navbar -->
+        <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
+          <div class="container-fluid px-0">
+            <button
+              class="navbar-toggler me-2"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#topNav"
+              aria-controls="topNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-lg-none" href="index.html">
+              <span>HR Portal</span>
+            </a>
+
+            <div class="collapse navbar-collapse" id="topNav">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <span class="nav-link disabled">Logged in as: <strong>HR</strong></span>
+                </li>
+              </ul>
+
+              <div class="d-flex align-items-center gap-3">
+                <button
+                  type="button"
+                  class="btn btn-light position-relative rounded-circle p-2"
+                  aria-label="Notifications"
+                >
+                  🔔
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  >
+                    4
+                  </span>
+                </button>
+                <div class="dropdown">
+                  <button
+                    class="btn btn-outline-secondary d-flex align-items-center gap-2"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span
+                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
+                      style="width: 32px; height: 32px"
+                      >HR</span
+                    >
+                    <span class="d-none d-sm-inline small">HR Admin</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">HR Admin</h6></li>
+                    <li><a class="dropdown-item" href="settings.html">Settings &amp; Security</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Page content -->
+        <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h1 class="h4 mb-1">Timeline</h1>
+              <p class="text-muted small mb-0">
+                Share internal updates, ideas, and documents
+              </p>
+            </div>
+            <span class="badge text-bg-light d-none d-md-inline"></span>
+          </div>
+
+          <div class="row g-3">
+            <!-- Main Timeline Feed -->
+            <div class="col-12 col-lg-8">
+              <!-- Create Timeline Post Section -->
+              <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h2 class="h6 mb-0">Share an Update</h2>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#postForm"
+                    aria-expanded="false"
+                    aria-controls="postForm"
+                  >
+                    + Add Post
+                  </button>
+                </div>
+                <div class="collapse" id="postForm">
+                  <div class="card-body">
+                    <form>
+                      <div class="mb-3">
+                        <label for="postTitle" class="form-label">Title (Optional)</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="postTitle"
+                          placeholder="Enter a title for your post"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="postMessage" class="form-label">Message / Update <span class="text-danger">*</span></label>
+                        <textarea
+                          class="form-control"
+                          id="postMessage"
+                          rows="4"
+                          placeholder="Share your update, idea, or information..."
+                          required
+                        ></textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label for="postFile" class="form-label">File Attachment (Optional)</label>
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="postFile"
+                          aria-describedby="fileHelp"
+                        />
+                        <div id="fileHelp" class="form-text">
+                          Attach documents, images, or other files to share with the team
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="postLink" class="form-label">Link Attachment (Optional)</label>
+                        <input
+                          type="url"
+                          class="form-control"
+                          id="postLink"
+                          placeholder="https://example.com"
+                          aria-describedby="linkHelp"
+                        />
+                        <div id="linkHelp" class="form-text">
+                          Share a relevant link or resource
+                        </div>
+                      </div>
+                      <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Share</button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#postForm"
+                          aria-expanded="false"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Feed -->
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h6 mb-0">Timeline Feed</h2>
+                <span class="badge bg-primary-subtle text-primary">Latest first</span>
+              </div>
+
+              <!-- Timeline Post 1 -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-start mb-3">
+                    <div
+                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center me-3"
+                      style="width: 48px; height: 48px"
+                    >
+                      HR
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                          <h3 class="h6 mb-0">HR Admin</h3>
+                          <small class="text-muted">HR · 2 hours ago</small>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">Update</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <h4 class="fs-6 mb-2">Q1 Policy Updates - Action Required</h4>
+                    <p class="mb-2">
+                      We've updated our Q1 HR policies including remote work guidelines and leave policies. 
+                      Please review the attached document and share any feedback by end of this week.
+                    </p>
+                    <div class="border rounded p-2 bg-light mb-2">
+                      <div class="d-flex align-items-center">
+                        <span class="me-2">📄</span>
+                        <div>
+                          <strong>Q1_Policy_Updates_2026.pdf</strong>
+                          <div class="text-muted small">2.4 MB · PDF Document</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3 align-items-center border-top pt-3">
+                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                      <span>👁️</span> View
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>👍</span> Like <span class="badge bg-secondary-subtle text-secondary ms-1">12</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>💬</span> Comment <span class="badge bg-secondary-subtle text-secondary ms-1">5</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Post 2 -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-start mb-3">
+                    <div
+                      class="rounded-circle bg-success text-white d-inline-flex justify-content-center align-items-center me-3"
+                      style="width: 48px; height: 48px"
+                    >
+                      MR
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                          <h3 class="h6 mb-0">Mia Rodriguez</h3>
+                          <small class="text-muted">Team Lead · 5 hours ago</small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Idea</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <p class="mb-2">
+                      Great idea for improving our onboarding process! I've created a checklist that we can use 
+                      for new hires. Would love to get HR's feedback on this.
+                    </p>
+                    <div class="border rounded p-2 bg-light mb-2">
+                      <div class="d-flex align-items-center">
+                        <span class="me-2">🔗</span>
+                        <div>
+                          <strong>Onboarding Checklist Template</strong>
+                          <div class="text-muted small">https://internal.hrportal.com/onboarding-checklist</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3 align-items-center border-top pt-3">
+                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                      <span>👁️</span> View
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>👍</span> Like <span class="badge bg-secondary-subtle text-secondary ms-1">8</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>💬</span> Comment <span class="badge bg-secondary-subtle text-secondary ms-1">3</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Post 3 -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-start mb-3">
+                    <div
+                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center me-3"
+                      style="width: 48px; height: 48px"
+                    >
+                      HR
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                          <h3 class="h6 mb-0">HR Admin</h3>
+                          <small class="text-muted">HR · Yesterday, 3:45 PM</small>
+                        </div>
+                        <span class="badge bg-info-subtle text-info">Document</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <h4 class="fs-6 mb-2">Performance Review Schedule</h4>
+                    <p class="mb-2">
+                      The annual performance review schedule is now available. Key dates: self-assessment deadline (31 Jan), 
+                      manager reviews (15 Feb), finalization (28 Feb). Please review the timeline document.
+                    </p>
+                    <div class="border rounded p-2 bg-light mb-2">
+                      <div class="d-flex align-items-center">
+                        <span class="me-2">📄</span>
+                        <div>
+                          <strong>Performance_Review_Schedule_2026.xlsx</strong>
+                          <div class="text-muted small">856 KB · Excel Document</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3 align-items-center border-top pt-3">
+                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                      <span>👁️</span> View
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>👍</span> Like <span class="badge bg-secondary-subtle text-secondary ms-1">15</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>💬</span> Comment <span class="badge bg-secondary-subtle text-secondary ms-1">7</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Post 4 -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-start mb-3">
+                    <div
+                      class="rounded-circle bg-warning text-white d-inline-flex justify-content-center align-items-center me-3"
+                      style="width: 48px; height: 48px"
+                    >
+                      AP
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                          <h3 class="h6 mb-0">Aarav Patel</h3>
+                          <small class="text-muted">Team Member · 2 days ago</small>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning">Information</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <p class="mb-2">
+                      Found a useful resource about employee engagement strategies. Thought I'd share it with the team. 
+                      The article has some great insights we could implement.
+                    </p>
+                    <div class="border rounded p-2 bg-light mb-2">
+                      <div class="d-flex align-items-center">
+                        <span class="me-2">🔗</span>
+                        <div>
+                          <strong>Employee Engagement Best Practices</strong>
+                          <div class="text-muted small">https://hr-resources.com/engagement-strategies</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3 align-items-center border-top pt-3">
+                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                      <span>👁️</span> View
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>👍</span> Like <span class="badge bg-secondary-subtle text-secondary ms-1">6</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>💬</span> Comment <span class="badge bg-secondary-subtle text-secondary ms-1">2</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Post 5 -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-start mb-3">
+                    <div
+                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center me-3"
+                      style="width: 48px; height: 48px"
+                    >
+                      HR
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                          <h3 class="h6 mb-0">HR Admin</h3>
+                          <small class="text-muted">HR · 3 days ago</small>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">Update</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <h4 class="fs-6 mb-2">New Wellness Program Launch</h4>
+                    <p class="mb-2">
+                      Excited to announce the launch of our new employee wellness program! This includes fitness challenges, 
+                      mental health resources, and wellness workshops. Check out the program guide for more details.
+                    </p>
+                    <div class="border rounded p-2 bg-light mb-2">
+                      <div class="d-flex align-items-center">
+                        <span class="me-2">📄</span>
+                        <div>
+                          <strong>Wellness_Program_Guide_2026.pdf</strong>
+                          <div class="text-muted small">1.8 MB · PDF Document</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-3 align-items-center border-top pt-3">
+                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                      <span>👁️</span> View
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>👍</span> Like <span class="badge bg-secondary-subtle text-secondary ms-1">24</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                      <span>💬</span> Comment <span class="badge bg-secondary-subtle text-secondary ms-1">11</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar Information -->
+            <div class="col-12 col-lg-4">
+              <!-- Document & Link Sharing Info -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header">
+                  <h2 class="h6 mb-0">Document & Link Sharing</h2>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <h3 class="fs-6 mb-2">
+                      <span class="badge bg-info-subtle text-info me-2">📄</span> Document Sharing
+                    </h3>
+                    <p class="small text-muted mb-0">
+                      Share documents, PDFs, images, and other files internally with your team. All shared documents are accessible to authorized team members.
+                    </p>
+                  </div>
+                  <hr />
+                  <div>
+                    <h3 class="fs-6 mb-2">
+                      <span class="badge bg-primary-subtle text-primary me-2">🔗</span> Link Sharing
+                    </h3>
+                    <p class="small text-muted mb-0">
+                      Share useful links, resources, and external references with the team. Links are displayed prominently in timeline posts for easy access.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notifications Info -->
+              <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header">
+                  <h2 class="h6 mb-0">Notifications</h2>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex align-items-start mb-2">
+                    <span class="me-2">🔔</span>
+                    <div>
+                      <h3 class="fs-6 mb-1">Timeline Updates</h3>
+                      <p class="small text-muted mb-0">
+                        You will receive notifications when new timeline posts are shared by team members or HR.
+                      </p>
+                    </div>
+                  </div>
+                  <hr />
+                  <div class="d-flex align-items-start">
+                    <span class="me-2">💬</span>
+                    <div>
+                      <h3 class="fs-6 mb-1">Comments & Interactions</h3>
+                      <p class="small text-muted mb-0">
+                        Get notified when someone comments on your posts or interacts with your shared content.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Note -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                  <h2 class="h6 mb-0">Security & Access</h2>
+                </div>
+                <div class="card-body">
+                  <div class="alert alert-info py-2 mb-0 small">
+                    <strong>Internal Access Only:</strong> All timeline posts are restricted to internal team members with appropriate role-based access. 
+                    Content is not publicly accessible and is protected by secure authentication.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="border-top bg-white py-2 px-3 px-lg-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>© <span id="year"></span> HR Portal • Timeline Module</span>
+            <span class="text-muted">Secure access · Internal communication</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
