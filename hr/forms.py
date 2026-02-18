@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.password_validation import validate_password   
 
-from .models import Attendance, LeaveCategory, HRProfile  # ✅ HRProfile added
+from .models import Attendance
+from .models import LeaveCategory, Announcement, Project, Task, Client
 
 User = get_user_model()
 
@@ -22,33 +23,24 @@ class TeamMemberAddForm(forms.ModelForm):
         label='Confirm Password',
     )
 
-    # ✅ ADD these fields (since they are NOT in User anymore)
-    role = forms.ChoiceField(
-        choices=HRProfile._meta.get_field("role").choices,
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        label='Role',
-    )
-    status = forms.ChoiceField(
-        choices=HRProfile._meta.get_field("status").choices,
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        label='Status',
-    )
-
     class Meta:
         model = User
-        # ✅ removed role,status from User model fields
-        fields = ['username', 'first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email', 'role', 'status']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Last name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'name@company.com'}),
+            'role': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
         }
         labels = {
             'username': 'Username',
             'first_name': 'First Name',
             'last_name': 'Last Name',
             'email': 'Email',
+            'role': 'Role',
+            'status': 'Status',
         }
 
     def clean_password_confirm(self):
@@ -63,16 +55,6 @@ class TeamMemberAddForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
-
-            # ✅ Save role/status into HRProfile
-            HRProfile.objects.update_or_create(
-                user=user,
-                defaults={
-                    "role": self.cleaned_data["role"],
-                    "status": self.cleaned_data["status"],
-                }
-            )
-
         return user
 
 
@@ -81,12 +63,7 @@ class AttendanceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # ✅ CHANGED: User.status doesn't exist -> use hr_profile__status
-        self.fields['user'].queryset = User.objects.filter(
-            hr_profile__status="ACTIVE"
-        ).order_by('first_name', 'last_name')
-
+        self.fields['user'].queryset = User.objects.filter(status='ACTIVE').order_by('first_name', 'last_name')
         self.fields['check_in'].required = False
         self.fields['check_out'].required = False
 
@@ -112,57 +89,114 @@ class AttendanceForm(forms.ModelForm):
 class TeamMemberEditForm(forms.ModelForm):
     """Form for editing an existing team member (User)."""
 
-    # ✅ ADD these fields (since they are NOT in User anymore)
-    role = forms.ChoiceField(
-        choices=HRProfile._meta.get_field("role").choices,
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        label='Role',
-    )
-    status = forms.ChoiceField(
-        choices=HRProfile._meta.get_field("status").choices,
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        label='Status',
-    )
-
     class Meta:
         model = User
-        # ✅ removed role,status from User model fields
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'role', 'status']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Last name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'name@company.com'}),
+            'role': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
         }
         labels = {
             'first_name': 'First Name',
             'last_name': 'Last Name',
             'email': 'Email',
+            'role': 'Role',
+            'status': 'Status',
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # ✅ Load initial role/status from HRProfile
-        if self.instance and hasattr(self.instance, "hr_profile"):
-            self.fields["role"].initial = self.instance.hr_profile.role
-            self.fields["status"].initial = self.instance.hr_profile.status
-
-    def save(self, commit=True):
-        user = super().save(commit=commit)
-
-        # ✅ Save role/status into HRProfile
-        HRProfile.objects.update_or_create(
-            user=user,
-            defaults={
-                "role": self.cleaned_data["role"],
-                "status": self.cleaned_data["status"],
-            }
-        )
-
-        return user
 
 
 class LeaveCategoryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "days_per_year" in self.fields:
+            self.fields["days_per_year"].required = False
+
     class Meta:
         model = LeaveCategory
         fields = ["name", "description", "days_per_year"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Category name"}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Description (optional)"}),
+            "days_per_year": forms.NumberInput(attrs={"class": "form-control form-control-sm", "placeholder": "Days per year"}),
+        }
+
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ["title", "message", "publish_date"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Enter announcement title"}),
+            "message": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Enter announcement message or description"}),
+            "publish_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+        }
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = [
+            "name",
+            "client_name",
+            "start_date",
+            "deadline",
+            "status",
+            "progress_percentage",
+            "description",
+        ]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Project name"}),
+            "client_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Client name"}),
+            "start_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "deadline": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "progress_percentage": forms.NumberInput(attrs={"class": "form-control form-control-sm", "min": 0, "max": 100}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Describe the project"}),
+        }
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = [
+            "title",
+            "project",
+            "assigned_to",
+            "due_date",
+            "priority",
+            "status",
+            "description",
+        ]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Task title"}),
+            "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "assigned_to": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Assignee name"}),
+            "due_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "priority": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Task details"}),
+        }
+
+
+class ClientForm(forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = [
+            "company_name",
+            "contact_person",
+            "email",
+            "phone",
+            "address",
+            "status",
+        ]
+        widgets = {
+            "company_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Company name"}),
+            "contact_person": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Contact person"}),
+            "email": forms.EmailInput(attrs={"class": "form-control form-control-sm", "placeholder": "email@example.com"}),
+            "phone": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Phone number"}),
+            "address": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Address"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
