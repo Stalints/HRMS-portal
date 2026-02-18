@@ -2,7 +2,7 @@ from datetime import date
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse  # ✅ added
+from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -12,6 +12,7 @@ from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm
 from .models import Attendance, Status, LeaveRequest, LeaveCategory
 from .forms import LeaveCategoryForm
 
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -20,6 +21,7 @@ User = get_user_model()
 # DASHBOARD
 # =====================
 
+@login_required
 def dashboard(request):
     return render(request, "hr/dashboard.html")
 
@@ -28,6 +30,7 @@ def dashboard(request):
 # TEAM MANAGEMENT
 # =====================
 
+@login_required
 def team_list(request):
     query = request.GET.get("q", "").strip()
 
@@ -41,7 +44,7 @@ def team_list(request):
             Q(username__icontains=query)
         )
 
-    members = members.order_by("-created_at")
+    members = members.order_by("-date_joined")
 
     return render(request, "hr/team.html", {
         "members": members,
@@ -49,6 +52,7 @@ def team_list(request):
     })
 
 
+@login_required
 def team_add(request):
     if request.method == "POST":
         form = TeamMemberAddForm(request.POST)
@@ -65,6 +69,7 @@ def team_add(request):
     })
 
 
+@login_required
 def team_edit(request, pk):
     member = get_object_or_404(User, pk=pk)
 
@@ -84,21 +89,27 @@ def team_edit(request, pk):
     })
 
 
+@login_required
 def team_activate(request, pk):
     member = get_object_or_404(User, pk=pk)
-    member.status = Status.ACTIVE
+
+    member.hr_profile.status = Status.ACTIVE
     member.is_active = True
     member.save()
+    member.hr_profile.save()
 
     messages.success(request, f"{member.get_full_name()} activated.")
     return redirect("hr:team_list")
 
 
+@login_required
 def team_deactivate(request, pk):
     member = get_object_or_404(User, pk=pk)
-    member.status = Status.INACTIVE
+
+    member.hr_profile.status = Status.INACTIVE
     member.is_active = False
     member.save()
+    member.hr_profile.save()
 
     messages.success(request, f"{member.get_full_name()} deactivated.")
     return redirect("hr:team_list")
@@ -108,6 +119,7 @@ def team_deactivate(request, pk):
 # ATTENDANCE
 # =====================
 
+@login_required
 def attendance_list(request):
     date_str = request.GET.get("date", "")
 
@@ -116,7 +128,6 @@ def attendance_list(request):
     except ValueError:
         filter_date = timezone.localdate()
 
-    # ---- Save attendance ----
     if request.method == "POST":
         form = AttendanceForm(request.POST)
 
@@ -142,7 +153,6 @@ def attendance_list(request):
     else:
         form = AttendanceForm(initial={"date": filter_date})
 
-    # ---- Filters ----
     records = Attendance.objects.filter(date=filter_date).select_related("user")
 
     status_filter = request.GET.get("status", "")
@@ -162,7 +172,7 @@ def attendance_list(request):
         "form": form,
         "filter_date": filter_date,
         "date_str": filter_date.isoformat(),
-        "total_employees": User.objects.filter(status="ACTIVE").count(),
+        "total_employees": User.objects.filter(hr_profile__status="ACTIVE").count(),
         "present_today": records.filter(status="PRESENT").count(),
         "absent_today": records.filter(status="ABSENT").count(),
         "late_today": records.filter(status="LATE").count(),
@@ -175,6 +185,7 @@ def attendance_list(request):
 # LEAVE MANAGEMENT
 # =====================
 
+@login_required
 def leave_dashboard(request):
     leaves = LeaveRequest.objects.select_related("user", "category")
     categories = LeaveCategory.objects.all()
@@ -192,32 +203,31 @@ def leave_dashboard(request):
     return render(request, "leave.html", context)
 
 
+@login_required
 def approve_leave(request, pk):
     leave = get_object_or_404(LeaveRequest, pk=pk)
     leave.status = "Approved"
 
-    if request.user.is_authenticated:
-        leave.approved_by = request.user
-
+    leave.approved_by = request.user
     leave.save()
-    messages.success(request, "Leave approved.")
 
+    messages.success(request, "Leave approved.")
     return redirect("hr:leave_dashboard")
 
 
+@login_required
 def reject_leave(request, pk):
     leave = get_object_or_404(LeaveRequest, pk=pk)
     leave.status = "Rejected"
 
-    if request.user.is_authenticated:
-        leave.approved_by = request.user
-
+    leave.approved_by = request.user
     leave.save()
-    messages.success(request, "Leave rejected.")
 
+    messages.success(request, "Leave rejected.")
     return redirect("hr:leave_dashboard")
 
 
+@login_required
 def add_leave_category_ajax(request):
     if request.method == "POST":
         form = LeaveCategoryForm(request.POST)
