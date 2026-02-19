@@ -1,9 +1,10 @@
+# ✅ keep these imports as you already have
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password   
+from django.contrib.auth.password_validation import validate_password
 
-from .models import Attendance
-from .models import LeaveCategory, Announcement, Project, Task, Client
+from .models import Attendance, LeaveCategory, LeaveRequest, Announcement, Project, Task, Client
+
 
 User = get_user_model()
 
@@ -25,22 +26,19 @@ class TeamMemberAddForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'role', 'status']
+        # ✅ REMOVED role, status (they don't exist on default Django User)
+        fields = ['username', 'first_name', 'last_name', 'email']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'First name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Last name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'name@company.com'}),
-            'role': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
         }
         labels = {
             'username': 'Username',
             'first_name': 'First Name',
             'last_name': 'Last Name',
             'email': 'Email',
-            'role': 'Role',
-            'status': 'Status',
         }
 
     def clean_password_confirm(self):
@@ -58,12 +56,32 @@ class TeamMemberAddForm(forms.ModelForm):
         return user
 
 
+class TeamMemberEditForm(forms.ModelForm):
+    """Form for editing an existing team member (User)."""
+
+    class Meta:
+        model = User
+        # ✅ REMOVED role, status
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Last name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'name@company.com'}),
+        }
+        labels = {
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
+            'email': 'Email',
+        }
+
+
 class AttendanceForm(forms.ModelForm):
     """Form for manual attendance entry."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.filter(status='ACTIVE').order_by('first_name', 'last_name')
+        # ✅ removed status filter (default User doesn't have status)
+        self.fields['user'].queryset = User.objects.all().order_by('first_name', 'last_name')
         self.fields['check_in'].required = False
         self.fields['check_out'].required = False
 
@@ -85,29 +103,6 @@ class AttendanceForm(forms.ModelForm):
             'status': 'Status',
         }
 
-
-class TeamMemberEditForm(forms.ModelForm):
-    """Form for editing an existing team member (User)."""
-
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'role', 'status']
-        widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'First name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Last name'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'name@company.com'}),
-            'role': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        }
-        labels = {
-            'first_name': 'First Name',
-            'last_name': 'Last Name',
-            'email': 'Email',
-            'role': 'Role',
-            'status': 'Status',
-        }
-
-
 class LeaveCategoryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -124,6 +119,19 @@ class LeaveCategoryForm(forms.ModelForm):
         }
 
 
+class LeaveRequestForm(forms.ModelForm):
+    class Meta:
+        model = LeaveRequest
+        fields = ["user", "category", "start_date", "end_date", "reason"]
+        widgets = {
+            "user": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "category": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "start_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "end_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "reason": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3}),
+        }
+
+
 class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
@@ -133,6 +141,15 @@ class AnnouncementForm(forms.ModelForm):
             "message": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Enter announcement message or description"}),
             "publish_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
         }
+
+    def save(self, user=None, commit=True):
+        obj = super().save(commit=False)
+        if user is not None:
+            obj.created_by = user
+        if commit:
+            obj.save()
+        return obj
+
 
 
 class ProjectForm(forms.ModelForm):

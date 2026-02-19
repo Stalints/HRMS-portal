@@ -1,17 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.db.models import Sum
 
-from .models import ClientProfile, Project, Invoice, Payment, Message, SupportTicket
+from .models import (
+    ClientProfile, Project, Invoice, Payment, Message, SupportTicket,
+    PaymentStatus, PaymentMethod
+)
 
 
-# 🔒 Helper function: check CLIENT role
+
 def is_client(user):
     return user.groups.filter(name="CLIENT").exists()
 
 
 def get_client_profile(user):
-    # auto-create profile if missing
     profile, _ = ClientProfile.objects.get_or_create(user=user)
     return profile
 
@@ -28,13 +33,12 @@ def index(request):
     tickets_open = SupportTicket.objects.filter(client=client, status="OPEN").count()
     unread_messages = Message.objects.filter(client=client, is_read=False).count()
 
-    context = {
+    return render(request, "core/index.html", {
         "projects_count": projects_count,
         "invoices_pending": invoices_pending,
         "tickets_open": tickets_open,
         "unread_messages": unread_messages,
-    }
-    return render(request, "core/index.html", context)
+    })
 
 
 @login_required
@@ -58,7 +62,6 @@ def project_create(request):
         name = request.POST.get("name", "").strip()
         description = request.POST.get("description", "").strip()
         status = request.POST.get("status", "PLANNED")
-
         start_date = request.POST.get("start_date") or None
         end_date = request.POST.get("end_date") or None
 
@@ -75,7 +78,6 @@ def project_create(request):
     return redirect("core:projects")
 
 
-
 @login_required
 def project_edit(request, pk):
     if not is_client(request.user):
@@ -88,10 +90,8 @@ def project_edit(request, pk):
         project.name = request.POST.get("name", "").strip()
         project.description = request.POST.get("description", "").strip()
         project.status = request.POST.get("status", project.status)
-
         project.start_date = request.POST.get("start_date") or None
         project.end_date = request.POST.get("end_date") or None
-
         project.save()
         return redirect("core:projects")
 
@@ -112,21 +112,14 @@ def project_delete(request, pk):
     return redirect("core:projects")
 
 
-
-# ✅ UPDATED: invoices view (shows invoices + provides projects for modal + handles POST create)
 @login_required
 def invoices(request):
     if not is_client(request.user):
         return redirect("login")
 
     client = get_client_profile(request.user)
-
-    print("LOGGED USER:", request.user.username)
-
-    # For modal dropdown
     projects_qs = Project.objects.filter(client=client).order_by("-created_at")
 
-    # Create invoice from modal form
     if request.method == "POST":
         project_id = request.POST.get("project_id")
         amount = request.POST.get("amount")
@@ -149,14 +142,249 @@ def invoices(request):
     return render(request, "core/invoices.html", {"invoices": invoices_qs, "projects": projects_qs})
 
 
+# ✅ Step 7.4 (correct): summary + invoices dropdown
 @login_required
 def payments(request):
     if not is_client(request.user):
         return redirect("login")
 
     client = get_client_profile(request.user)
-    payments_qs = Payment.objects.filter(invoice__project__client=client).order_by("-created_at")
-    return render(request, "core/payments.html", {"payments": payments_qs})
+
+    payments_qs = Payment.objects.filter(
+        invoice__project__client=client
+    ).select_related("invoice", "invoice__project").order_by("-created_at")
+
+    invoices_qs = Invoice.objects.filter(
+        project__client=client
+    ).select_related("project").order_by("-created_at")
+
+    total_paid = payments_qs.filter(status=PaymentStatus.COMPLETED).aggregate(s=Sum("amount_paid"))["s"] or 0
+    pending = payments_qs.filter(status=PaymentStatus.PENDING).aggregate(s=Sum("amount_paid"))["s"] or 0
+
+    last_payment = payments_qs.filter(status=PaymentStatus.COMPLETED).order_by("-payment_date", "-created_at").first()
+
+    return render(request, "core/payments.html", {
+        "payments": payments_qs,
+        "invoices": invoices_qs,
+        "total_paid": total_paid,
+        "pending": pending,
+        "last_payment": last_payment,
+    })
+
+
+# ✅ Create payment row from Add Payment modal
+@login_required
+@require_POST
+def payment_create(request):
+    if not is_client(request.user):
+        return redirect("login")
+
+    client = get_client_profile(request.user)
+
+    invoice_id = request.POST.get("invoice_id")
+    payment_id = (request.POST.get("payment_id") or "").strip()
+    amount_paid = request.POST.get("amount_paid") or 0
+    payment_date = request.POST.get("payment_date") or timezone.now().date()
+
+    invoice = get_object_or_404(Invoice, id=invoice_id, project__client=client)
+
+    Payment.objects.create(
+        invoice=invoice,
+        payment_id=payment_id,
+        amount_paid=amount_paid,
+        payment_date=payment_date,
+        status=PaymentStatus.PENDING,
+    )
+    return redirect("core:payments")
+
+
+# ✅ Dummy pay-now handler (AJAX)
+@login_required
+@require_POST
+def payment_pay_now(request, pk):
+    if not is_client(request.user):
+        return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
+
+    client = get_client_profile(request.user)
+    payment = get_object_or_404(Payment, pk=pk, invoice__project__client=client)
+
+    method = request.POST.get("method")
+
+    if method not in [PaymentMethod.CARD, PaymentMethod.UPI, PaymentMethod.BANK]:
+        return JsonResponse({"ok": False, "message": "Invalid method"}, status=400)
+
+    # --- dummy validation based on method ---
+    if method == PaymentMethod.CARD:
+        card_number = (request.POST.get("card_number") or "").strip().replace(" ", "")
+        card_expiry = (request.POST.get("card_expiry") or "").strip()
+        card_cvv = (request.POST.get("card_cvv") or "").strip()
+
+        if len(card_number) < 12 or not card_number.isdigit():
+            return JsonResponse({"ok": False, "message": "Enter a valid card number."}, status=400)
+        if not card_expiry:
+            return JsonResponse({"ok": False, "message": "Enter card expiry (MM/YY)."}, status=400)
+        if len(card_cvv) < 3 or not card_cvv.isdigit():
+            return JsonResponse({"ok": False, "message": "Enter valid CVV."}, status=400)
+
+        payment.card_last4 = card_number[-4:]
+
+    elif method == PaymentMethod.UPI:
+        upi_id = (request.POST.get("upi_id") or "").strip()
+        upi_pin = (request.POST.get("upi_pin") or "").strip()
+
+        if not upi_id or "@" not in upi_id:
+            return JsonResponse({"ok": False, "message": "Enter valid UPI ID (example@bank)."}, status=400)
+        if len(upi_pin) < 4 or not upi_pin.isdigit():
+            return JsonResponse({"ok": False, "message": "Enter valid UPI PIN."}, status=400)
+
+        payment.upi_id = upi_id
+
+    else:  # BANK
+        bank_ref = (request.POST.get("bank_ref") or "").strip()
+        if not bank_ref:
+            return JsonResponse({"ok": False, "message": "Enter bank reference number."}, status=400)
+
+        payment.bank_ref = bank_ref
+
+    # mark completed (dummy success)
+    payment.method = method
+    payment.status = PaymentStatus.COMPLETED
+    payment.txn_id = f"DUMMY-{payment.payment_id}"
+    payment.save()
+
+    # mark invoice paid too
+    payment.invoice.status = "PAID"
+    payment.invoice.save()
+
+    return JsonResponse({"ok": True, "message": "Payment successful (dummy)."})
+
+
+
+@login_required
+@require_POST
+def invoice_pay_now(request):
+    """
+    Called by Invoice page modal (AJAX).
+    Expects: invoice_id + method + fields
+    Creates/updates a Payment as COMPLETED and marks invoice PAID (dummy success).
+    Returns JSON {ok: True/False, message: "..."}
+    """
+    if not is_client(request.user):
+        return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
+
+    client = get_client_profile(request.user)
+
+    invoice_id = request.POST.get("invoice_id")
+    if not invoice_id:
+        return JsonResponse({"ok": False, "message": "Invoice id missing."}, status=400)
+
+    invoice = get_object_or_404(Invoice, id=invoice_id, project__client=client)
+
+    method = request.POST.get("method")
+    if method not in [PaymentMethod.CARD, PaymentMethod.UPI, PaymentMethod.BANK]:
+        return JsonResponse({"ok": False, "message": "Invalid method"}, status=400)
+
+    # --- dummy validation based on method ---
+    if method == PaymentMethod.CARD:
+        card_number = (request.POST.get("card_number") or "").strip().replace(" ", "")
+        card_expiry = (request.POST.get("card_expiry") or "").strip()
+        card_cvv = (request.POST.get("card_cvv") or "").strip()
+
+        if len(card_number) < 12 or not card_number.isdigit():
+            return JsonResponse({"ok": False, "message": "Enter a valid card number."}, status=400)
+        if not card_expiry:
+            return JsonResponse({"ok": False, "message": "Enter card expiry (MM/YY)."}, status=400)
+        if len(card_cvv) < 3 or not card_cvv.isdigit():
+            return JsonResponse({"ok": False, "message": "Enter valid CVV."}, status=400)
+
+        last4 = card_number[-4:]
+        upi_id = ""
+        bank_ref = ""
+
+    elif method == PaymentMethod.UPI:
+        upi_id = (request.POST.get("upi_id") or "").strip()
+        upi_pin = (request.POST.get("upi_pin") or "").strip()
+
+        if not upi_id or "@" not in upi_id:
+            return JsonResponse({"ok": False, "message": "Enter valid UPI ID (example@bank)."}, status=400)
+        if len(upi_pin) < 4 or not upi_pin.isdigit():
+            return JsonResponse({"ok": False, "message": "Enter valid UPI PIN."}, status=400)
+
+        last4 = ""
+        bank_ref = ""
+
+    else:  # BANK
+        bank_ref = (request.POST.get("bank_ref") or "").strip()
+        if not bank_ref:
+            return JsonResponse({"ok": False, "message": "Enter bank reference number."}, status=400)
+
+        last4 = ""
+        upi_id = ""
+
+    # ✅ Create a COMPLETED payment for this invoice (dummy)
+    pay = Payment.objects.create(
+        invoice=invoice,
+        payment_id=f"PAY-INV-{invoice.id}-{int(timezone.now().timestamp())}",
+        amount_paid=invoice.amount,
+        payment_date=timezone.now().date(),
+        status=PaymentStatus.COMPLETED,
+        method=method,
+        txn_id=f"DUMMY-INV-{invoice.id}",
+
+        # ✅ if your DB columns are NOT NULL, never send None
+        card_last4=(last4 or ""),
+        upi_id=(upi_id or ""),
+        bank_ref=(bank_ref or ""),
+    )
+
+
+    # ✅ Mark invoice paid
+    invoice.status = "PAID"
+    invoice.save()
+
+    return JsonResponse({"ok": True, "message": f"Invoice INV-{invoice.id} paid successfully (dummy)."})
+
+
+
+@login_required
+@require_POST
+def payment_delete(request, pk):
+    if not is_client(request.user):
+        return redirect("login")
+
+    client = get_client_profile(request.user)
+
+    payment = get_object_or_404(
+        Payment,
+        pk=pk,
+        invoice__project__client=client
+    )
+
+    # Optional rule: do NOT allow deleting completed payments
+    # If you WANT to allow delete for completed also, comment these 2 lines.
+    if payment.status == PaymentStatus.COMPLETED:
+        return redirect("core:payments")
+
+    payment.delete()
+    return redirect("core:payments")
+
+
+@login_required
+@require_POST
+def payment_delete(request, pk):
+    if not is_client(request.user):
+        return redirect("login")
+
+    client = get_client_profile(request.user)
+
+    payment = get_object_or_404(
+        Payment,
+        pk=pk,
+        invoice__project__client=client
+    )
+    payment.delete()
+    return redirect("core:payments")
+
 
 
 @login_required
@@ -211,7 +439,6 @@ def support(request):
     return render(request, "core/support.html", {"tickets": tickets})
 
 
-# ✅ Payment action (auto-save payment + mark invoice PAID)
 @login_required
 def pay_invoice(request, invoice_id):
     if not is_client(request.user):
@@ -223,8 +450,11 @@ def pay_invoice(request, invoice_id):
     if request.method == "POST":
         Payment.objects.create(
             invoice=invoice,
+            payment_id=f"PAY-{invoice.id}-{int(timezone.now().timestamp())}",
             amount_paid=invoice.amount,
             payment_date=timezone.now().date(),
+            status=PaymentStatus.COMPLETED,
+            method=PaymentMethod.BANK,
             txn_id=request.POST.get("txn_id", "")
         )
         invoice.status = "PAID"

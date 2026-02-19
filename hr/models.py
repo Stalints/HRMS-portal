@@ -1,6 +1,11 @@
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from decimal import Decimal
+from datetime import datetime
+
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # -------------------------
@@ -18,10 +23,27 @@ class Status(models.TextChoices):
     INACTIVE = 'INACTIVE', 'Inactive'
 
 
-class User(AbstractUser):
+class HRProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="hr_profile"
+    )
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+# ✅ Auto-create HRProfile for every new user (Version A feature)
+User = get_user_model()
+
+@receiver(post_save, sender=User)
+def create_hr_profile(sender, instance, created, **kwargs):
+    if created:
+        HRProfile.objects.create(user=instance)
 
 
 # -------------------------
@@ -43,7 +65,12 @@ class Attendance(models.Model):
     date = models.DateField()
     check_in = models.TimeField(null=True, blank=True)
     check_out = models.TimeField(null=True, blank=True)
-    total_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0, editable=False)
+    total_hours = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        editable=False
+    )
     status = models.CharField(
         max_length=20,
         choices=AttendanceStatus.choices,
@@ -57,51 +84,52 @@ class Attendance(models.Model):
 
     def save(self, *args, **kwargs):
         if self.check_in and self.check_out:
-            from datetime import datetime
-            from decimal import Decimal
             delta = datetime.combine(self.date, self.check_out) - datetime.combine(self.date, self.check_in)
-            self.total_hours = Decimal(str(delta.total_seconds() / 3600)).quantize(Decimal('0.01'))
+            self.total_hours = Decimal(delta.total_seconds() / 3600).quantize(Decimal("0.01"))
         else:
-            self.total_hours = 0
+            self.total_hours = Decimal("0.00")
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.user.get_full_name()} - {self.date} ({self.get_status_display()})'
 
 
+# -------------------------
+# LEAVE MANAGEMENT
+# -------------------------
+
 class LeaveCategory(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    days_per_year = models.IntegerField(default=0)   # added for template usage
+    days_per_year = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
 
 
 class LeaveRequest(models.Model):
-
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected'),
     ]
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    category = models.ForeignKey(LeaveCategory, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="leave_requests"
+    )
+    category = models.ForeignKey(
+        LeaveCategory,
+        on_delete=models.CASCADE,
+        related_name="leave_requests"
+    )
 
-    # renamed to match your template
     start_date = models.DateField()
     end_date = models.DateField()
-
     total_days = models.IntegerField(editable=False)
-
     reason = models.TextField()
-
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='Pending'
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 
     approved_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -113,16 +141,16 @@ class LeaveRequest(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def save(self, *args, **kwargs):
         if self.start_date and self.end_date:
             self.total_days = (self.end_date - self.start_date).days + 1
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.username} - {self.category.name}"
-
-    class Meta:
-        ordering = ["-created_at"]
+        return f"{self.user.username} - {self.category.name} ({self.status})"
 
 
 # -------------------------
@@ -214,6 +242,10 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
+
+# -------------------------
+# CLIENTS
+# -------------------------
 
 class ClientStatus(models.TextChoices):
     ACTIVE = "Active", "Active"

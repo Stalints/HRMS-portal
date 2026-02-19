@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 class ClientProfile(models.Model):
@@ -50,15 +51,52 @@ class Invoice(models.Model):
         return f"Invoice #{self.id} - {self.project.name}"
 
 
+# -------------------------
+# PAYMENTS (UPDATED FOR DUMMY PAY NOW FLOW)
+# -------------------------
+
+class PaymentStatus(models.TextChoices):
+    PENDING = "PENDING", "Pending"
+    COMPLETED = "COMPLETED", "Completed"
+
+
+class PaymentMethod(models.TextChoices):
+    CARD = "CARD", "Credit Card"
+    UPI = "UPI", "UPI"
+    BANK = "BANK", "Bank Transfer"
+
+
 class Payment(models.Model):
+    # link to invoice (kept from your model)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="payments")
+
+    # for UI like PAY-201 (unique)
+    payment_id = models.CharField(max_length=50, unique=True)
+
+    # amount and date (we keep your meaning)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateField()
+    payment_date = models.DateField(default=timezone.now)
+
+    # method + status (needed for Pay Now)
+    method = models.CharField(max_length=10, choices=PaymentMethod.choices, default=PaymentMethod.UPI)
+    status = models.CharField(max_length=10, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
+
+    # dummy “transaction id”
     txn_id = models.CharField(max_length=100, blank=True)
+
+    # dummy method-specific saved values (safe)
+    card_last4 = models.CharField(max_length=4, blank=True, null=True)
+    upi_id     = models.CharField(max_length=120, blank=True, null=True)
+    bank_ref   = models.CharField(max_length=120, blank=True, null=True)
+
+
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
-        return f"Payment #{self.id} - Invoice #{self.invoice.id}"
+        return f"{self.payment_id} - Invoice #{self.invoice.id} - {self.status}"
 
 
 class Message(models.Model):
@@ -93,4 +131,3 @@ class SupportTicket(models.Model):
 
     def __str__(self):
         return self.title
-

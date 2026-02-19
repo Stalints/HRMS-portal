@@ -7,10 +7,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
-from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm
-from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus
+from .forms import (
+    AttendanceForm, TeamMemberAddForm, TeamMemberEditForm,
+    AnnouncementForm, ProjectForm, TaskForm, ClientForm
+)
+from .models import (
+    Attendance, LeaveRequest, LeaveCategory,
+    Announcement, AnnouncementStatus,
+    Project, Task, TaskStatus,
+    Client, ClientStatus
+)
 from .forms import LeaveCategoryForm
-
 
 User = get_user_model()
 
@@ -20,7 +27,11 @@ User = get_user_model()
 # =====================
 
 def dashboard(request):
-    active_announcements = Announcement.objects.filter(status=AnnouncementStatus.ACTIVE).order_by("-publish_date", "-created_at")[:5]
+    active_announcements = (
+        Announcement.objects
+        .filter(status=AnnouncementStatus.ACTIVE)
+        .order_by("-publish_date", "-created_at")[:5]
+    )
     return render(request, "hr/dashboard.html", {
         "active_announcements": active_announcements,
         "active_announcements_count": active_announcements.count(),
@@ -33,7 +44,6 @@ def dashboard(request):
 
 def team_list(request):
     query = request.GET.get("q", "").strip()
-
     members = User.objects.all()
 
     if query:
@@ -44,7 +54,7 @@ def team_list(request):
             Q(username__icontains=query)
         )
 
-    members = members.order_by("-created_at")
+    members = members.order_by("-date_joined")
 
     return render(request, "hr/team.html", {
         "members": members,
@@ -89,9 +99,8 @@ def team_edit(request, pk):
 
 def team_activate(request, pk):
     member = get_object_or_404(User, pk=pk)
-    member.status = Status.ACTIVE
     member.is_active = True
-    member.save()
+    member.save(update_fields=["is_active"])
 
     messages.success(request, f"{member.get_full_name()} activated.")
     return redirect("hr:team_list")
@@ -99,9 +108,8 @@ def team_activate(request, pk):
 
 def team_deactivate(request, pk):
     member = get_object_or_404(User, pk=pk)
-    member.status = Status.INACTIVE
     member.is_active = False
-    member.save()
+    member.save(update_fields=["is_active"])
 
     messages.success(request, f"{member.get_full_name()} deactivated.")
     return redirect("hr:team_list")
@@ -165,7 +173,7 @@ def attendance_list(request):
         "form": form,
         "filter_date": filter_date,
         "date_str": filter_date.isoformat(),
-        "total_employees": User.objects.filter(status="ACTIVE").count(),
+        "total_employees": User.objects.filter(is_active=True).count(),
         "present_today": records.filter(status="PRESENT").count(),
         "absent_today": records.filter(status="ABSENT").count(),
         "late_today": records.filter(status="LATE").count(),
@@ -196,7 +204,6 @@ def leave_dashboard(request):
     return render(request, "hr/leave.html", context)
 
 
-
 def approve_leave(request, pk):
     leave = get_object_or_404(LeaveRequest, pk=pk)
     leave.status = "Approved"
@@ -206,8 +213,36 @@ def approve_leave(request, pk):
 
     leave.save()
     messages.success(request, "Leave approved.")
-
     return redirect("hr:leave_dashboard")
+
+
+def reject_leave(request, pk):
+    leave = get_object_or_404(LeaveRequest, pk=pk)
+    leave.status = "Rejected"
+
+    if request.user.is_authenticated:
+        leave.approved_by = request.user
+
+    leave.save()
+    messages.success(request, "Leave rejected.")
+    return redirect("hr:leave_dashboard")
+
+
+def add_leave_category_ajax(request):
+    return redirect("hr:add_leave_category")
+
+
+def add_leave_category(request):
+    if request.method == "POST":
+        form = LeaveCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Leave category added.")
+            return redirect("hr:leave_dashboard")
+    else:
+        form = LeaveCategoryForm()
+
+    return render(request, "hr/leave_category_form.html", {"form": form})
 
 
 # =====================
@@ -236,9 +271,11 @@ def announcement_list(request):
 
 def announcement_edit(request, pk):
     ann = get_object_or_404(Announcement, pk=pk)
+
     if request.method == "POST":
         form = AnnouncementForm(request.POST, instance=ann)
         status_value = request.POST.get("status")
+
         if form.is_valid():
             obj = form.save(commit=False)
             if status_value in dict(AnnouncementStatus.choices):
@@ -320,10 +357,16 @@ def project_delete(request, pk):
 def task_list(request):
     status_filter = request.GET.get("status")
     tasks = Task.objects.select_related("project").all()
+
     if status_filter in dict(TaskStatus.choices).keys():
         tasks = tasks.filter(status=status_filter)
+
     form = TaskForm()
-    return render(request, "hr/tasks.html", {"tasks": tasks, "form": form, "status_filter": status_filter})
+    return render(request, "hr/tasks.html", {
+        "tasks": tasks,
+        "form": form,
+        "status_filter": status_filter
+    })
 
 
 def task_create(request):
@@ -356,6 +399,10 @@ def task_delete(request, pk):
         messages.success(request, "Task deleted.")
     return redirect("hr:task_list")
 
+
+# =====================
+# CLIENTS
+# =====================
 
 def client_list(request):
     clients = Client.objects.all()
@@ -393,34 +440,6 @@ def client_delete(request, pk):
         messages.success(request, "Client deleted.")
     return redirect("hr:client_list")
 
+def client_events(request):
+    return render(request, "hr/events.html")
 
-def reject_leave(request, pk):
-    leave = get_object_or_404(LeaveRequest, pk=pk)
-    leave.status = "Rejected"
-
-    if request.user.is_authenticated:
-        leave.approved_by = request.user
-
-    leave.save()
-    messages.success(request, "Leave rejected.")
-
-    return redirect("hr:leave_dashboard")
-
-
-def add_leave_category_ajax(request):
-    # Deprecated AJAX handler retained for compatibility if referenced elsewhere.
-    # Prefer add_leave_category view for non-API form handling.
-    return redirect("hr:add_leave_category")
-
-
-def add_leave_category(request):
-    if request.method == "POST":
-        form = LeaveCategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Leave category added.")
-            return redirect("hr:leave_dashboard")
-    else:
-        form = LeaveCategoryForm()
-
-    return render(request, "hr/leave_category_form.html", {"form": form})
