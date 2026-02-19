@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password   
 
 from .models import Attendance
-from .models import LeaveCategory, Announcement, Project, Task, Client
+from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask
 
 User = get_user_model()
 
@@ -199,4 +199,91 @@ class ClientForm(forms.ModelForm):
             "phone": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Phone number"}),
             "address": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Address"}),
             "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = [
+            "title",
+            "description",
+            "event_date",
+            "start_time",
+            "end_time",
+            "share_with",
+            "event_type",
+            "reminder_enabled",
+            "reminder_date",
+        ]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Enter event title"}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Enter event description"}),
+            "event_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "start_time": forms.TimeInput(attrs={"class": "form-control form-control-sm", "type": "time"}),
+            "end_time": forms.TimeInput(attrs={"class": "form-control form-control-sm", "type": "time"}),
+            "share_with": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Shared with"}),
+            "event_type": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "reminder_enabled": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "reminder_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+        }
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = Note
+        fields = ["title", "description", "tags", "visibility", "attachment"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter note title", "required": True}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Enter note description", "required": True}),
+            "tags": forms.TextInput(attrs={"class": "form-control", "placeholder": "tag1, tag2"}),
+            "visibility": forms.Select(attrs={"class": "form-select"}),
+            "attachment": forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
+
+
+class TimelinePostForm(forms.ModelForm):
+    class Meta:
+        model = TimelinePost
+        fields = ["title", "message", "file_attachment", "link_attachment", "post_type"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter a title for your post"}),
+            "message": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Share your update, idea, or information...", "required": True}),
+            "file_attachment": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "link_attachment": forms.URLInput(attrs={"class": "form-control", "placeholder": "https://example.com"}),
+            "post_type": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+class TimelineCommentForm(forms.ModelForm):
+    class Meta:
+        model = TimelineComment
+        fields = ["comment_text"]
+        widgets = {
+            "comment_text": forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Write a comment..."}),
+        }
+
+
+class HelpArticleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["category"].queryset = HelpCategory.objects.order_by("name")
+        self.fields["category"].empty_label = "Select a category"
+    class Meta:
+        model = HelpArticle
+        fields = ["title", "category", "content"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter article title", "required": True}),
+            "category": forms.Select(attrs={"class": "form-select", "required": True}),
+            "content": forms.Textarea(attrs={"class": "form-control", "rows": 8, "placeholder": "Write the article content here...", "required": True}),
+        }
+
+
+class PersonalTaskForm(forms.ModelForm):
+    class Meta:
+        model = PersonalTask
+        fields = ["description", "due_date"]
+        widgets = {
+            "description": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your task...", "required": True}),
+            "due_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
         }

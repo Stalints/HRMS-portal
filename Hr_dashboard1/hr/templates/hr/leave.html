@@ -80,7 +80,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="events.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
@@ -89,32 +89,32 @@
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notes.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
               <span class="me-2">🗒️</span> Notes
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="timeline.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
               <span class="me-2">📊</span> Timeline
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="help.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
               <span class="me-2">📚</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="todo.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
               <span class="me-2">✅</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notifications.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
               <span class="me-2">🔔</span> Notifications
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="settings.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
               <span class="me-2">⚙️</span> Settings / Security
             </a>
           </li>
@@ -138,7 +138,7 @@
               <span class="navbar-toggler-icon"></span>
             </button>
 
-            <a class="navbar-brand d-lg-none" href="index.html">
+            <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
               <span>HR Portal</span>
             </a>
 
@@ -184,7 +184,7 @@
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
                     <li>
-                      <a class="dropdown-item" href="settings.html">
+                      <a class="dropdown-item" href="{% url 'hr:settings' %}">
                         Settings &amp; Security
                       </a>
                     </li>
