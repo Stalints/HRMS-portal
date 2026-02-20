@@ -14,3 +14,8 @@ db.sqlite3
 
 # VS Code settings
 .vscode/
+
+.DS_Store
+**/.DS_Store
+.venv/
+venv/
