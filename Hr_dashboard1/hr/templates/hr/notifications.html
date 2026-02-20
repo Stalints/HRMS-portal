@@ -1,0 +1,515 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Portal | Notifications</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <!-- Shared dashboard styles -->
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+</head>
+
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <div class="mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
+            style="width: 36px; height: 36px">
+            HR
+          </div>
+          <div>
+            <div class="fw-semibold small">HR Portal</div>
+            <div class="text-secondary small">Notifications</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2 sidebar-heading">Main</div>
+      <ul class="nav nav-pills flex-column mb-3 gap-1">
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
+            <span class="me-2">🏠</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+<<<<<<< HEAD
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+            <span class="me-2">👥</span> Employee Management
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+            <span class="me-2">&#129309;</span> Team Management
+=======
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+            <span class="me-2">👥</span> Team Management
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
+            <span class="me-2">⏱️</span> Time Cards / Attendance
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
+            <span class="me-2">📝</span> Leave Management
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
+            <span class="me-2">📢</span> Announcements
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
+            <span class="me-2">📅</span> Event Calendar
+          </a>
+        </li>
+      </ul>
+
+      <div class="mb-2 sidebar-heading">Personal & Tools</div>
+      <ul class="nav nav-pills flex-column mb-3 gap-1">
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
+            <span class="me-2">🗒️</span> Notes
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
+            <span class="me-2">📊</span> Timeline
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
+            <span class="me-2">📚</span> Help Articles
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
+            <span class="me-2">✅</span> Personal To-Do List
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active d-flex align-items-center" href="{% url 'hr:notifications' %}">
+            <span class="me-2">🔔</span> Notifications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
+            <span class="me-2">⚙️</span> Settings / Security
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main content -->
+    <div class="flex-grow-1 content-wrapper d-flex flex-column">
+      <!-- Top navbar -->
+      <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
+        <div class="container-fluid px-0">
+          <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+            aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
+            <span>HR Portal</span>
+          </a>
+
+          <div class="collapse navbar-collapse" id="topNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <span class="nav-link disabled">Logged in as: <strong>HR</strong></span>
+              </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+              <button type="button" class="btn btn-light position-relative rounded-circle p-2"
+                aria-label="Notifications">
+                🔔
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  4
+                </span>
+              </button>
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary d-flex align-items-center gap-2" type="button"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  <span
+                    class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
+                    style="width: 32px; height: 32px">HR</span>
+                  <span class="d-none d-sm-inline small">HR Admin</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <h6 class="dropdown-header">HR Admin</h6>
+                  </li>
+                  <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
+                  <li>
+                    <hr class="dropdown-divider" />
+                  </li>
+                  <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Page content -->
+      <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h1 class="h4 mb-1">Notifications</h1>
+            <p class="text-muted small mb-0">
+              View recent system alerts and updates
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary">Mark All as Read</button>
+            <button class="btn btn-sm btn-outline-secondary">Clear All</button>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- Main Content Area -->
+          <div class="col-12 col-lg-8">
+            <!-- Filter Section -->
+            <div class="card border-0 shadow-sm mb-3">
+              <div class="card-body">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                  <label class="small fw-semibold mb-0">Filter by Type:</label>
+                  <button type="button" class="btn btn-sm btn-primary">All</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Attendance</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Leave</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Event</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Announcement</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Timeline</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h6 mb-0">All Notifications</h2>
+              <span class="badge bg-danger-subtle text-danger">4 unread</span>
+            </div>
+
+            <!-- Notification 1 - Unread -->
+            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1">Pending Leave Request Approval</h3>
+                    <p class="text-muted small mb-2">
+                      Leave request #LR-1024 submitted by <strong>Aarav Patel</strong> requires your review and
+                      approval.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-warning-subtle text-warning">Leave</span>
+                      <span class="badge bg-danger-subtle text-danger">Unread</span>
+                      <small class="text-muted">2 minutes ago</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 2 - Unread -->
+            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1">Attendance Exception Flagged</h3>
+                    <p class="text-muted small mb-2">
+                      2 employees forgot to check-out yesterday. Review and resolve attendance discrepancies.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-info-subtle text-info">Attendance</span>
+                      <span class="badge bg-danger-subtle text-danger">Unread</span>
+                      <small class="text-muted">1 hour ago</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 3 - Unread -->
+            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1">Policy Acknowledgement Due</h3>
+                    <p class="text-muted small mb-2">
+                      18 employees have not acknowledged the new hybrid work policy. Follow up required.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-primary-subtle text-primary">Announcement</span>
+                      <span class="badge bg-danger-subtle text-danger">Unread</span>
+                      <small class="text-muted">3 hours ago</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 4 - Unread -->
+            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1">Event RSVP Status Update</h3>
+                    <p class="text-muted small mb-2">
+                      63% of invited employees responded to Quarterly Town Hall invite. 45 responses pending.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-success-subtle text-success">Event</span>
+                      <span class="badge bg-danger-subtle text-danger">Unread</span>
+                      <small class="text-muted">5 hours ago</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 5 - Read -->
+            <div class="card border-0 shadow-sm mb-2">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1 text-muted">New Timeline Post</h3>
+                    <p class="text-muted small mb-2">
+                      <strong>Mia Rodriguez</strong> shared a new post: "Onboarding Checklist Template" on the timeline.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-secondary-subtle text-secondary">Timeline</span>
+                      <span class="badge bg-success-subtle text-success">Read</span>
+                      <small class="text-muted">Yesterday, 2:30 PM</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 6 - Read -->
+            <div class="card border-0 shadow-sm mb-2">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1 text-muted">Leave Request Approved</h3>
+                    <p class="text-muted small mb-2">
+                      Leave request #LR-1019 for <strong>Mia Rodriguez</strong> has been approved successfully.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-warning-subtle text-warning">Leave</span>
+                      <span class="badge bg-success-subtle text-success">Read</span>
+                      <small class="text-muted">Yesterday, 11:00 AM</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 7 - Read -->
+            <div class="card border-0 shadow-sm mb-2">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1 text-muted">New Announcement Published</h3>
+                    <p class="text-muted small mb-2">
+                      Announcement "Hybrid Work Policy Refresh" has been published and is now visible to all team
+                      members.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-primary-subtle text-primary">Announcement</span>
+                      <span class="badge bg-success-subtle text-success">Read</span>
+                      <small class="text-muted">2 days ago</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification 8 - Read -->
+            <div class="card border-0 shadow-sm mb-2">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="flex-grow-1">
+                    <h3 class="h6 mb-1 text-muted">Security Reminder</h3>
+                    <p class="text-muted small mb-2">
+                      HR admins are reminded to review access and permissions this week as part of security audit.
+                    </p>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-danger-subtle text-danger">Security</span>
+                      <span class="badge bg-success-subtle text-success">Read</span>
+                      <small class="text-muted">3 days ago</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
+                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar Information -->
+          <div class="col-12 col-lg-4">
+            <!-- Notification Summary -->
+            <div class="card border-0 shadow-sm mb-3">
+              <div class="card-header">
+                <h2 class="h6 mb-0">Notification Summary</h2>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small">Total Notifications</span>
+                    <span class="badge bg-primary-subtle text-primary fs-6">8</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small">Unread Notifications</span>
+                    <span class="badge bg-danger-subtle text-danger fs-6">4</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small">Read Notifications</span>
+                    <span class="badge bg-success-subtle text-success fs-6">4</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification Types -->
+            <div class="card border-0 shadow-sm mb-3">
+              <div class="card-header">
+                <h2 class="h6 mb-0">By Type</h2>
+              </div>
+              <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">Leave</span>
+                    <span class="badge bg-warning-subtle text-warning">2</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">Attendance</span>
+                    <span class="badge bg-info-subtle text-info">1</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">Announcement</span>
+                    <span class="badge bg-primary-subtle text-primary">2</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">Event</span>
+                    <span class="badge bg-success-subtle text-success">1</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">Timeline</span>
+                    <span class="badge bg-secondary-subtle text-secondary">1</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small">Security</span>
+                    <span class="badge bg-danger-subtle text-danger">1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Note -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-header">
+                <h2 class="h6 mb-0">Security & Privacy</h2>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info py-2 mb-0 small">
+                  <strong>Role-Based Notifications:</strong> All notifications are role-based and user-specific.
+                  You only receive notifications relevant to your role and responsibilities in the HR Portal.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="border-top bg-white py-2 px-3 px-lg-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span>© <span id="year"></span> HR Portal • Notifications Module</span>
+          <span class="text-muted">Secure access · Role-based alerts</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+<<<<<<< HEAD
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
+
+
+
+=======
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc

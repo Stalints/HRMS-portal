@@ -1,0 +1,179 @@
+{% extends "hr/dashboard.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-1"><i class="fa-solid fa-building me-2"></i> Clients</h1>
+    <p class="text-muted small mb-0">Manage client companies and contacts</p>
+  </div>
+  <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClientModal">
+    <i class="fa-solid fa-plus me-1"></i> Add Client
+  </button>
+  </div>
+
+{% if messages %}
+  <div class="mb-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="h6 mb-0">All Clients</h2>
+    <span class="badge bg-secondary-subtle text-secondary">{{ clients|length }} item{{ clients|length|pluralize }}</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Company Name</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="small">
+          {% for c in clients %}
+          <tr>
+            <td>
+              <strong>{{ c.company_name }}</strong>
+              <div class="small text-muted">{{ c.address|truncatewords:10 }}</div>
+            </td>
+            <td>{{ c.contact_person }}</td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.phone }}</td>
+            <td>
+              {% if c.status == 'Active' %}
+                <span class="badge bg-success-subtle text-success">Active</span>
+              {% else %}
+                <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="text-end text-nowrap">
+              <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editClientModal{{ c.id }}" aria-label="Edit client">Edit</button>
+                <form method="post" action="{% url 'hr:client_delete' c.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger" aria-label="Delete client">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+
+          <div class="modal fade" id="editClientModal{{ c.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"><i class="fa-solid fa-pen-to-square me-1"></i> Edit Client</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'hr:client_update' c.pk %}">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" name="company_name" value="{{ c.company_name }}" class="form-control form-control-sm" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Contact Person</label>
+                        <input type="text" name="contact_person" value="{{ c.contact_person }}" class="form-control form-control-sm" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" value="{{ c.email }}" class="form-control form-control-sm" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="phone" value="{{ c.phone }}" class="form-control form-control-sm" required>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control form-control-sm" rows="3">{{ c.address }}</textarea>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select form-select-sm">
+                          <option {% if c.status == 'Active' %}selected{% endif %}>Active</option>
+                          <option {% if c.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">No clients yet. Use the Add Client button to create one.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fa-solid fa-plus me-1"></i> Add Client</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'hr:client_create' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="{{ form.company_name.id_for_label }}" class="form-label">Company Name</label>
+              {{ form.company_name }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.contact_person.id_for_label }}" class="form-label">Contact Person</label>
+              {{ form.contact_person }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-12">
+              <label for="{{ form.address.id_for_label }}" class="form-label">Address</label>
+              {{ form.address }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+              {{ form.status }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-sm">Create Client</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+
+
