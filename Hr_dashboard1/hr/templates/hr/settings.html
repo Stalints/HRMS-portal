@@ -192,14 +192,16 @@
                   <h2 class="h6 mb-0">Account Settings</h2>
                 </div>
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="{% url 'hr:update_profile' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                       <label for="profileName" class="form-label">Full Name <span class="text-danger">*</span></label>
                       <input
                         type="text"
                         class="form-control"
                         id="profileName"
-                        value="HR Admin"
+                        name="full_name"
+                        value="{{ profile.full_name }}"
                         required
                       />
                     </div>
@@ -209,7 +211,8 @@
                         type="email"
                         class="form-control"
                         id="profileEmail"
-                        value="hr.admin@company.com"
+                        name="email"
+                        value="{{ profile.email }}"
                         required
                       />
                     </div>
@@ -219,7 +222,7 @@
                         type="text"
                         class="form-control"
                         id="profileRole"
-                        value="HR"
+                        value="{{ profile.role }}"
                         disabled
                       />
                       <div class="form-text">Role cannot be changed from this page</div>
@@ -235,13 +238,15 @@
                   <h2 class="h6 mb-0">Password & Security</h2>
                 </div>
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="{% url 'hr:change_password' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                       <label for="currentPassword" class="form-label">Current Password <span class="text-danger">*</span></label>
                       <input
                         type="password"
                         class="form-control"
                         id="currentPassword"
+                        name="current_password"
                         placeholder="Enter current password"
                         required
                       />
@@ -252,6 +257,7 @@
                         type="password"
                         class="form-control"
                         id="newPassword"
+                        name="new_password"
                         placeholder="Enter new password"
                         required
                       />
@@ -262,6 +268,7 @@
                         type="password"
                         class="form-control"
                         id="confirmPassword"
+                        name="confirm_password"
                         placeholder="Confirm new password"
                         required
                       />

@@ -3,16 +3,32 @@ from calendar import monthrange
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.db.models import Q, F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+import re
 
 from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm
 from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus
 from .forms import LeaveCategoryForm
 from .forms import EventForm, NoteForm, TimelinePostForm, TimelineCommentForm, HelpArticleForm, PersonalTaskForm
-from .models import Event, Role, Note, NoteVisibility, TimelinePost, TimelineLike, TimelineComment, HelpArticle, HelpCategory, PersonalTask
+from .models import (
+    Event,
+    Role,
+    Note,
+    NoteVisibility,
+    TimelinePost,
+    TimelineLike,
+    TimelineComment,
+    HelpArticle,
+    HelpCategory,
+    PersonalTask,
+    Notification,
+    NotificationType,
+    AdminProfile,
+)
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
@@ -20,6 +36,16 @@ from django.contrib.auth import authenticate, login, logout
 
 
 User = get_user_model()
+
+
+def _create_notification(title: str, message: str, notification_type: str) -> None:
+    if notification_type not in dict(NotificationType.choices):
+        notification_type = NotificationType.ANNOUNCEMENT
+    Notification.objects.create(
+        title=title[:255],
+        message=message,
+        type=notification_type,
+    )
 
 
 # =====================
@@ -68,7 +94,12 @@ def team_add(request):
     if request.method == "POST":
         form = TeamMemberAddForm(request.POST)
         if form.is_valid():
-            form.save()
+            member = form.save()
+            _create_notification(
+                "Team member added",
+                f"{member.get_full_name() or member.username} was added to Team Management.",
+                NotificationType.SECURITY,
+            )
             messages.success(request, "Team member added successfully.")
             return redirect("hr:team_list")
     else:
@@ -86,7 +117,12 @@ def team_edit(request, pk):
     if request.method == "POST":
         form = TeamMemberEditForm(request.POST, instance=member)
         if form.is_valid():
-            form.save()
+            member = form.save()
+            _create_notification(
+                "Team member updated",
+                f"{member.get_full_name() or member.username} profile details were updated.",
+                NotificationType.SECURITY,
+            )
             messages.success(request, "Team member updated successfully.")
             return redirect("hr:team_list")
     else:
@@ -104,6 +140,11 @@ def team_activate(request, pk):
     member.status = Status.ACTIVE
     member.is_active = True
     member.save()
+    _create_notification(
+        "Team member activated",
+        f"{member.get_full_name() or member.username} was activated.",
+        NotificationType.SECURITY,
+    )
 
     messages.success(request, f"{member.get_full_name()} activated.")
     return redirect("hr:team_list")
@@ -114,6 +155,11 @@ def team_deactivate(request, pk):
     member.status = Status.INACTIVE
     member.is_active = False
     member.save()
+    _create_notification(
+        "Team member deactivated",
+        f"{member.get_full_name() or member.username} was deactivated.",
+        NotificationType.SECURITY,
+    )
 
     messages.success(request, f"{member.get_full_name()} deactivated.")
     return redirect("hr:team_list")
@@ -149,6 +195,11 @@ def attendance_list(request):
             )
 
             attendance.save()
+            _create_notification(
+                "Attendance updated",
+                f"Attendance for {attendance.user.get_full_name() or attendance.user.username} on {attendance.date} was saved.",
+                NotificationType.ATTENDANCE,
+            )
             messages.success(request, "Attendance saved.")
 
             return redirect(
@@ -217,6 +268,11 @@ def approve_leave(request, pk):
         leave.approved_by = request.user
 
     leave.save()
+    _create_notification(
+        "Leave approved",
+        f"Leave request #{leave.pk} for {leave.user.get_full_name() or leave.user.username} was approved.",
+        NotificationType.LEAVE,
+    )
     messages.success(request, "Leave approved.")
 
     return redirect("hr:leave_dashboard")
@@ -234,6 +290,11 @@ def announcement_list(request):
             if request.user.is_authenticated:
                 ann.created_by = request.user
             ann.save()
+            _create_notification(
+                "Announcement created",
+                f"Announcement '{ann.title}' was published.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Announcement created.")
             return redirect("hr:announcement_list")
     else:
@@ -256,6 +317,11 @@ def announcement_edit(request, pk):
             if status_value in dict(AnnouncementStatus.choices):
                 obj.status = status_value
             obj.save()
+            _create_notification(
+                "Announcement updated",
+                f"Announcement '{obj.title}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Announcement updated.")
             return redirect("hr:announcement_list")
     else:
@@ -271,7 +337,13 @@ def announcement_edit(request, pk):
 def announcement_delete(request, pk):
     ann = get_object_or_404(Announcement, pk=pk)
     if request.method == "POST":
+        ann_title = ann.title
         ann.delete()
+        _create_notification(
+            "Announcement deleted",
+            f"Announcement '{ann_title}' was removed.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Announcement deleted.")
         return redirect("hr:announcement_list")
     return render(request, "hr/announcement_delete_confirm.html", {"announcement": ann})
@@ -290,7 +362,12 @@ def project_create(request):
     if request.method == "POST":
         form = ProjectForm(request.POST)
         if form.is_valid():
-            form.save()
+            project = form.save()
+            _create_notification(
+                "Project created",
+                f"Project '{project.name}' was created.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Project created successfully.")
             return redirect("hr:project_list")
     else:
@@ -308,7 +385,12 @@ def project_update(request, pk):
     if request.method == "POST":
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
-            form.save()
+            project = form.save()
+            _create_notification(
+                "Project updated",
+                f"Project '{project.name}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Project updated successfully.")
             return redirect("hr:project_detail", pk=project.pk)
     else:
@@ -319,7 +401,13 @@ def project_update(request, pk):
 def project_delete(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == "POST":
+        project_name = project.name
         project.delete()
+        _create_notification(
+            "Project deleted",
+            f"Project '{project_name}' was deleted.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Project deleted.")
         return redirect("hr:project_list")
     return render(request, "hr/project_delete_confirm.html", {"project": project})
@@ -342,7 +430,12 @@ def task_create(request):
     if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            task = form.save()
+            _create_notification(
+                "Task created",
+                f"Task '{task.title}' was created in project '{task.project.name}'.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Task created.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -354,7 +447,12 @@ def task_update(request, pk):
     if request.method == "POST":
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
-            form.save()
+            task = form.save()
+            _create_notification(
+                "Task updated",
+                f"Task '{task.title}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Task updated.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -364,7 +462,13 @@ def task_update(request, pk):
 def task_delete(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == "POST":
+        task_title = task.title
         task.delete()
+        _create_notification(
+            "Task deleted",
+            f"Task '{task_title}' was deleted.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Task deleted.")
     return redirect("hr:task_list")
 
@@ -379,7 +483,12 @@ def client_create(request):
     if request.method == "POST":
         form = ClientForm(request.POST)
         if form.is_valid():
-            form.save()
+            client = form.save()
+            _create_notification(
+                "Client added",
+                f"Client '{client.company_name}' was added.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Client added.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -391,7 +500,12 @@ def client_update(request, pk):
     if request.method == "POST":
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
-            form.save()
+            client = form.save()
+            _create_notification(
+                "Client updated",
+                f"Client '{client.company_name}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Client updated.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -401,7 +515,13 @@ def client_update(request, pk):
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == "POST":
+        company_name = client.company_name
         client.delete()
+        _create_notification(
+            "Client deleted",
+            f"Client '{company_name}' was deleted.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Client deleted.")
     return redirect("hr:client_list")
 
@@ -414,6 +534,11 @@ def reject_leave(request, pk):
         leave.approved_by = request.user
 
     leave.save()
+    _create_notification(
+        "Leave rejected",
+        f"Leave request #{leave.pk} for {leave.user.get_full_name() or leave.user.username} was rejected.",
+        NotificationType.LEAVE,
+    )
     messages.success(request, "Leave rejected.")
 
     return redirect("hr:leave_dashboard")
@@ -429,7 +554,12 @@ def add_leave_category(request):
     if request.method == "POST":
         form = LeaveCategoryForm(request.POST)
         if form.is_valid():
-            form.save()
+            category = form.save()
+            _create_notification(
+                "Leave category added",
+                f"Leave category '{category.name}' was added.",
+                NotificationType.LEAVE,
+            )
             messages.success(request, "Leave category added.")
             return redirect("hr:leave_dashboard")
     else:
@@ -502,6 +632,11 @@ def events_view(request):
             obj = form.save(commit=False)
             obj.created_by = request.user if request.user.is_authenticated else None
             obj.save()
+            _create_notification(
+                "Event created",
+                f"Event '{obj.title}' was scheduled for {obj.event_date}.",
+                NotificationType.EVENT,
+            )
             messages.success(request, "Event created successfully.")
             return redirect("hr:events")
         else:
@@ -519,7 +654,13 @@ def events_view(request):
 def delete_event(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
+        event_title = event.title
         event.delete()
+        _create_notification(
+            "Event deleted",
+            f"Event '{event_title}' was deleted.",
+            NotificationType.EVENT,
+        )
         messages.success(request, "Event deleted.")
     return redirect("hr:events")
 
@@ -532,7 +673,12 @@ def event_edit(request, pk):
     if request.method == "POST":
         form = EventForm(request.POST, instance=ev)
         if form.is_valid():
-            form.save()
+            ev = form.save()
+            _create_notification(
+                "Event updated",
+                f"Event '{ev.title}' was updated.",
+                NotificationType.EVENT,
+            )
             messages.success(request, "Event updated.")
             return redirect("hr:events")
         else:
@@ -551,6 +697,11 @@ def event_ics(request, pk):
 
 def send_event_reminders(request):
     _send_event_reminders_if_due()
+    _create_notification(
+        "Event reminders processed",
+        "Event reminder dispatch was executed.",
+        NotificationType.EVENT,
+    )
     return redirect("hr:events")
 
 def _build_ics(ev: Event) -> str:
@@ -656,6 +807,11 @@ def create_post_view(request):
         obj = form.save(commit=False)
         obj.created_by = request.user if request.user.is_authenticated else None
         obj.save()
+        _create_notification(
+            "New timeline post",
+            f"A new timeline post '{obj.title or obj.message[:40]}' was shared.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Post shared.")
     else:
         messages.error(request, "Please correct the errors in the post form.")
@@ -678,6 +834,11 @@ def comment_post_view(request, pk):
             c.post = post
             c.user = request.user if request.user.is_authenticated else None
             c.save()
+            _create_notification(
+                "New timeline comment",
+                f"A comment was added on timeline post '{post.title or post.message[:40]}'.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Comment added.")
         else:
             messages.error(request, "Please enter a valid comment.")
@@ -690,7 +851,13 @@ def view_post_view(request, pk):
 def delete_post_view(request, pk):
     post = get_object_or_404(TimelinePost, pk=pk)
     if request.method == "POST":
+        post_title = post.title or post.message[:40]
         post.delete()
+        _create_notification(
+            "Timeline post deleted",
+            f"Timeline post '{post_title}' was deleted.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Post deleted.")
     return redirect("hr:timeline")
 
@@ -715,6 +882,11 @@ def help_create_view(request):
         obj = form.save(commit=False)
         obj.created_by = request.user if request.user.is_authenticated else None
         obj.save()
+        _create_notification(
+            "Help article created",
+            f"Help article '{obj.title}' was created.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Help article created.")
     else:
         messages.error(request, "Please correct the errors in the article form.")
@@ -729,7 +901,12 @@ def help_update_view(request, pk):
     if request.method == "POST":
         form = HelpArticleForm(request.POST, instance=article)
         if form.is_valid():
-            form.save()
+            article = form.save()
+            _create_notification(
+                "Help article updated",
+                f"Help article '{article.title}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Article updated successfully.")
             return redirect("hr:help")
     else:
@@ -750,7 +927,13 @@ from django.views.decorators.http import require_POST
 @require_POST
 def help_delete_view(request, pk):
     article = get_object_or_404(HelpArticle, pk=pk)
+    article_title = article.title
     article.delete()
+    _create_notification(
+        "Help article deleted",
+        f"Help article '{article_title}' was deleted.",
+        NotificationType.ANNOUNCEMENT,
+    )
     messages.success(request, "Article deleted successfully.")
     return redirect("hr:help")
 
@@ -800,6 +983,11 @@ def add_task_view(request):
         obj = form.save(commit=False)
         obj.user = User.objects.first()
         obj.save()
+        _create_notification(
+            "Personal task added",
+            f"Personal to-do item '{obj.description}' was added.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Task added.")
     else:
         messages.error(request, "Please correct the errors in the form.")
@@ -810,7 +998,12 @@ def edit_task_view(request, pk):
     if request.method == "POST":
         form = PersonalTaskForm(request.POST, instance=task)
         if form.is_valid():
-            form.save()
+            task = form.save()
+            _create_notification(
+                "Personal task updated",
+                f"Personal to-do item '{task.description}' was updated.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Task updated.")
             return redirect("hr:todo")
         else:
@@ -844,7 +1037,13 @@ def edit_task_view(request, pk):
 @require_POST
 def delete_task_view(request, pk):
     task = get_object_or_404(PersonalTask, pk=pk)
+    task_description = task.description
     task.delete()
+    _create_notification(
+        "Personal task deleted",
+        f"Personal to-do item '{task_description}' was deleted.",
+        NotificationType.TIMELINE,
+    )
     messages.success(request, "Task deleted.")
     return redirect("hr:todo")
 
@@ -853,13 +1052,144 @@ def toggle_task_status_view(request, pk):
     task = get_object_or_404(PersonalTask, pk=pk)
     task.is_completed = not task.is_completed
     task.save(update_fields=["is_completed"])
+    _create_notification(
+        "Personal task status changed",
+        f"Personal to-do item '{task.description}' marked as {'completed' if task.is_completed else 'pending'}.",
+        NotificationType.TIMELINE,
+    )
     return redirect("hr:todo")
 
-def notifications(request):
-    return render(request, "hr/notifications.html")
+def notifications_view(request):
+    all_notifications = Notification.objects.all().order_by("-created_at")
+    selected_type = request.GET.get("type", "").strip().upper()
+    valid_types = set(dict(NotificationType.choices).keys())
+    notifications = all_notifications
+    if selected_type in valid_types:
+        notifications = notifications.filter(type=selected_type)
+    else:
+        selected_type = ""
 
-def settings_page(request):
-    return render(request, "hr/settings.html")
+    total_count = all_notifications.count()
+    unread_count = all_notifications.filter(is_read=False).count()
+    read_count = all_notifications.filter(is_read=True).count()
+    type_counts = {
+        "LEAVE": all_notifications.filter(type=NotificationType.LEAVE).count(),
+        "ATTENDANCE": all_notifications.filter(type=NotificationType.ATTENDANCE).count(),
+        "EVENT": all_notifications.filter(type=NotificationType.EVENT).count(),
+        "ANNOUNCEMENT": all_notifications.filter(type=NotificationType.ANNOUNCEMENT).count(),
+        "TIMELINE": all_notifications.filter(type=NotificationType.TIMELINE).count(),
+        "SECURITY": all_notifications.filter(type=NotificationType.SECURITY).count(),
+    }
+    detail_urls = {
+        "LEAVE": reverse("hr:leave_dashboard"),
+        "ATTENDANCE": reverse("hr:attendance_list"),
+        "EVENT": reverse("hr:events"),
+        "ANNOUNCEMENT": reverse("hr:announcement_list"),
+        "TIMELINE": reverse("hr:timeline"),
+        "SECURITY": reverse("hr:settings"),
+    }
+    return render(
+        request,
+        "hr/notifications.html",
+        {
+            "notifications": notifications,
+            "total_count": total_count,
+            "unread_count": unread_count,
+            "read_count": read_count,
+            "type_counts": type_counts,
+            "selected_type": selected_type,
+            "detail_urls": detail_urls,
+        },
+    )
+
+
+@require_POST
+def mark_as_read_view(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    notification.is_read = True
+    notification.save(update_fields=["is_read"])
+    return redirect("hr:notifications")
+
+
+@require_POST
+def clear_notification_view(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    notification.delete()
+    return redirect("hr:notifications")
+
+
+@require_POST
+def mark_all_read_view(request):
+    Notification.objects.filter(is_read=False).update(is_read=True)
+    return redirect("hr:notifications")
+
+
+@require_POST
+def clear_all_view(request):
+    Notification.objects.all().delete()
+    return redirect("hr:notifications")
+
+def settings_view(request):
+    profile = AdminProfile.objects.first()
+    if profile is None:
+        profile = AdminProfile.objects.create(
+            full_name="HR Admin",
+            email="hr.admin@company.com",
+            role="HR",
+            password=make_password("Admin@123"),
+        )
+    return render(request, "hr/settings.html", {"profile": profile})
+
+
+@require_POST
+def update_profile_view(request):
+    profile = AdminProfile.objects.first()
+    if profile is None:
+        profile = AdminProfile.objects.create(
+            full_name="HR Admin",
+            email="hr.admin@company.com",
+            role="HR",
+            password=make_password("Admin@123"),
+        )
+    profile.full_name = request.POST.get("full_name", profile.full_name).strip() or profile.full_name
+    profile.email = request.POST.get("email", profile.email).strip() or profile.email
+    profile.save(update_fields=["full_name", "email"])
+    return redirect("hr:settings")
+
+
+@require_POST
+def change_password_view(request):
+    profile = AdminProfile.objects.first()
+    if profile is None:
+        profile = AdminProfile.objects.create(
+            full_name="HR Admin",
+            email="hr.admin@company.com",
+            role="HR",
+            password=make_password("Admin@123"),
+        )
+
+    new_password = request.POST.get("new_password", "")
+    confirm_password = request.POST.get("confirm_password", "")
+
+    is_valid = True
+    if new_password != confirm_password:
+        is_valid = False
+    if len(new_password) < 8:
+        is_valid = False
+    if not re.search(r"[A-Z]", new_password):
+        is_valid = False
+    if not re.search(r"[a-z]", new_password):
+        is_valid = False
+    if not re.search(r"[0-9]", new_password):
+        is_valid = False
+    if not re.search(r"[^A-Za-z0-9]", new_password):
+        is_valid = False
+
+    if is_valid:
+        profile.password = make_password(new_password)
+        profile.save(update_fields=["password"])
+
+    return redirect("hr:settings")
 
 def note_create_view(request):
     if request.method == "POST":
@@ -868,6 +1198,11 @@ def note_create_view(request):
             obj = form.save(commit=False)
             obj.created_by = request.user if request.user.is_authenticated else None
             obj.save()
+            _create_notification(
+                "Note created",
+                f"Note '{obj.title}' was created.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Note created.")
             return redirect("hr:notes")
         else:
@@ -881,7 +1216,12 @@ def note_update_view(request, pk):
     if request.method == "POST":
         form = NoteForm(request.POST, request.FILES, instance=note)
         if form.is_valid():
-            form.save()
+            note = form.save()
+            _create_notification(
+                "Note updated",
+                f"Note '{note.title}' was updated.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Note updated.")
             return redirect("hr:notes")
         else:
@@ -893,7 +1233,13 @@ def note_update_view(request, pk):
 def note_delete_view(request, pk):
     note = get_object_or_404(Note, pk=pk)
     if request.method == "POST":
+        note_title = note.title
         note.delete()
+        _create_notification(
+            "Note deleted",
+            f"Note '{note_title}' was deleted.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Note deleted.")
         return redirect("hr:notes")
     return render(request, "hr/note_delete_confirm.html", {"note": note})

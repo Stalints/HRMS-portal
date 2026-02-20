@@ -200,6 +200,54 @@ class Event(models.Model):
 
 
 # -------------------------
+# NOTIFICATIONS
+# -------------------------
+
+class NotificationType(models.TextChoices):
+    LEAVE = "LEAVE", "Leave"
+    ATTENDANCE = "ATTENDANCE", "Attendance"
+    EVENT = "EVENT", "Event"
+    ANNOUNCEMENT = "ANNOUNCEMENT", "Announcement"
+    TIMELINE = "TIMELINE", "Timeline"
+    SECURITY = "SECURITY", "Security"
+
+
+class Notification(models.Model):
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    type = models.CharField(max_length=20, choices=NotificationType.choices)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+
+# -------------------------
+# SETTINGS
+# -------------------------
+
+class AdminProfile(models.Model):
+    full_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    role = models.CharField(max_length=20, default="HR")
+    password = models.CharField(max_length=255)
+    last_login_time = models.DateTimeField(null=True, blank=True)
+    last_login_ip = models.CharField(max_length=255, null=True, blank=True)
+    member_since = models.DateField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.full_name
+
+
+# -------------------------
 # PROJECTS
 # -------------------------
 
