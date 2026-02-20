@@ -3,7 +3,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password   
 
 from .models import Attendance
+<<<<<<< HEAD
+from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask, Team
+=======
 from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
 
 User = get_user_model()
 
@@ -106,6 +110,33 @@ class TeamMemberEditForm(forms.ModelForm):
             'role': 'Role',
             'status': 'Status',
         }
+
+
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ["name", "description", "team_lead", "members", "status"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter team name"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Team description (optional)"}),
+            "team_lead": forms.Select(attrs={"class": "form-select"}),
+            "members": forms.SelectMultiple(attrs={"class": "form-select", "size": 8}),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+        labels = {
+            "name": "Team Name",
+            "description": "Description",
+            "team_lead": "Team Lead",
+            "members": "Members",
+            "status": "Status",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        employees = User.objects.order_by("first_name", "last_name", "username")
+        self.fields["team_lead"].queryset = employees
+        self.fields["team_lead"].required = False
+        self.fields["members"].queryset = employees
 
 
 class LeaveCategoryForm(forms.ModelForm):

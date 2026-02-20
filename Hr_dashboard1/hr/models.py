@@ -25,6 +25,36 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class TeamStatus(models.TextChoices):
+    ACTIVE = "Active", "Active"
+    INACTIVE = "Inactive", "Inactive"
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    team_lead = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="led_teams",
+    )
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="teams",
+    )
+    status = models.CharField(max_length=10, choices=TeamStatus.choices, default=TeamStatus.ACTIVE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 # -------------------------
 # ATTENDANCE
 # -------------------------

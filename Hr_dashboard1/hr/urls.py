@@ -6,11 +6,16 @@ app_name = 'hr'
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
 
-    path('team/', views.team_list, name='team_list'),
-    path('team/add/', views.team_add, name='team_add'),
-    path('team/edit/<int:pk>/', views.team_edit, name='team_edit'),
-    path('team/activate/<int:pk>/', views.team_activate, name='team_activate'),
-    path('team/deactivate/<int:pk>/', views.team_deactivate, name='team_deactivate'),
+    path('team/', views.employee_list, name='employee_list'),
+    path('team/add/', views.employee_add, name='employee_add'),
+    path('team/edit/<int:pk>/', views.employee_edit, name='employee_edit'),
+    path('team/activate/<int:pk>/', views.employee_activate, name='employee_activate'),
+    path('team/deactivate/<int:pk>/', views.employee_deactivate, name='employee_deactivate'),
+    path('teams/', views.team_list, name='team_list'),
+    path('teams/add/', views.team_create, name='team_add'),
+    path('teams/<int:pk>/', views.team_detail, name='team_detail'),
+    path('teams/<int:pk>/edit/', views.team_update, name='team_edit'),
+    path('teams/<int:pk>/delete/', views.team_delete, name='team_delete'),
 
     path('attendance/', views.attendance_list, name='attendance_list'),
 
@@ -78,3 +83,4 @@ urlpatterns = [
     path("settings/update-profile/", views.update_profile_view, name="update_profile"),
     path("settings/change-password/", views.change_password_view, name="change_password"),
 ]
+

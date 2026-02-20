@@ -10,6 +10,11 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+<<<<<<< HEAD
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+=======
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
   <!-- Dashboard custom CSS -->
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 </head>
@@ -40,9 +45,21 @@
           </a>
         </li>
         <li class="nav-item">
+<<<<<<< HEAD
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %}"
+            href="{% url 'hr:employee_list' %}">
+            <span class="me-2">👥</span> Employee Management
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'team_list' or request.resolver_match.url_name == 'team_add' or request.resolver_match.url_name == 'team_detail' or request.resolver_match.url_name == 'team_edit' %}active{% endif %}"
+            href="{% url 'hr:team_list' %}">
+            <span class="me-2">&#129309;</span> Team Management
+=======
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'team_list' %}active{% endif %}"
             href="{% url 'hr:team_list' %}">
             <span class="me-2">👥</span> Team Management
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
           </a>
         </li>
         <li class="nav-item">
@@ -202,7 +219,11 @@
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
+<<<<<<< HEAD
+                  <div class="text-muted small">Total Employees</div>
+=======
                   <div class="text-muted small">Total Team Members</div>
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
                   <div class="fs-4 fw-semibold">128</div>
                 </div>
                 <div class="summary-card-icon">👥</div>
@@ -488,6 +509,7 @@
       </footer>
     </div>
   </div>
+<<<<<<< HEAD
 
   <!-- Bootstrap JS (optional for basic navbar/ dropdowns) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -499,3 +521,19 @@
 </body>
 
 </html>
+
+
+
+=======
+
+  <!-- Bootstrap JS (optional for basic navbar/ dropdowns) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc

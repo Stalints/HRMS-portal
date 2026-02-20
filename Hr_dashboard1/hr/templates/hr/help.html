@@ -43,11 +43,24 @@
             </a>
           </li>
           <li class="nav-item">
+<<<<<<< HEAD
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+              <span class="me-2">👥</span> Employee Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+              <span class="me-2">&#129309;</span> Team Management
+            </a>
+          </li>
+          <li class="nav-item">
+=======
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
               <span class="me-2">👥</span> Team Management
             </a>
           </li>
           <li class="nav-item">
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
@@ -192,7 +205,7 @@
             <div>
               <h1 class="h4 mb-1">Help Articles</h1>
               <p class="text-muted small mb-0">
-                Internal knowledge base for team members
+                Internal knowledge base for Employees
               </p>
             </div>
             <span class="badge text-bg-light d-none d-md-inline"></span>
@@ -239,7 +252,11 @@
                       <div class="mb-3">
                         <label for="id_content" class="form-label">Article Content <span class="text-danger">*</span></label>
                         {{ form.content }}
+<<<<<<< HEAD
+                        <div class="form-text">Provide detailed information, steps, or guidelines for Employees</div>
+=======
                         <div class="form-text">Provide detailed information, steps, or guidelines for team members</div>
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
                       </div>
                       <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Publish{% endif %}</button>
@@ -335,9 +352,9 @@
                   <div class="d-flex align-items-start mb-3">
                     <span class="me-2">👥</span>
                     <div>
-                      <h3 class="fs-6 mb-1">Team Member Access</h3>
+                      <h3 class="fs-6 mb-1">Employee Access</h3>
                       <p class="small text-muted mb-0">
-                        Help articles are accessible only to authorized team members with valid portal access. 
+                        Help articles are accessible only to authorized Employees with valid portal access. 
                         All articles are part of the internal knowledge base.
                       </p>
                     </div>
@@ -349,7 +366,7 @@
                       <h3 class="fs-6 mb-1">Internal Use Only</h3>
                       <p class="small text-muted mb-0">
                         These articles contain internal company information, policies, and procedures. 
-                        They are not publicly accessible and are restricted to team members only.
+                        They are not publicly accessible and are restricted to Employees only.
                       </p>
                     </div>
                   </div>
@@ -363,7 +380,7 @@
                 </div>
                 <div class="card-body">
                   <div class="alert alert-info py-2 mb-0 small">
-                    <strong>Internal Access Only:</strong> All help articles are restricted to internal team members 
+                    <strong>Internal Access Only:</strong> All help articles are restricted to internal Employees 
                     with appropriate role-based access. Content is protected by secure authentication and is not publicly accessible.
                   </div>
                 </div>
@@ -392,3 +409,7 @@
     </script>
   </body>
 </html>
+
+
+
+

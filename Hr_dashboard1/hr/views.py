@@ -10,8 +10,8 @@ from django.urls import reverse
 from django.utils import timezone
 import re
 
-from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm
-from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus
+from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm, TeamForm
+from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus, Team
 from .forms import LeaveCategoryForm
 from .forms import EventForm, NoteForm, TimelinePostForm, TimelineCommentForm, HelpArticleForm, PersonalTaskForm
 from .models import (
@@ -38,6 +38,7 @@ from django.contrib.auth import authenticate, login, logout
 User = get_user_model()
 
 
+<<<<<<< HEAD
 def _create_notification(title: str, message: str, notification_type: str) -> None:
     if notification_type not in dict(NotificationType.choices):
         notification_type = NotificationType.ANNOUNCEMENT
@@ -46,6 +47,11 @@ def _create_notification(title: str, message: str, notification_type: str) -> No
         message=message,
         type=notification_type,
     )
+=======
+def _employee_total_count():
+    # Real-time total employee records across statuses.
+    return User.objects.filter(is_superuser=False).count()
+>>>>>>> 7625528ec4f186c428b9a884e9661005aabace69
 
 
 # =====================
@@ -55,9 +61,16 @@ def _create_notification(title: str, message: str, notification_type: str) -> No
 def dashboard(request):
     active_announcements = Announcement.objects.filter(status=AnnouncementStatus.ACTIVE).order_by("-publish_date", "-created_at")[:5]
     today = timezone.localdate()
+<<<<<<< HEAD
+    upcoming = Event.objects.filter(event_date__gte=today)
+    if request.user.is_authenticated and request.user.role == Role.EMPLOYEE:
+        upcoming = upcoming.filter(Q(share_with__icontains="Employee") | Q(share_with__icontains="Team"))
+    upcoming = upcoming.order_by("event_date", "start_time")[:5]
+=======
     upcoming = Event.objects.filter(event_date__gte=today).order_by("event_date", "start_time")[:5]
     if request.user.is_authenticated and request.user.role == Role.EMPLOYEE:
         upcoming = upcoming.filter(Q(share_with__icontains="Employee") | Q(share_with__icontains="Team"))
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
     return render(request, "hr/dashboard.html", {
         "active_announcements": active_announcements,
         "active_announcements_count": active_announcements.count(),
@@ -66,10 +79,10 @@ def dashboard(request):
 
 
 # =====================
-# TEAM MANAGEMENT
+# EMPLOYEE MANAGEMENT
 # =====================
 
-def team_list(request):
+def employee_list(request):
     query = request.GET.get("q", "").strip()
 
     members = User.objects.all()
@@ -84,16 +97,17 @@ def team_list(request):
 
     members = members.order_by("-created_at")
 
-    return render(request, "hr/team.html", {
+    return render(request, "hr/employee.html", {
         "members": members,
         "search_query": query,
     })
 
 
-def team_add(request):
+def employee_add(request):
     if request.method == "POST":
         form = TeamMemberAddForm(request.POST)
         if form.is_valid():
+<<<<<<< HEAD
             member = form.save()
             _create_notification(
                 "Team member added",
@@ -102,21 +116,27 @@ def team_add(request):
             )
             messages.success(request, "Team member added successfully.")
             return redirect("hr:team_list")
+=======
+            form.save()
+            messages.success(request, "Employee added successfully.")
+            return redirect("hr:employee_list")
+>>>>>>> 7625528ec4f186c428b9a884e9661005aabace69
     else:
         form = TeamMemberAddForm()
 
-    return render(request, "hr/team_form.html", {
+    return render(request, "hr/emp_form.html", {
         "form": form,
         "is_edit": False
     })
 
 
-def team_edit(request, pk):
+def employee_edit(request, pk):
     member = get_object_or_404(User, pk=pk)
 
     if request.method == "POST":
         form = TeamMemberEditForm(request.POST, instance=member)
         if form.is_valid():
+<<<<<<< HEAD
             member = form.save()
             _create_notification(
                 "Team member updated",
@@ -125,17 +145,22 @@ def team_edit(request, pk):
             )
             messages.success(request, "Team member updated successfully.")
             return redirect("hr:team_list")
+=======
+            form.save()
+            messages.success(request, "Employee updated successfully.")
+            return redirect("hr:employee_list")
+>>>>>>> 7625528ec4f186c428b9a884e9661005aabace69
     else:
         form = TeamMemberEditForm(instance=member)
 
-    return render(request, "hr/team_form.html", {
+    return render(request, "hr/emp_form.html", {
         "form": form,
         "member": member,
         "is_edit": True
     })
 
 
-def team_activate(request, pk):
+def employee_activate(request, pk):
     member = get_object_or_404(User, pk=pk)
     member.status = Status.ACTIVE
     member.is_active = True
@@ -147,10 +172,10 @@ def team_activate(request, pk):
     )
 
     messages.success(request, f"{member.get_full_name()} activated.")
-    return redirect("hr:team_list")
+    return redirect("hr:employee_list")
 
 
-def team_deactivate(request, pk):
+def employee_deactivate(request, pk):
     member = get_object_or_404(User, pk=pk)
     member.status = Status.INACTIVE
     member.is_active = False
@@ -162,7 +187,55 @@ def team_deactivate(request, pk):
     )
 
     messages.success(request, f"{member.get_full_name()} deactivated.")
-    return redirect("hr:team_list")
+    return redirect("hr:employee_list")
+
+
+# =====================
+# TEAM MANAGEMENT
+# =====================
+
+def team_list(request):
+    teams = Team.objects.select_related("team_lead").prefetch_related("members").order_by("name")
+    return render(request, "teams/teams.html", {"teams": teams})
+
+
+def team_create(request):
+    if request.method == "POST":
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Team created successfully.")
+            return redirect("hr:team_list")
+    else:
+        form = TeamForm()
+    return render(request, "teams/team_form.html", {"form": form, "is_edit": False})
+
+
+def team_detail(request, pk):
+    team = get_object_or_404(Team.objects.select_related("team_lead").prefetch_related("members"), pk=pk)
+    return render(request, "teams/team_detail.html", {"team": team})
+
+
+def team_update(request, pk):
+    team = get_object_or_404(Team, pk=pk)
+    if request.method == "POST":
+        form = TeamForm(request.POST, instance=team)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Team updated successfully.")
+            return redirect("hr:team_detail", pk=team.pk)
+    else:
+        form = TeamForm(instance=team)
+    return render(request, "teams/team_form.html", {"form": form, "team": team, "is_edit": True})
+
+
+def team_delete(request, pk):
+    team = get_object_or_404(Team, pk=pk)
+    if request.method == "POST":
+        team.delete()
+        messages.success(request, "Team deleted successfully.")
+        return redirect("hr:team_list")
+    return redirect("hr:team_detail", pk=team.pk)
 
 
 # =====================
@@ -228,7 +301,7 @@ def attendance_list(request):
         "form": form,
         "filter_date": filter_date,
         "date_str": filter_date.isoformat(),
-        "total_employees": User.objects.filter(status="ACTIVE").count(),
+        "total_employees": _employee_total_count(),
         "present_today": records.filter(status="PRESENT").count(),
         "absent_today": records.filter(status="ABSENT").count(),
         "late_today": records.filter(status="LATE").count(),
@@ -248,7 +321,7 @@ def leave_dashboard(request):
     context = {
         "leaves": leaves,
         "categories": categories,
-        "total_employees": User.objects.count(),
+        "total_employees": _employee_total_count(),
         "total_requests": leaves.count(),
         "approved_count": leaves.filter(status="Approved").count(),
         "pending_count": leaves.filter(status="Pending").count(),
@@ -1266,3 +1339,9 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("hr:login")
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
