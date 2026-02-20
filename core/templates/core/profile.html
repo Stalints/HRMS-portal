@@ -3,145 +3,574 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Profile | HR Portal</title>
+  <meta charset="UTF-8">
+  <title>Profile | HR Portal</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-    <style>
-        body {
-            background: #f1f5f9;
+  <style>
+    :root {
+      --brand: #1e3a8a;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --muted: #64748b;
+      --border: rgba(148, 163, 184, .35);
+      --shadow: 0 18px 50px rgba(2, 6, 23, .08);
+      --shadow-soft: 0 10px 25px rgba(2, 6, 23, .06);
+      --radius: 16px;
+    }
+
+    body {
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(30, 58, 138, .12), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(14, 165, 233, .10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(90deg, #1e3a8a, #1e40af);
+      box-shadow: 0 10px 30px rgba(2, 6, 23, .12);
+    }
+
+    .page-title {
+      letter-spacing: -0.02em;
+    }
+
+    .card-pro {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card-pro .card-header-pro {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-pro .card-body-pro {
+      padding: 18px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .pill {
+      background: rgba(30, 58, 138, .08);
+      color: var(--brand);
+      border: 1px solid rgba(30, 58, 138, .15);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .profile-avatar {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 42px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-soft);
+      border: 4px solid #fff;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .avatar-action {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .55);
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .25);
+      cursor: pointer;
+    }
+
+    .avatar-action i {
+      font-size: 16px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .meta-box {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(248, 250, 252, .7);
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .form-control {
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, .55);
+      padding: 10px 12px;
+    }
+
+    .form-control:focus {
+      border-color: rgba(30, 58, 138, .5);
+      box-shadow: 0 0 0 .22rem rgba(30, 58, 138, .12);
+    }
+
+    .btn {
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 600;
+    }
+
+    .btn-primary { 
+        background: linear-gradient(90deg, #1e3a8a, #1d4ed8); 
+        border: none; 
+        box-shadow: 0 10px 22px rgba(30, 58, 138, .2); 
         }
 
-        .profile-card {
-            border-radius: 14px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
-        }
 
-        .profile-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: #1e3a8a;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            margin: auto;
-        }
+    .btn-primary:disabled {
+      opacity: .7;
+    }
 
-        .label-muted {
-            font-size: 14px;
-            color: #64748b;
-        }
+    .btn-outline-secondary {
+      border-color: rgba(148, 163, 184, .8);
+    }
 
-        .btn {
-            border-radius: 8px;
-        }
-    </style>
+    .alert {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .dropzone {
+      border: 1px dashed rgba(148, 163, 184, .8);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(248, 250, 252, .8);
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .dropzone:hover {
+      border-color: rgba(30, 58, 138, .45);
+      background: rgba(248, 250, 252, 1);
+    }
+
+    .dropzone.active {
+      border-color: rgba(30, 58, 138, .7);
+      box-shadow: 0 0 0 .25rem rgba(30, 58, 138, .10);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar shadow-sm" style="background:#1e3a8a;">
-        <div class="container">
-            <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="{% url 'core:client_dashboard' %}">
-                <i class="bi bi-building me-2"></i>
-                HR Portal
-            </a>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container py-2">
+      <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="{% url 'core:client_dashboard' %}">
+        <i class="bi bi-building me-2"></i> HR Portal
+      </a>
 
-            <span class="text-white-50">
-                <i class="bi bi-person-circle me-1"></i> Client
-            </span>
-        </div>
-    </nav>
+      <div class="d-flex align-items-center gap-2">
+        <span class="pill">
+          <i class="bi bi-person-circle me-1"></i> Client
+        </span>
+      </div>
+    </div>
+  </nav>
 
-    <div class="container my-5">
+  <div class="container my-5">
 
-        <h2 class="fw-semibold mb-4">My Profile</h2>
-
-        <div class="row g-4">
-
-            <!-- Profile Summary -->
-            <div class="col-md-4">
-                <div class="card profile-card text-center p-4">
-                    <div class="profile-avatar mb-3">
-                        <i class="bi bi-person"></i>
-                    </div>
-                    <h5 class="mb-1">John Client</h5>
-                    <p class="text-muted mb-2">Client Account</p>
-                    <span class="badge bg-success">Active</span>
-
-                    <hr>
-
-                    <p class="label-muted mb-1">Client ID</p>
-                    <p class="fw-semibold">CL-1023</p>
-
-                    <p class="label-muted mb-1">Member Since</p>
-                    <p class="fw-semibold">Jan 2024</p>
-                </div>
-            </div>
-
-            <!-- Profile Details -->
-            <div class="col-md-8">
-                <div class="card profile-card p-4">
-                    <h5 class="mb-4">
-                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
-                    </h5>
-
-                    <form id="profileForm">
-                        <div class="row g-3">
-
-                            <div class="col-md-6">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" class="form-control" value="John Client">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" value="client@hrportal.com">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <input type="text" class="form-control" value="+91 98765 43210">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Company</label>
-                                <input type="text" class="form-control" value="ABC Technologies">
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Address</label>
-                                <textarea class="form-control" rows="3">Bangalore, India</textarea>
-                            </div>
-
-                            <div class="col-md-12 text-end mt-3">
-                                <button class="btn btn-outline-secondary me-2" type="reset">
-                                    Cancel
-                                </button>
-                                <button class="btn btn-primary">
-                                    <i class="bi bi-save me-1"></i> Save Changes
-                                </button>
-                            </div>
-
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-        </div>
+    <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-4">
+      <div>
+        <h2 class="fw-bold page-title mb-1">My Profile</h2>
+        <div class="muted">Manage your account information and profile photo.</div>
+      </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Inline messages -->
+    <div id="msgBox" class="mb-3" style="display:none;"></div>
+
+    <div class="row g-4">
+
+      <!-- Left Summary -->
+      <div class="col-lg-4">
+        <div class="card-pro">
+          <div class="card-header-pro">
+            <div class="fw-bold">Profile</div>
+            <span class="badge" id="summaryStatus">Active</span>
+          </div>
+
+          <div class="card-body-pro text-center">
+
+            <div class="profile-avatar mb-3" id="avatarBox" title="Change photo">
+              <img id="avatarImg" alt="Profile Photo">
+              <i id="avatarIcon" class="bi bi-person"></i>
+
+              <div class="avatar-action" id="avatarAction">
+                <i class="bi bi-camera-fill text-white"></i>
+              </div>
+            </div>
+
+            <h5 class="mb-0 fw-bold" id="summaryName">-</h5>
+            <div class="muted mb-3">Client Account</div>
+
+            <div class="dropzone text-start" id="dropZone">
+              <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-cloud-arrow-up fs-5" style="color: var(--brand);"></i>
+                <div>
+                  <div class="fw-semibold">Upload profile photo</div>
+                  <div class="muted" style="font-size: 13px;">Drag & drop or click to select (JPG/PNG)</div>
+                </div>
+              </div>
+
+              <input type="file" id="photoInput" accept="image/*" hidden>
+
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-sm btn-primary" id="btnUpload" type="button" disabled>
+                  <i class="bi bi-upload me-1"></i> Upload
+                </button>
+                <button class="btn btn-sm btn-outline-danger" id="btnRemovePhoto" type="button">
+                  <i class="bi bi-trash me-1"></i> Remove
+                </button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="meta-grid text-start">
+              <div class="meta-box">
+                <div class="meta-label">Client ID</div>
+                <div class="meta-value" id="summaryClientId">-</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Member Since</div>
+                <div class="meta-value" id="summaryMemberSince">-</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form -->
+      <div class="col-lg-8">
+        <div class="card-pro">
+          <div class="card-header-pro">
+            <div class="fw-bold d-flex align-items-center gap-2">
+              <i class="bi bi-pencil-square"></i>
+              <span>Edit Profile</span>
+            </div>
+
+            <div class="muted" id="saveState">Not saved</div>
+          </div>
+
+          <div class="card-body-pro">
+            <form id="profileForm">
+              {% csrf_token %}
+              <div class="row g-3">
+
+                <div class="col-md-6">
+                  <label class="form-label">Full Name</label>
+                  <input id="full_name" type="text" class="form-control" placeholder="Enter full name">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input id="email" type="email" class="form-control" placeholder="name@example.com">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Phone</label>
+                  <input id="phone" type="text" class="form-control" placeholder="+91 XXXXX XXXXX">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Company</label>
+                  <input id="company" type="text" class="form-control" placeholder="Company name">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Address</label>
+                  <textarea id="address" class="form-control" rows="3" placeholder="Your address"></textarea>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                  <button class="btn btn-outline-secondary" id="btnCancel" type="button">
+                    Cancel
+                  </button>
+                  <button class="btn btn-primary" id="btnSave" type="submit">
+                    <span id="saveBtnText"><i class="bi bi-save me-1"></i> Save Changes</span>
+                    <span id="saveSpinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display:none;"></span>
+                  </button>
+                </div>
+
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const apiGet = "{% url 'core:api_profile_get' %}";
+    const apiUpdate = "{% url 'core:api_profile_update' %}";
+    const apiRemovePhoto = "{% url 'core:api_profile_remove_photo' %}";
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    const form = document.getElementById("profileForm");
+    const btnCancel = document.getElementById("btnCancel");
+    const btnSave = document.getElementById("btnSave");
+    const saveSpinner = document.getElementById("saveSpinner");
+    const saveBtnText = document.getElementById("saveBtnText");
+    const saveState = document.getElementById("saveState");
+
+    const msgBox = document.getElementById("msgBox");
+
+    const avatarImg = document.getElementById("avatarImg");
+    const avatarIcon = document.getElementById("avatarIcon");
+
+    const dropZone = document.getElementById("dropZone");
+    const photoInput = document.getElementById("photoInput");
+    const btnUpload = document.getElementById("btnUpload");
+    const btnRemovePhoto = document.getElementById("btnRemovePhoto");
+    const avatarAction = document.getElementById("avatarAction");
+
+    let original = null;
+    let selectedFile = null;
+
+    function showMessage(type, text) {
+      msgBox.style.display = "block";
+      msgBox.innerHTML = `
+        <div class="alert alert-${type} d-flex align-items-start gap-2 mb-0">
+          <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} fs-5"></i>
+          <div>${text}</div>
+        </div>
+      `;
+      setTimeout(() => { msgBox.style.display = "none"; }, 2500);
+    }
+
+    function setSaving(isSaving) {
+      btnSave.disabled = isSaving;
+      saveSpinner.style.display = isSaving ? "inline-block" : "none";
+      saveState.innerText = isSaving ? "Saving..." : "Saved";
+    }
+
+    function setAvatar(url) {
+      if (url) {
+        avatarImg.src = url;
+        avatarImg.style.display = "block";
+        avatarIcon.style.display = "none";
+      } else {
+        avatarImg.style.display = "none";
+        avatarIcon.style.display = "block";
+      }
+    }
+
+    function formatDate(isoDate) {
+      if (!isoDate) return "-";
+      const d = new Date(isoDate);
+      if (isNaN(d)) return isoDate;
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function loadProfile() {
+      const res = await fetch(apiGet, { credentials: "same-origin" });
+      const data = await res.json();
+      original = data;
+
+      // Fill form
+      document.getElementById("full_name").value = data.full_name || "";
+      document.getElementById("email").value = data.email || "";
+      document.getElementById("phone").value = data.phone || "";
+      document.getElementById("company").value = data.company || "";
+      document.getElementById("address").value = data.address || "";
+
+      // Summary
+      document.getElementById("summaryName").innerText = data.full_name || "Client";
+      document.getElementById("summaryClientId").innerText = data.client_id || "-";
+      document.getElementById("summaryMemberSince").innerText = formatDate(data.member_since);
+
+      const statusEl = document.getElementById("summaryStatus");
+      if (data.is_active) {
+        statusEl.className = "badge bg-success";
+        statusEl.innerText = "Active";
+      } else {
+        statusEl.className = "badge bg-secondary";
+        statusEl.innerText = "Inactive";
+      }
+
+      setAvatar(data.profile_image);
+      saveState.innerText = "Up to date";
+    }
+
+    // Save (AJAX)
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setSaving(true);
+
+      const fd = new FormData();
+      fd.append("full_name", document.getElementById("full_name").value);
+      fd.append("email", document.getElementById("email").value);
+      fd.append("phone", document.getElementById("phone").value);
+      fd.append("company", document.getElementById("company").value);
+      fd.append("address", document.getElementById("address").value);
+
+      const res = await fetch(apiUpdate, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken },
+        body: fd,
+        credentials: "same-origin"
+      });
+
+      const out = await res.json();
+      if (out.ok) {
+        original = out.data;
+        await loadProfile();
+        showMessage("success", "Profile updated successfully.");
+      } else {
+        showMessage("danger", "Save failed. Please check inputs.");
+      }
+
+      setSaving(false);
+    });
+
+    // Cancel restore
+    btnCancel.addEventListener("click", () => {
+      if (!original) return;
+      document.getElementById("full_name").value = original.full_name || "";
+      document.getElementById("email").value = original.email || "";
+      document.getElementById("phone").value = original.phone || "";
+      document.getElementById("company").value = original.company || "";
+      document.getElementById("address").value = original.address || "";
+      showMessage("success", "Changes reverted.");
+    });
+
+    // Photo choose
+    function handleSelectedFile(file) {
+      if (!file || !file.type.startsWith("image/")) return;
+      selectedFile = file;
+      setAvatar(URL.createObjectURL(file)); // preview
+      btnUpload.disabled = false;
+    }
+
+    // Click actions
+    avatarAction.addEventListener("click", () => photoInput.click());
+    dropZone.addEventListener("click", () => photoInput.click());
+    photoInput.addEventListener("change", () => {
+      if (photoInput.files && photoInput.files[0]) handleSelectedFile(photoInput.files[0]);
+    });
+
+    // Drag drop UI
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("active");
+    });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("active"));
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("active");
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) handleSelectedFile(e.dataTransfer.files[0]);
+    });
+
+    // Upload photo (simple upload without crop for now)
+    btnUpload.addEventListener("click", async () => {
+      if (!selectedFile) return;
+
+      const fd = new FormData();
+      fd.append("profile_image", selectedFile);
+
+      const res = await fetch(apiUpdate, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken },
+        body: fd,
+        credentials: "same-origin"
+      });
+
+      const out = await res.json();
+      if (out.ok) {
+        selectedFile = null;
+        photoInput.value = "";
+        btnUpload.disabled = true;
+        await loadProfile();
+        showMessage("success", "Profile photo updated.");
+      } else {
+        showMessage("danger", "Photo upload failed.");
+      }
+    });
+
+    // Remove photo
+    btnRemovePhoto.addEventListener("click", async () => {
+      const res = await fetch(apiRemovePhoto, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken },
+        credentials: "same-origin"
+      });
+
+      const out = await res.json();
+      if (out.ok) {
+        await loadProfile();
+        showMessage("success", "Profile photo removed.");
+      } else {
+        showMessage("danger", "Remove failed.");
+      }
+    });
+
+    loadProfile();
+  </script>
 
 </body>
 

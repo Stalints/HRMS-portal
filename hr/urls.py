@@ -41,4 +41,34 @@ urlpatterns = [
 
     path("clients/events/", views.client_events, name="client_events"),
 
+    path("events/", views.events, name="events"),
+    path("events/send-reminders/", views.send_event_reminders, name="send_event_reminders"),
+
+    path("notes/", views.notes, name="notes"),
+    path("notes/add/", views.note_add, name="note_add"),
+    path("notes/<int:pk>/", views.note_detail, name="note_detail"),
+    path("notes/<int:pk>/edit/", views.note_edit, name="note_edit"),
+    path("notes/<int:pk>/delete/", views.note_delete, name="note_delete"),
+
+    path("timeline/", views.timeline, name="timeline"),
+    path("timeline/add-post/", views.add_post, name="add_post"),
+
+    path("notifications/", views.notifications, name="notifications"),
+    
+    
+    path("help/", views.help_page, name="help"),
+    path("help/create/", views.help_create, name="help_create"),
+    path("help/<int:pk>/edit/", views.help_edit, name="help_edit"),
+    path("help/<int:pk>/delete/", views.help_delete, name="help_delete"),
+
+
+    path("settings/", views.settings_page, name="settings"),
+
+
+    path("todo/", views.todo, name="todo"),
+    path("todo/add/", views.add_task, name="add_task"),
+    path("todo/<int:pk>/edit/", views.edit_task, name="edit_task"),
+    path("todo/<int:pk>/delete/", views.delete_task, name="delete_task"),
+    path("todo/<int:pk>/toggle/", views.toggle_task, name="toggle_task"),
+
 ]

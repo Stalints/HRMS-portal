@@ -23,6 +23,8 @@ from django.urls import path, include
 from django.shortcuts import redirect
 from django.contrib.auth import views as auth_views
 from accounts.views_password import password_change_done_logout
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Redirect root URL to login page
 def home_redirect(request):
@@ -68,7 +70,10 @@ urlpatterns = [
     # HR module
     path('hr/', include(('hr.urls', 'hr'), namespace='hr')),
 
+
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

@@ -4,13 +4,48 @@ from django.utils import timezone
 
 
 class ClientProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="client_profile")
-    company_name = models.CharField(max_length=200, blank=True)
-    phone = models.CharField(max_length=20, blank=True)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="client_profile"
+    )
+
+    full_name = models.CharField(max_length=120, blank=True)
+    phone = models.CharField(max_length=30, blank=True)
+    company = models.CharField(max_length=150, blank=True)
     address = models.TextField(blank=True)
 
+    # profile picture
+    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
+
+    is_active = models.BooleanField(default=True)
+
+    # Auto ID like CL-1023
+    client_id = models.CharField(max_length=20, unique=True, blank=True)
+
+    # ✅ FIX: avoid migration asking default when table already has rows
+    member_since = models.DateField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        # Auto-generate client_id only if empty
+        if not self.client_id:
+            last = ClientProfile.objects.exclude(client_id="").order_by("-id").first()
+
+            if last and last.client_id.startswith("CL-"):
+                try:
+                    last_num = int(last.client_id.split("-")[1])
+                except Exception:
+                    last_num = 1022
+                next_num = last_num + 1
+            else:
+                next_num = 1023
+
+            self.client_id = f"CL-{next_num}"
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.user.username
+        return f"{self.user.username} - ClientProfile"
 
 
 class Project(models.Model):
@@ -67,28 +102,25 @@ class PaymentMethod(models.TextChoices):
 
 
 class Payment(models.Model):
-    # link to invoice (kept from your model)
+    # link to invoice
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="payments")
 
     # for UI like PAY-201 (unique)
     payment_id = models.CharField(max_length=50, unique=True)
 
-    # amount and date (we keep your meaning)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField(default=timezone.now)
 
-    # method + status (needed for Pay Now)
     method = models.CharField(max_length=10, choices=PaymentMethod.choices, default=PaymentMethod.UPI)
     status = models.CharField(max_length=10, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
 
     # dummy “transaction id”
     txn_id = models.CharField(max_length=100, blank=True)
 
-    # dummy method-specific saved values (safe)
+    # dummy method-specific saved values
     card_last4 = models.CharField(max_length=4, blank=True, null=True)
-    upi_id     = models.CharField(max_length=120, blank=True, null=True)
-    bank_ref   = models.CharField(max_length=120, blank=True, null=True)
-
+    upi_id = models.CharField(max_length=120, blank=True, null=True)
+    bank_ref = models.CharField(max_length=120, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

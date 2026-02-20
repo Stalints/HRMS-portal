@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.urls import path
+from . import api_views
 
 app_name = "core"
 
@@ -26,4 +28,8 @@ urlpatterns = [
     path("projects/<int:pk>/delete/", views.project_delete, name="project_delete"),
 
     path("support/", views.support, name="support"),
+
+    path("api/profile/", api_views.profile_get, name="api_profile_get"),
+    path("api/profile/update/", api_views.profile_update, name="api_profile_update"),
+    path("api/profile/remove-photo/", api_views.profile_remove_photo, name="api_profile_remove_photo"),
 ]

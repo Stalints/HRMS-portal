@@ -115,7 +115,7 @@
 
               <!-- Checkbox to toggle status -->
               <div class="form-check me-3 mt-1">
-                <form method="post" action="{% url 'hr:toggle_task_status' task.pk %}">
+               <form method="post" action="{% url 'hr:toggle_task' task.pk %}">
                   {% csrf_token %}
                   {% if task.is_completed %}
                   <input class="form-check-input" type="checkbox" id="task{{ task.pk }}" checked

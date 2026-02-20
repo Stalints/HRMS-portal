@@ -47,9 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'accounts',
+    "rest_framework",
     'core',          # Client module
     'employee',      # Employee module ✅ Added
     'hr',            # Hr Module
+              
 ]
 
 MIDDLEWARE = [
@@ -129,3 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login/'                    # login page
 LOGIN_REDIRECT_URL = '/client/dashboard/'        # default redirect after login
 LOGOUT_REDIRECT_URL = '/accounts/login/'         # redirect after logout
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

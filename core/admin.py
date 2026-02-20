@@ -1,10 +1,12 @@
 from django.contrib import admin
 from .models import ClientProfile, Project, Invoice, Payment, Message, SupportTicket
 
+
 @admin.register(ClientProfile)
 class ClientProfileAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "company_name")
-
+    list_display = ("id", "user", "company", "phone", "is_active")
+    search_fields = ("user__username", "user__email", "company", "phone")
+    list_filter = ("is_active",)
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "client", "status")
