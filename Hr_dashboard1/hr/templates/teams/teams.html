@@ -1,0 +1,82 @@
+{% extends "hr/dashboard.html" %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h4 mb-1"><i class="fa-solid fa-people-group me-2"></i>Team Management</h1>
+    <p class="text-muted small mb-0">Add your team members and set different roles</p>
+  </div>
+  <a href="{% url 'hr:team_add' %}" class="btn btn-primary btn-sm">
+    <i class="fa-solid fa-plus me-1"></i>+ Add Team
+  </a>
+</div>
+
+{% if messages %}
+<div class="mb-3">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show small" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="h6 mb-0">Teams</h2>
+    <span class="badge bg-secondary-subtle text-secondary">{{ teams|length }} team{{ teams|length|pluralize }}</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Team Name</th>
+            <th>Team Lead</th>
+            <th>Members Count</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="small">
+          {% for team in teams %}
+          <tr>
+            <td><strong>{{ team.name }}</strong></td>
+            <td>
+              {% if team.team_lead %}
+              {{ team.team_lead.get_full_name|default:team.team_lead.username }}
+              {% else %}
+              <span class="text-muted">Not assigned</span>
+              {% endif %}
+            </td>
+            <td>{{ team.members.count }}</td>
+            <td>
+              {% if team.status == "Active" %}
+              <span class="badge bg-success-subtle text-success">Active</span>
+              {% else %}
+              <span class="badge bg-danger-subtle text-danger">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Team actions">
+                <a href="{% url 'hr:team_detail' team.pk %}" class="btn btn-outline-primary">View</a>
+                <a href="{% url 'hr:team_edit' team.pk %}" class="btn btn-outline-secondary">Edit</a>
+                <form method="post" action="{% url 'hr:team_delete' team.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger"
+                    onclick="return confirm('Delete this team?');">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">No teams created yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -13,7 +14,7 @@
       crossorigin="anonymous"
     />
     <!-- Shared dashboard styles -->
-    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 
     <style>
       /* Page-only helpers (no backend; purely visual calendar grid) */
@@ -70,32 +71,52 @@
         <div class="mb-2 sidebar-heading">Main</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="index.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
               <span class="me-2">🏠</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="team.html">
-              <span class="me-2">👥</span> Team Management
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+              <span class="me-2">👥</span> Employee Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="attendance.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+              <span class="me-2">&#129309;</span> Team Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="leave.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
               <span class="me-2">📝</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="announcements.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
               <span class="me-2">📢</span> Announcements
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active d-flex align-items-center" href="#">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active d-flex align-items-center" href="{% url 'hr:events' %}">
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
@@ -104,32 +125,32 @@
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notes.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
               <span class="me-2">🗒️</span> Notes
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="timeline.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
               <span class="me-2">📊</span> Timeline
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="help.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
               <span class="me-2">📚</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="todo.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
               <span class="me-2">✅</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notifications.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
               <span class="me-2">🔔</span> Notifications
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="settings.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
               <span class="me-2">⚙️</span> Settings / Security
             </a>
           </li>
@@ -153,7 +174,7 @@
               <span class="navbar-toggler-icon"></span>
             </button>
 
-            <a class="navbar-brand d-lg-none" href="index.html">
+            <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
               <span>HR Portal</span>
             </a>
 
@@ -193,7 +214,7 @@
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
-                    <li><a class="dropdown-item" href="settings.html">Settings &amp; Security</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
                   </ul>
@@ -212,6 +233,13 @@
             </div>
             <span class="badge text-bg-light d-none d-md-inline"></span>
           </div>
+          {% if messages %}
+            <div class="mb-3">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} small mb-2" role="alert">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
 
           <div class="row g-3 mb-4">
             <div class="col-12 col-lg-8">
@@ -232,51 +260,40 @@
                 </div>
                 <div class="collapse" id="eventForm">
                   <div class="card-body">
-                    <form class="small">
+                    <form method="post" action="{% url 'hr:events' %}" class="small">
+                      {% csrf_token %}
                       <div class="mb-3">
-                        <label for="eventTitle" class="form-label">Event Title</label>
-                        <input
-                          type="text"
-                          id="eventTitle"
-                          class="form-control form-control-sm"
-                          placeholder="Enter event title"
-                        />
+                        <label class="form-label">Event Title</label>
+                        {{ form.title }}
                       </div>
                       <div class="mb-3">
-                        <label for="eventDesc" class="form-label">Event Description</label>
-                        <textarea
-                          id="eventDesc"
-                          class="form-control form-control-sm"
-                          rows="4"
-                          placeholder="Enter event description"
-                        ></textarea>
+                        <label class="form-label">Event Description</label>
+                        {{ form.description }}
                       </div>
                       <div class="row g-2">
                         <div class="col-md-6">
-                          <label for="eventDate" class="form-label">Event Date</label>
-                          <input type="date" id="eventDate" class="form-control form-control-sm" />
+                          <label class="form-label">Event Date</label>
+                          {{ form.event_date }}
                         </div>
                         <div class="col-md-3">
-                          <label for="startTime" class="form-label">Start Time</label>
-                          <input type="time" id="startTime" class="form-control form-control-sm" />
+                          <label class="form-label">Start Time</label>
+                          {{ form.start_time }}
                         </div>
                         <div class="col-md-3">
-                          <label for="endTime" class="form-label">End Time</label>
-                          <input type="time" id="endTime" class="form-control form-control-sm" />
+                          <label class="form-label">End Time</label>
+                          {{ form.end_time }}
                         </div>
                       </div>
                       <div class="mt-3 mb-3">
-                        <label for="shareWith" class="form-label">Share With</label>
-                        <select id="shareWith" class="form-select form-select-sm">
-                          <option selected>Team Members</option>
-                          <option>HR Only</option>
-                        </select>
-                        <div class="form-text">
-                          UI only: No external invites, video links, or meeting minutes are included.
-                        </div>
+                        <label class="form-label">Share With</label>
+                        {{ form.share_with }}
+                      </div>
+                      <div class="mt-3 mb-3">
+                        <label class="form-label">Event Type</label>
+                        {{ form.event_type }}
                       </div>
                       <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-primary btn-sm">Save</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
                         <button
                           type="button"
                           class="btn btn-outline-secondary btn-sm"
@@ -285,11 +302,6 @@
                         >
                           Cancel
                         </button>
-                      </div>
-                      <div class="form-text mt-2">
-                        <small class="text-muted"
-                          >Note: This is a frontend-only form. No data will be saved.</small
-                        >
                       </div>
                     </form>
                   </div>
@@ -300,11 +312,10 @@
               <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h2 class="h6 mb-0">Calendar View</h2>
-                  <span class="badge bg-secondary-subtle text-secondary">Static monthly view</span>
                 </div>
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div class="fw-semibold">January 2026</div>
+                    <div class="fw-semibold">{{ current_month_label }}</div>
                     <div class="btn-group btn-group-sm" role="group" aria-label="Calendar controls">
                       <button type="button" class="btn btn-outline-secondary">Prev</button>
                       <button type="button" class="btn btn-outline-secondary">Today</button>
@@ -323,91 +334,26 @@
                   </div>
 
                   <div class="calendar-grid" aria-label="Monthly calendar grid">
-                    <div class="calendar-day is-muted"><div class="day-num">28</div></div>
-                    <div class="calendar-day is-muted"><div class="day-num">29</div></div>
-                    <div class="calendar-day is-muted"><div class="day-num">30</div></div>
-                    <div class="calendar-day is-muted"><div class="day-num">31</div></div>
-                    <div class="calendar-day"><div class="day-num">1</div></div>
-                    <div class="calendar-day"><div class="day-num">2</div></div>
-                    <div class="calendar-day"><div class="day-num">3</div></div>
-
-                    <div class="calendar-day"><div class="day-num">4</div></div>
-                    <div class="calendar-day"><div class="day-num">5</div></div>
-                    <div class="calendar-day"><div class="day-num">6</div></div>
-                    <div class="calendar-day"><div class="day-num">7</div></div>
-                    <div class="calendar-day"><div class="day-num">8</div></div>
-                    <div class="calendar-day has-event">
-                      <div class="d-flex justify-content-between">
-                        <div class="day-num">9</div>
-                        <span class="event-dot bg-primary" title="Event"></span>
+                    {% for day in days %}
+                      <div class="calendar-day {% if day.is_muted %}is-muted{% endif %} {% if day.events %}has-event{% endif %}">
+                        <div class="d-flex justify-content-between">
+                          <div class="day-num">{{ day.day }}</div>
+                          {% if day.events %}
+                            <span class="event-dot {{ day.first_event_dot_class }}" title="Event"></span>
+                          {% endif %}
+                        </div>
+                        {% if day.events %}
+                          <div class="mt-2">
+                            {% for e in day.events|slice:":2" %}
+                              <span class="{{ e.badge_class }}">{{ e.title }}</span>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
                       </div>
-                      <div class="mt-2">
-                        <span class="badge bg-primary-subtle text-primary">Town Hall</span>
-                      </div>
-                    </div>
-                    <div class="calendar-day"><div class="day-num">10</div></div>
-
-                    <div class="calendar-day"><div class="day-num">11</div></div>
-                    <div class="calendar-day"><div class="day-num">12</div></div>
-                    <div class="calendar-day has-event">
-                      <div class="d-flex justify-content-between">
-                        <div class="day-num">13</div>
-                        <span class="event-dot bg-success" title="Event"></span>
-                      </div>
-                      <div class="mt-2">
-                        <span class="badge bg-success-subtle text-success">Orientation</span>
-                      </div>
-                    </div>
-                    <div class="calendar-day"><div class="day-num">14</div></div>
-                    <div class="calendar-day"><div class="day-num">15</div></div>
-                    <div class="calendar-day"><div class="day-num">16</div></div>
-                    <div class="calendar-day"><div class="day-num">17</div></div>
-
-                    <div class="calendar-day"><div class="day-num">18</div></div>
-                    <div class="calendar-day"><div class="day-num">19</div></div>
-                    <div class="calendar-day"><div class="day-num">20</div></div>
-                    <div class="calendar-day"><div class="day-num">21</div></div>
-                    <div class="calendar-day"><div class="day-num">22</div></div>
-                    <div class="calendar-day"><div class="day-num">23</div></div>
-                    <div class="calendar-day"><div class="day-num">24</div></div>
-
-                    <div class="calendar-day"><div class="day-num">25</div></div>
-                    <div class="calendar-day has-event">
-                      <div class="d-flex justify-content-between">
-                        <div class="day-num">26</div>
-                        <span class="event-dot bg-primary" title="Event"></span>
-                      </div>
-                      <div class="mt-2">
-                        <span class="badge bg-primary-subtle text-primary">Town Hall</span>
-                      </div>
-                    </div>
-                    <div class="calendar-day"><div class="day-num">27</div></div>
-                    <div class="calendar-day"><div class="day-num">28</div></div>
-                    <div class="calendar-day has-event">
-                      <div class="d-flex justify-content-between">
-                        <div class="day-num">29</div>
-                        <span class="event-dot bg-success" title="Event"></span>
-                      </div>
-                      <div class="mt-2">
-                        <span class="badge bg-success-subtle text-success">Orientation</span>
-                      </div>
-                    </div>
-                    <div class="calendar-day"><div class="day-num">30</div></div>
-                    <div class="calendar-day has-event">
-                      <div class="d-flex justify-content-between">
-                        <div class="day-num">31</div>
-                        <span class="event-dot bg-warning" title="Event"></span>
-                      </div>
-                      <div class="mt-2">
-                        <span class="badge bg-warning-subtle text-warning">Deadline</span>
-                      </div>
-                    </div>
+                    {% endfor %}
                   </div>
 
-                  <div class="mt-3 small text-muted">
-                    Highlighted dates indicate scheduled events (static UI). This page does not
-                    include client events, project timelines, meeting minutes, or conference links.
-                  </div>
+                  <div class="mt-3 small text-muted"></div>
                 </div>
               </div>
 
@@ -415,7 +361,6 @@
               <div class="card border-0 shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h2 class="h6 mb-0">Upcoming Events</h2>
-                  <span class="badge bg-secondary-subtle text-secondary">Static sample data</span>
                 </div>
                 <div class="card-body p-0">
                   <div class="table-responsive">
@@ -430,45 +375,31 @@
                         </tr>
                       </thead>
                       <tbody class="small">
+                        {% for event in events %}
                         <tr>
-                          <td><strong>Quarterly Town Hall</strong></td>
-                          <td>26 Jan 2026</td>
-                          <td>4:00 PM – 5:00 PM</td>
-                          <td><span class="badge bg-primary-subtle text-primary">Team</span></td>
+                          <td><strong>{{ event.title }}</strong></td>
+                          <td>{{ event.event_date|date:"d M Y" }}</td>
+                          <td>
+                            {{ event.start_time }}
+                            {% if event.end_time %}– {{ event.end_time }}{% endif %}
+                          </td>
+                          <td><span class="badge bg-primary-subtle text-primary">{{ event.share_with }}</span></td>
                           <td class="text-end">
-                            <div class="btn-group btn-group-sm" role="group">
-                              <button type="button" class="btn btn-outline-secondary">View</button>
-                              <button type="button" class="btn btn-outline-secondary">Edit</button>
-                              <button type="button" class="btn btn-outline-danger">Delete</button>
+                            <div class="d-inline-flex gap-1">
+                              <a href="{% url 'hr:event_detail' event.pk %}" class="btn btn-outline-secondary btn-sm">View</a>
+                              <a href="{% url 'hr:event_edit' event.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                              <form method="post" action="{% url 'hr:delete_event' event.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                              </form>
                             </div>
                           </td>
                         </tr>
+                        {% empty %}
                         <tr>
-                          <td><strong>New Hire Orientation</strong></td>
-                          <td>29 Jan 2026</td>
-                          <td>10:00 AM – 11:30 AM</td>
-                          <td><span class="badge bg-primary-subtle text-primary">Team</span></td>
-                          <td class="text-end">
-                            <div class="btn-group btn-group-sm" role="group">
-                              <button type="button" class="btn btn-outline-secondary">View</button>
-                              <button type="button" class="btn btn-outline-secondary">Edit</button>
-                              <button type="button" class="btn btn-outline-danger">Delete</button>
-                            </div>
-                          </td>
+                          <td colspan="5" class="text-center text-muted">No upcoming events</td>
                         </tr>
-                        <tr>
-                          <td><strong>Performance Review Deadline</strong></td>
-                          <td>31 Jan 2026</td>
-                          <td>All day</td>
-                          <td><span class="badge bg-primary-subtle text-primary">Team</span></td>
-                          <td class="text-end">
-                            <div class="btn-group btn-group-sm" role="group">
-                              <button type="button" class="btn btn-outline-secondary">View</button>
-                              <button type="button" class="btn btn-outline-secondary">Edit</button>
-                              <button type="button" class="btn btn-outline-danger">Delete</button>
-                            </div>
-                          </td>
-                        </tr>
+                        {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -483,20 +414,25 @@
                   <h2 class="h6 mb-0">Event Details (Preview)</h2>
                 </div>
                 <div class="card-body small">
+                  {% with ev=events|first %}
+                  {% if ev %}
                   <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                      <div class="fw-semibold">Quarterly Town Hall</div>
-                      <div class="text-muted">26 Jan 2026 · 4:00 PM – 5:00 PM</div>
+                      <div class="fw-semibold">{{ ev.title }}</div>
+                      <div class="text-muted">
+                        {{ ev.event_date|date:"d M Y" }} · {{ ev.start_time }}{% if ev.end_time %} – {{ ev.end_time }}{% endif %}
+                      </div>
                     </div>
-                    <span class="badge bg-primary-subtle text-primary">Team</span>
+                    <span class="badge bg-primary-subtle text-primary">{{ ev.share_with }}</span>
                   </div>
-                  <p class="mb-2">
-                    Company-wide HR &amp; leadership update session. This preview is UI-only and does
-                    not create meeting minutes or conference links.
-                  </p>
+                  <p class="mb-2">{{ ev.description }}</p>
                   <div class="text-muted">
-                    <strong>Shared members:</strong> Team Members (visibility controlled by role).
+                    <strong>Shared members:</strong> {{ ev.share_with }}
                   </div>
+                  {% else %}
+                  <div class="text-muted">No event selected</div>
+                  {% endif %}
+                  {% endwith %}
                 </div>
               </div>
 
@@ -506,10 +442,13 @@
                   <h2 class="h6 mb-0">Google Calendar Sync</h2>
                 </div>
                 <div class="card-body small">
-                  <p class="mb-0">
-                    UI text only: Events can be synced with Google Calendar for convenience. No API
-                    integration is implemented in this frontend-only version.
-                  </p>
+                  {% with ev=events|first %}
+                    {% if ev %}
+                      <a href="{% url 'hr:event_ics' ev.pk %}" class="btn btn-outline-success btn-sm">Export .ics</a>
+                    {% else %}
+                      <div class="text-muted">No event available</div>
+                    {% endif %}
+                  {% endwith %}
                 </div>
               </div>
 
@@ -519,10 +458,28 @@
                   <h2 class="h6 mb-0">Event Reminders</h2>
                 </div>
                 <div class="card-body small">
-                  <p class="mb-0">
-                    UI text only: Event reminder notifications are enabled for upcoming events. No
-                    push/email configuration is included.
-                  </p>
+                  <ul class="list-group list-group-flush small">
+                    {% for ev in events|slice:":5" %}
+                      <li class="list-group-item px-0 d-flex justify-content-between">
+                        <div>
+                          <div class="fw-semibold">{{ ev.title }}</div>
+                          <div class="text-muted">
+                            Reminder Date: {{ ev.reminder_date|default_if_none:"N/A" }}
+                          </div>
+                        </div>
+                        {% if ev.reminder_sent %}
+                          <span class="badge bg-success-subtle text-success">Sent</span>
+                        {% else %}
+                          <span class="badge bg-warning-subtle text-warning">Pending</span>
+                        {% endif %}
+                      </li>
+                    {% empty %}
+                      <li class="list-group-item px-0">
+                        <div class="text-muted">No events</div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  <a href="{% url 'hr:send_event_reminders' %}" class="btn btn-outline-secondary btn-sm mt-2">Send Reminders</a>
                 </div>
               </div>
 
@@ -532,10 +489,18 @@
                   <h2 class="h6 mb-0">Dashboard Visibility</h2>
                 </div>
                 <div class="card-body small">
-                  <p class="mb-0">
-                    Upcoming events are visible on the HR dashboard and employee dashboards (based
-                    on sharing settings) as a quick preview.
-                  </p>
+                  {% with ev=events|first %}
+                    {% if ev %}
+                      <div class="mb-1"><strong>Shared With:</strong> {{ ev.share_with }}</div>
+                      {% if ev.share_with|lower == "all" %}
+                        <div class="text-muted">Visible to HR and Employees</div>
+                      {% else %}
+                        <div class="text-muted">Visible to {{ ev.share_with }}</div>
+                      {% endif %}
+                    {% else %}
+                      <div class="text-muted">No event available</div>
+                    {% endif %}
+                  {% endwith %}
                 </div>
               </div>
 
@@ -545,14 +510,14 @@
                   <h2 class="h6 mb-0">Security &amp; Access</h2>
                 </div>
                 <div class="card-body small">
-                  <p class="mb-2">
-                    <strong>Secure access:</strong> Only authorized users can create and manage
-                    events.
-                  </p>
-                  <p class="mb-0 text-muted">
-                    Role-based visibility controls who can view shared events. This is UI text only;
-                    authentication/authorization is enforced elsewhere in the portal.
-                  </p>
+                  <div class="mb-1"><strong>Your Role:</strong> {% if user.is_authenticated %}{{ user.role }}{% else %}Guest{% endif %}</div>
+                  <div class="text-muted">
+                    {% if user.is_authenticated and user.role == 'HR' %}
+                      You can create, edit, and delete events.
+                    {% else %}
+                      You can view events only.
+                    {% endif %}
+                  </div>
                 </div>
               </div>
 
@@ -597,5 +562,9 @@
     </script>
   </body>
 </html>
+
+
+
+
 
 

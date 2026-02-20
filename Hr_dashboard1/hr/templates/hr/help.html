@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -13,7 +14,7 @@
       crossorigin="anonymous"
     />
     <!-- Shared dashboard styles -->
-    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
   </head>
   <body>
     <div class="d-flex">
@@ -37,32 +38,52 @@
         <div class="mb-2 sidebar-heading">Main</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="index.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
               <span class="me-2">🏠</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="team.html">
-              <span class="me-2">👥</span> Team Management
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+              <span class="me-2">👥</span> Employee Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="attendance.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+              <span class="me-2">&#129309;</span> Team Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="leave.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
               <span class="me-2">📝</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="announcements.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
               <span class="me-2">📢</span> Announcements
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="events.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
@@ -71,32 +92,32 @@
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notes.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
               <span class="me-2">🗒️</span> Notes
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="timeline.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
               <span class="me-2">📊</span> Timeline
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active d-flex align-items-center" href="help.html">
+            <a class="nav-link active d-flex align-items-center" href="{% url 'hr:help' %}">
               <span class="me-2">📚</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="todo.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
               <span class="me-2">✅</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notifications.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
               <span class="me-2">🔔</span> Notifications
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="settings.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
               <span class="me-2">⚙️</span> Settings / Security
             </a>
           </li>
@@ -120,7 +141,7 @@
               <span class="navbar-toggler-icon"></span>
             </button>
 
-            <a class="navbar-brand d-lg-none" href="index.html">
+            <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
               <span>HR Portal</span>
             </a>
 
@@ -160,7 +181,7 @@
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
-                    <li><a class="dropdown-item" href="settings.html">Settings &amp; Security</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
                   </ul>
@@ -176,11 +197,19 @@
             <div>
               <h1 class="h4 mb-1">Help Articles</h1>
               <p class="text-muted small mb-0">
-                Internal knowledge base for team members
+                Internal knowledge base for Employees
               </p>
             </div>
             <span class="badge text-bg-light d-none d-md-inline"></span>
           </div>
+          
+          {% if messages %}
+            <div class="mb-3">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} small mb-2" role="alert">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
 
           <div class="row g-3">
             <!-- Main Content Area -->
@@ -200,55 +229,26 @@
                     + Add Article
                   </button>
                 </div>
-                <div class="collapse" id="articleForm">
+                <div class="collapse {% if editing %}show{% endif %}" id="articleForm">
                   <div class="card-body">
-                    <form>
+                    <form method="post" action="{% if editing %}{% url 'hr:help_edit' edit_article_id %}{% else %}{% url 'hr:help_create' %}{% endif %}">
+                      {% csrf_token %}
                       <div class="mb-3">
-                        <label for="articleTitle" class="form-label">Article Title <span class="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="articleTitle"
-                          placeholder="Enter article title"
-                          required
-                        />
+                        <label for="id_title" class="form-label">Article Title <span class="text-danger">*</span></label>
+                        {{ form.title }}
                       </div>
                       <div class="mb-3">
-                        <label for="articleCategory" class="form-label">Category <span class="text-danger">*</span></label>
-                        <select class="form-select" id="articleCategory" required>
-                          <option value="">Select a category</option>
-                          <option value="hr-policy">HR Policy</option>
-                          <option value="rules">Rules</option>
-                          <option value="guidelines">Guidelines</option>
-                          <option value="procedures">Procedures</option>
-                          <option value="faq">FAQ</option>
-                          <option value="onboarding">Onboarding</option>
-                          <option value="benefits">Benefits</option>
-                          <option value="other">Other</option>
-                        </select>
+                        <label for="id_category" class="form-label">Category <span class="text-danger">*</span></label>
+                        {{ form.category }}
                       </div>
                       <div class="mb-3">
-                        <label for="articleContent" class="form-label">Article Content <span class="text-danger">*</span></label>
-                        <textarea
-                          class="form-control"
-                          id="articleContent"
-                          rows="8"
-                          placeholder="Write the article content here..."
-                          required
-                        ></textarea>
-                        <div class="form-text">Provide detailed information, steps, or guidelines for team members</div>
+                        <label for="id_content" class="form-label">Article Content <span class="text-danger">*</span></label>
+                        {{ form.content }}
+                        <div class="form-text">Provide detailed information, steps, or guidelines for Employees</div>
                       </div>
                       <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">Publish</button>
-                        <button
-                          type="button"
-                          class="btn btn-outline-secondary"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#articleForm"
-                          aria-expanded="false"
-                        >
-                          Cancel
-                        </button>
+                        <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Publish{% endif %}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#articleForm">Cancel</button>
                       </div>
                     </form>
                   </div>
@@ -258,167 +258,58 @@
               <!-- Help Articles List -->
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="h6 mb-0">All Help Articles</h2>
-                <span class="badge bg-primary-subtle text-primary">15 articles</span>
+                <span class="badge bg-primary-subtle text-primary">{{ articles_count }} articles</span>
               </div>
 
-              <!-- Article Card 1 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">Leave Policy Guidelines</h3>
-                      <span class="badge bg-primary-subtle text-primary me-2">HR Policy</span>
-                      <span class="badge bg-info-subtle text-info">Guidelines</span>
+              {% if selected_article %}
+                <div class="card border-0 shadow-sm mb-3">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div class="flex-grow-1">
+                        <h3 class="h6 mb-1">{{ selected_article.title }}</h3>
+                        <span class="badge bg-primary-subtle text-primary me-2">{{ selected_article.category.name }}</span>
+                      </div>
+                      <small class="text-muted">Created: {{ selected_article.created_at|date:"d M Y" }}</small>
                     </div>
-                    <small class="text-muted">Created: 20 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Comprehensive guide on leave types, eligibility, application process, and approval workflow. 
-                    Includes information about annual leave, sick leave, personal leave, and special leave categories.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    <p class="text-muted small mb-3">{{ selected_article.content }}</p>
+                    <div class="d-flex gap-2">
+                      <a class="btn btn-sm btn-outline-primary" href="{% url 'hr:help_detail' selected_article.pk %}">View</a>
+                      <a class="btn btn-sm btn-outline-secondary" href="{% url 'hr:help_edit' selected_article.pk %}">Edit</a>
+                      <form method="post" action="{% url 'hr:help_delete' selected_article.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                      </form>
+                    </div>
                   </div>
                 </div>
-              </div>
+              {% else %}
+                {% for article in articles %}
+                <div class="card border-0 shadow-sm mb-3">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div class="flex-grow-1">
+                        <h3 class="h6 mb-1">{{ article.title }}</h3>
+                        <span class="badge bg-primary-subtle text-primary me-2">{{ article.category.name }}</span>
+                      </div>
+                      <small class="text-muted">Created: {{ article.created_at|date:"d M Y" }}</small>
+                    </div>
+                    <p class="text-muted small mb-3">{{ article.content|truncatechars:150 }}</p>
+                    <div class="d-flex gap-2">
+                      <a class="btn btn-sm btn-outline-primary" href="{% url 'hr:help_detail' article.pk %}">View</a>
+                      <a class="btn btn-sm btn-outline-secondary" href="{% url 'hr:help_edit' article.pk %}">Edit</a>
+                      <form method="post" action="{% url 'hr:help_delete' article.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                {% empty %}
+                <div class="alert alert-warning">No help articles available</div>
+                {% endfor %}
+              {% endif %}
 
-              <!-- Article Card 2 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">Attendance Tracking Rules</h3>
-                      <span class="badge bg-warning-subtle text-warning me-2">Rules</span>
-                    </div>
-                    <small class="text-muted">Created: 18 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Detailed rules and procedures for attendance tracking, check-in/check-out requirements, 
-                    late arrival policies, and how to handle attendance exceptions or discrepancies.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Article Card 3 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">New Employee Onboarding Process</h3>
-                      <span class="badge bg-success-subtle text-success me-2">Onboarding</span>
-                      <span class="badge bg-info-subtle text-info">Procedures</span>
-                    </div>
-                    <small class="text-muted">Created: 15 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Step-by-step guide for new employee onboarding including documentation requirements, 
-                    system access setup, initial training schedule, and first-week orientation activities.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Article Card 4 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">Employee Benefits Overview</h3>
-                      <span class="badge bg-info-subtle text-info me-2">Benefits</span>
-                      <span class="badge bg-primary-subtle text-primary">HR Policy</span>
-                    </div>
-                    <small class="text-muted">Created: 12 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Complete overview of employee benefits including health insurance, retirement plans, 
-                    wellness programs, and other perks available to team members.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Article Card 5 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">Performance Review Guidelines</h3>
-                      <span class="badge bg-primary-subtle text-primary me-2">HR Policy</span>
-                      <span class="badge bg-info-subtle text-info">Guidelines</span>
-                    </div>
-                    <small class="text-muted">Created: 10 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Guidelines for annual performance reviews including self-assessment process, 
-                    manager review procedures, goal setting, and feedback mechanisms.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Article Card 6 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">Remote Work Policy</h3>
-                      <span class="badge bg-primary-subtle text-primary me-2">HR Policy</span>
-                      <span class="badge bg-warning-subtle text-warning">Rules</span>
-                    </div>
-                    <small class="text-muted">Created: 8 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Policy guidelines for remote work arrangements including eligibility criteria, 
-                    work hours, communication expectations, and equipment requirements.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Article Card 7 -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="flex-grow-1">
-                      <h3 class="h6 mb-1">Frequently Asked Questions (FAQ)</h3>
-                      <span class="badge bg-secondary-subtle text-secondary me-2">FAQ</span>
-                    </div>
-                    <small class="text-muted">Created: 5 Jan 2026</small>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Common questions and answers about HR policies, procedures, benefits, and general 
-                    workplace information to help team members find quick answers.
-                  </p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary">View</button>
-                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger">Delete</button>
-                  </div>
-                </div>
-              </div>
+              
             </div>
 
             <!-- Sidebar Information -->
@@ -430,34 +321,12 @@
                 </div>
                 <div class="card-body">
                   <div class="d-flex flex-column gap-2">
-                    <button type="button" class="btn btn-outline-primary btn-sm text-start">
-                      <span class="badge bg-primary-subtle text-primary me-2">HR Policy</span>
-                      <span class="small">8 articles</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-warning btn-sm text-start">
-                      <span class="badge bg-warning-subtle text-warning me-2">Rules</span>
-                      <span class="small">4 articles</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-info btn-sm text-start">
-                      <span class="badge bg-info-subtle text-info me-2">Guidelines</span>
-                      <span class="small">5 articles</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-success btn-sm text-start">
-                      <span class="badge bg-success-subtle text-success me-2">Onboarding</span>
-                      <span class="small">3 articles</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-info btn-sm text-start">
-                      <span class="badge bg-info-subtle text-info me-2">Benefits</span>
-                      <span class="small">2 articles</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm text-start">
-                      <span class="badge bg-secondary-subtle text-secondary me-2">FAQ</span>
-                      <span class="small">1 article</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary btn-sm text-start">
-                      <span class="badge bg-primary-subtle text-primary me-2">Procedures</span>
-                      <span class="small">3 articles</span>
-                    </button>
+                    {% for category in categories %}
+                    <a class="btn btn-outline-primary btn-sm text-start" href="{% url 'hr:category_filter' category.slug %}">
+                      <span class="badge bg-primary-subtle text-primary me-2">{{ category.name }}</span>
+                      <span class="small">{{ category.articles.count }} articles</span>
+                    </a>
+                    {% endfor %}
                   </div>
                 </div>
               </div>
@@ -471,9 +340,9 @@
                   <div class="d-flex align-items-start mb-3">
                     <span class="me-2">👥</span>
                     <div>
-                      <h3 class="fs-6 mb-1">Team Member Access</h3>
+                      <h3 class="fs-6 mb-1">Employee Access</h3>
                       <p class="small text-muted mb-0">
-                        Help articles are accessible only to authorized team members with valid portal access. 
+                        Help articles are accessible only to authorized Employees with valid portal access. 
                         All articles are part of the internal knowledge base.
                       </p>
                     </div>
@@ -485,7 +354,7 @@
                       <h3 class="fs-6 mb-1">Internal Use Only</h3>
                       <p class="small text-muted mb-0">
                         These articles contain internal company information, policies, and procedures. 
-                        They are not publicly accessible and are restricted to team members only.
+                        They are not publicly accessible and are restricted to Employees only.
                       </p>
                     </div>
                   </div>
@@ -499,7 +368,7 @@
                 </div>
                 <div class="card-body">
                   <div class="alert alert-info py-2 mb-0 small">
-                    <strong>Internal Access Only:</strong> All help articles are restricted to internal team members 
+                    <strong>Internal Access Only:</strong> All help articles are restricted to internal Employees 
                     with appropriate role-based access. Content is protected by secure authentication and is not publicly accessible.
                   </div>
                 </div>
@@ -528,3 +397,7 @@
     </script>
   </body>
 </html>
+
+
+
+

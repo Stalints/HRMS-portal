@@ -110,6 +110,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # --------------------
 # Default PK
@@ -123,15 +126,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --------------------
 
 AUTH_USER_MODEL = 'hr.User'
-
-
-# --------------------
-# Auth Redirects
-# --------------------
-
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/leave/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 # --------------------

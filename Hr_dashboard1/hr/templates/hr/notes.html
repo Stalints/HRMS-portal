@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HR Portal | Notes</title>
+    {% load static %}
 
     <!-- Bootstrap CSS -->
     <link
@@ -13,7 +14,7 @@
       crossorigin="anonymous"
     />
     <!-- Shared dashboard styles -->
-    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
   </head>
   <body>
     <div class="d-flex">
@@ -37,32 +38,52 @@
         <div class="mb-2 sidebar-heading">Main</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="index.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
               <span class="me-2">🏠</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="team.html">
-              <span class="me-2">👥</span> Team Management
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+              <span class="me-2">👥</span> Employee Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="attendance.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+              <span class="me-2">&#129309;</span> Team Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="leave.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
               <span class="me-2">📝</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="announcements.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
               <span class="me-2">📢</span> Announcements
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="events.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
@@ -71,32 +92,32 @@
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
-            <a class="nav-link active d-flex align-items-center" href="notes.html">
+            <a class="nav-link active d-flex align-items-center" href="{% url 'hr:notes' %}">
               <span class="me-2">🗒️</span> Notes
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="timeline.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
               <span class="me-2">📊</span> Timeline
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="help.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
               <span class="me-2">📚</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="todo.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
               <span class="me-2">✅</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notifications.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
               <span class="me-2">🔔</span> Notifications
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="settings.html">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
               <span class="me-2">⚙️</span> Settings / Security
             </a>
           </li>
@@ -120,7 +141,7 @@
               <span class="navbar-toggler-icon"></span>
             </button>
 
-            <a class="navbar-brand d-lg-none" href="index.html">
+            <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
               <span>HR Portal</span>
             </a>
 
@@ -160,7 +181,7 @@
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
-                    <li><a class="dropdown-item" href="settings.html">Settings &amp; Security</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
                   </ul>
@@ -182,6 +203,16 @@
             <span class="badge text-bg-light d-none d-md-inline"></span>
           </div>
 
+          {% if messages %}
+          <div class="mb-3">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags|default:'info' }} small mb-2" role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
           <!-- Create Note Section -->
           <div class="row g-3 mb-4">
             <div class="col-12 col-lg-8">
@@ -201,77 +232,31 @@
                 </div>
                 <div class="collapse" id="noteForm">
                   <div class="card-body">
-                    <form>
+                    <form method="post" action="{% url 'hr:note_add' %}" enctype="multipart/form-data" class="small">
+                      {% csrf_token %}
                       <div class="mb-3">
                         <label for="noteTitle" class="form-label">Note Title <span class="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="noteTitle"
-                          placeholder="Enter note title"
-                          required
-                        />
+                        {{ form.title }}
                       </div>
                       <div class="mb-3">
                         <label for="noteDescription" class="form-label">Note Description <span class="text-danger">*</span></label>
-                        <textarea
-                          class="form-control"
-                          id="noteDescription"
-                          rows="4"
-                          placeholder="Enter note description"
-                          required
-                        ></textarea>
+                        {{ form.description }}
                       </div>
                       <div class="mb-3">
                         <label for="noteTags" class="form-label">Tags (Optional)</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="noteTags"
-                          placeholder="Enter tags separated by commas (e.g., policy, reminder, meeting)"
-                        />
+                        {{ form.tags }}
                         <div class="form-text">Add tags to categorize your notes for easy filtering</div>
                       </div>
                       <div class="mb-3">
                         <label class="form-label">Visibility <span class="text-danger">*</span></label>
                         <div>
-                          <div class="form-check">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              name="noteVisibility"
-                              id="visibilityPrivate"
-                              value="private"
-                              checked
-                            />
-                            <label class="form-check-label" for="visibilityPrivate">
-                              Private
-                            </label>
-                            <div class="form-text ms-4">Visible only to HR</div>
-                          </div>
-                          <div class="form-check">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              name="noteVisibility"
-                              id="visibilityShared"
-                              value="shared"
-                            />
-                            <label class="form-check-label" for="visibilityShared">
-                              Shared
-                            </label>
-                            <div class="form-text ms-4">Accessible by authorized team members</div>
-                          </div>
+                          {{ form.visibility }}
+                          <div class="form-text">Private: only creator/HR. Shared: authorized team.</div>
                         </div>
                       </div>
                       <div class="mb-3">
                         <label for="noteAttachment" class="form-label">File Attachment (Optional)</label>
-                        <input
-                          type="file"
-                          class="form-control"
-                          id="noteAttachment"
-                          aria-describedby="attachmentHelp"
-                        />
+                        {{ form.attachment }}
                         <div id="attachmentHelp" class="form-text">
                           Attach files related to this note (PDF, DOC, images, etc.)
                         </div>
@@ -315,7 +300,7 @@
                       <span class="badge bg-primary-subtle text-primary me-2">👥</span> Shared Notes
                     </h3>
                     <p class="small text-muted mb-0">
-                      Shared notes can be accessed by authorized team members. Use shared notes for team-wide information, collaborative documentation, or general HR updates.
+                      Shared notes can be accessed by authorized Employees. Use shared notes for team-wide information, collaborative documentation, or general HR updates.
                     </p>
                   </div>
                   <hr class="my-3" />
@@ -334,37 +319,44 @@
                 <div class="card-body">
                   <div class="row g-3">
                     <div class="col-12 col-md-6">
-                      <label for="searchNotes" class="form-label small fw-semibold">Search Notes</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="searchNotes"
-                        placeholder="Search by title or description..."
-                      />
+                      <form method="get" class="d-flex flex-column">
+                        <label for="searchNotes" class="form-label small fw-semibold">Search Notes</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="searchNotes"
+                          name="q"
+                          value="{{ q }}"
+                          placeholder="Search by title or description..."
+                        />
+                        <button type="submit" class="btn btn-outline-secondary btn-sm mt-2 align-self-start">Search</button>
+                      </form>
                     </div>
                     <div class="col-12 col-md-6">
-                      <label for="filterTags" class="form-label small fw-semibold">Filter by Tags</label>
-                      <select class="form-select" id="filterTags">
-                        <option value="">All Tags</option>
-                        <option value="policy">Policy</option>
-                        <option value="reminder">Reminder</option>
-                        <option value="meeting">Meeting</option>
-                        <option value="onboarding">Onboarding</option>
-                        <option value="review">Review</option>
-                        <option value="urgent">Urgent</option>
-                      </select>
+                      <form method="get">
+                        <label for="filterTags" class="form-label small fw-semibold">Filter by Tags</label>
+                        <select class="form-select" id="filterTags" name="tag" onchange="this.form.submit()">
+                          <option value="">All Tags</option>
+                          <option value="policy" {% if tag == 'policy' %}selected{% endif %}>Policy</option>
+                          <option value="reminder" {% if tag == 'reminder' %}selected{% endif %}>Reminder</option>
+                          <option value="meeting" {% if tag == 'meeting' %}selected{% endif %}>Meeting</option>
+                          <option value="onboarding" {% if tag == 'onboarding' %}selected{% endif %}>Onboarding</option>
+                          <option value="review" {% if tag == 'review' %}selected{% endif %}>Review</option>
+                          <option value="urgent" {% if tag == 'urgent' %}selected{% endif %}>Urgent</option>
+                        </select>
+                      </form>
                     </div>
                   </div>
                   <div class="mt-3">
                     <label class="form-label small fw-semibold">Quick Tag Filters</label>
                     <div class="d-flex flex-wrap gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-primary">All</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Policy</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Reminder</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Meeting</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Onboarding</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Review</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Urgent</button>
+                      <form method="get"><input type="hidden" name="tag" value=""><button type="submit" class="btn btn-sm btn-outline-primary {% if not tag %}active{% endif %}">All</button></form>
+                      <form method="get"><input type="hidden" name="tag" value="policy"><button type="submit" class="btn btn-sm btn-outline-secondary {% if tag == 'policy' %}active{% endif %}">Policy</button></form>
+                      <form method="get"><input type="hidden" name="tag" value="reminder"><button type="submit" class="btn btn-sm btn-outline-secondary {% if tag == 'reminder' %}active{% endif %}">Reminder</button></form>
+                      <form method="get"><input type="hidden" name="tag" value="meeting"><button type="submit" class="btn btn-sm btn-outline-secondary {% if tag == 'meeting' %}active{% endif %}">Meeting</button></form>
+                      <form method="get"><input type="hidden" name="tag" value="onboarding"><button type="submit" class="btn btn-sm btn-outline-secondary {% if tag == 'onboarding' %}active{% endif %}">Onboarding</button></form>
+                      <form method="get"><input type="hidden" name="tag" value="review"><button type="submit" class="btn btn-sm btn-outline-secondary {% if tag == 'review' %}active{% endif %}">Review</button></form>
+                      <form method="get"><input type="hidden" name="tag" value="urgent"><button type="submit" class="btn btn-sm btn-outline-secondary {% if tag == 'urgent' %}active{% endif %}">Urgent</button></form>
                     </div>
                   </div>
                 </div>
@@ -377,171 +369,50 @@
             <div class="col-12">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="h6 mb-0">All Notes</h2>
-                <span class="badge bg-primary-subtle text-primary">12 notes</span>
+                <span class="badge bg-primary-subtle text-primary">{{ notes_count }} notes</span>
               </div>
             </div>
 
-            <!-- Note Card 1 -->
+            {% for item in notes_display %}
+            {% with note=item.note tags=item.tags %}
             <div class="col-12 col-md-6 col-lg-4">
               <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="h6 mb-0">Q1 Policy Updates</h3>
-                    <span class="badge bg-secondary-subtle text-secondary">🔒 Private</span>
+                    <h3 class="h6 mb-0">{{ note.title }}</h3>
+                    {% if note.visibility == 'PRIVATE' %}
+                      <span class="badge bg-secondary-subtle text-secondary">🔒 Private</span>
+                    {% else %}
+                      <span class="badge bg-primary-subtle text-primary">👥 Shared</span>
+                    {% endif %}
                   </div>
-                  <p class="text-muted small mb-2">
-                    Review and update Q1 HR policies including remote work guidelines and leave policies. Schedule meeting with leadership team.
-                  </p>
+                  <p class="text-muted small mb-2">{{ note.description }}</p>
                   <div class="mb-2">
-                    <span class="badge bg-info-subtle text-info me-1">Policy</span>
-                    <span class="badge bg-warning-subtle text-warning">Urgent</span>
+                    {% for t in tags %}
+                      <span class="badge bg-info-subtle text-info me-1">{{ t }}</span>
+                    {% endfor %}
                   </div>
                   <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted">Created: 18 Jan 2026</small>
+                    <small class="text-muted">Created: {{ note.created_at|date:"d M Y" }}</small>
                   </div>
                   <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">View</button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger flex-fill">Delete</button>
+                    <a href="{% url 'hr:note_detail' note.pk %}" class="btn btn-sm btn-outline-primary flex-fill">View</a>
+                    <a href="{% url 'hr:note_edit' note.pk %}" class="btn btn-sm btn-outline-secondary flex-fill">Edit</a>
+                    <form method="post" action="{% url 'hr:note_delete' note.pk %}" class="flex-fill">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger w-100">Delete</button>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Note Card 2 -->
-            <div class="col-12 col-md-6 col-lg-4">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="h6 mb-0">New Hire Orientation Checklist</h3>
-                    <span class="badge bg-primary-subtle text-primary">👥 Shared</span>
-                  </div>
-                  <p class="text-muted small mb-2">
-                    Checklist for new employee onboarding process. Includes documentation, system access, and initial training schedule.
-                  </p>
-                  <div class="mb-2">
-                    <span class="badge bg-success-subtle text-success me-1">Onboarding</span>
-                    <span class="badge bg-info-subtle text-info">Reminder</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted">Created: 15 Jan 2026</small>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">View</button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger flex-fill">Delete</button>
-                  </div>
-                </div>
-              </div>
+            {% endwith %}
+            {% empty %}
+            <div class="col-12">
+              <div class="text-muted">No notes found</div>
             </div>
-
-            <!-- Note Card 3 -->
-            <div class="col-12 col-md-6 col-lg-4">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="h6 mb-0">Performance Review Schedule</h3>
-                    <span class="badge bg-primary-subtle text-primary">👥 Shared</span>
+            {% endfor %}
                   </div>
-                  <p class="text-muted small mb-2">
-                    Timeline for annual performance reviews. Key dates: self-assessment deadline (31 Jan), manager reviews (15 Feb), finalization (28 Feb).
-                  </p>
-                  <div class="mb-2">
-                    <span class="badge bg-warning-subtle text-warning me-1">Review</span>
-                    <span class="badge bg-info-subtle text-info">Reminder</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted">Created: 12 Jan 2026</small>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">View</button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger flex-fill">Delete</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Note Card 4 -->
-            <div class="col-12 col-md-6 col-lg-4">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="h6 mb-0">Team Meeting Notes - Jan 10</h3>
-                    <span class="badge bg-secondary-subtle text-secondary">🔒 Private</span>
-                  </div>
-                  <p class="text-muted small mb-2">
-                    Discussion points from HR team meeting: budget allocation, hiring plans, employee engagement initiatives, and policy updates.
-                  </p>
-                  <div class="mb-2">
-                    <span class="badge bg-primary-subtle text-primary me-1">Meeting</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted">Created: 10 Jan 2026</small>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">View</button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger flex-fill">Delete</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Note Card 5 -->
-            <div class="col-12 col-md-6 col-lg-4">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="h6 mb-0">Leave Policy Reminder</h3>
-                    <span class="badge bg-primary-subtle text-primary">👥 Shared</span>
-                  </div>
-                  <p class="text-muted small mb-2">
-                    Reminder to communicate updated leave policy to all employees. Key changes: carry-forward rules and new leave types.
-                  </p>
-                  <div class="mb-2">
-                    <span class="badge bg-info-subtle text-info me-1">Policy</span>
-                    <span class="badge bg-info-subtle text-info">Reminder</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted">Created: 8 Jan 2026</small>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">View</button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger flex-fill">Delete</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Note Card 6 -->
-            <div class="col-12 col-md-6 col-lg-4">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="h6 mb-0">Employee Engagement Survey Results</h3>
-                    <span class="badge bg-secondary-subtle text-secondary">🔒 Private</span>
-                  </div>
-                  <p class="text-muted small mb-2">
-                    Analysis of Q4 employee engagement survey. Key findings: satisfaction scores, areas for improvement, action items for Q1.
-                  </p>
-                  <div class="mb-2">
-                    <span class="badge bg-warning-subtle text-warning me-1">Review</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted">Created: 5 Jan 2026</small>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">View</button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger flex-fill">Delete</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
 
         <footer class="border-top bg-white py-2 px-3 px-lg-4">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -563,3 +434,7 @@
     </script>
   </body>
 </html>
+
+
+
+

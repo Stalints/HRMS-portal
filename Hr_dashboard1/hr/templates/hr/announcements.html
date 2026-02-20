@@ -27,7 +27,12 @@
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}"><span class="me-2">🏠</span> Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}"><span class="me-2">👥</span> Team Management</a>
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}"><span class="me-2">👥</span> Employee Management</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+              <span class="me-2">&#129309;</span> Team Management
+            </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}"><span class="me-2">⏱️</span> Time Cards / Attendance</a>
@@ -48,18 +53,18 @@
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}"><span class="me-2">🏢</span> Clients</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="#"><span class="me-2">📅</span> Event Calendar</a>
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}"><span class="me-2">📅</span> Event Calendar</a>
           </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="#"><span class="me-2">🗒️</span> Notes</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="#"><span class="me-2">📊</span> Timeline</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="#"><span class="me-2">📚</span> Help Articles</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="#"><span class="me-2">✅</span> Personal To-Do List</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="#"><span class="me-2">🔔</span> Notifications</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="#"><span class="me-2">⚙️</span> Settings / Security</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}"><span class="me-2">🗒️</span> Notes</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}"><span class="me-2">📊</span> Timeline</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}"><span class="me-2">📚</span> Help Articles</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}"><span class="me-2">✅</span> Personal To-Do List</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}"><span class="me-2">🔔</span> Notifications</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}"><span class="me-2">⚙️</span> Settings / Security</a></li>
         </ul>
       </nav>
 
@@ -88,7 +93,7 @@
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
-                    <li><a class="dropdown-item" href="#">Settings &amp; Security</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
                   </ul>
@@ -102,7 +107,7 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h1 class="h4 mb-1">Announcements</h1>
-              <p class="text-muted small mb-0">Create and publish announcements for team members</p>
+              <p class="text-muted small mb-0">Create and publish announcements for Employees</p>
             </div>
             <span class="badge text-bg-light d-none d-md-inline"></span>
           </div>
@@ -136,7 +141,7 @@
                         <div class="col-md-6 mb-3">
                           <label class="form-label">Visibility</label>
                           <select class="form-select form-select-sm">
-                            <option value="team" selected>Team Members</option>
+                            <option value="team" selected>Employees</option>
                             <option value="all">All Employees</option>
                             <option value="hr">HR Only</option>
                           </select>
@@ -157,7 +162,7 @@
               <div class="card border-0 shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h2 class="h6 mb-0">Published Announcements</h2>
-                  <span class="badge bg-secondary-subtle text-secondary">Static sample data</span>
+                  <span class="badge bg-secondary-subtle text-secondary">{{ announcements|length }} announcements</span>
                 </div>
                 <div class="card-body p-0">
                   <div class="table-responsive">
@@ -216,7 +221,7 @@
                 </div>
                 <div class="card-body small">
                   <p class="mb-2"><strong>Employee Dashboards:</strong> Published announcements automatically appear on employee dashboards based on visibility settings.</p>
-                  <p class="mb-0 text-muted">Team members will see announcements relevant to their role and team when they log into the HR Portal.</p>
+                  <p class="mb-0 text-muted">Employees will see announcements relevant to their role and team when they log into the HR Portal.</p>
                 </div>
               </div>
 
@@ -247,3 +252,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   </body>
   </html>
+
+
+
+

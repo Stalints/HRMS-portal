@@ -1,4 +1,5 @@
 from django.conf import settings
+from datetime import timedelta
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -22,6 +23,36 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class TeamStatus(models.TextChoices):
+    ACTIVE = "Active", "Active"
+    INACTIVE = "Inactive", "Inactive"
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    team_lead = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="led_teams",
+    )
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="teams",
+    )
+    status = models.CharField(max_length=10, choices=TeamStatus.choices, default=TeamStatus.ACTIVE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
 
 
 # -------------------------
@@ -156,6 +187,49 @@ class Announcement(models.Model):
 
 
 # -------------------------
+# EVENTS
+# -------------------------
+
+class EventType(models.TextChoices):
+    MEETING = "MEETING", "Meeting"
+    HOLIDAY = "HOLIDAY", "Holiday"
+    BIRTHDAY = "BIRTHDAY", "Birthday"
+    OTHER = "OTHER", "Other"
+
+
+class Event(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    event_date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField(null=True, blank=True)
+    share_with = models.CharField(max_length=255)
+    event_type = models.CharField(max_length=20, choices=EventType.choices, default=EventType.MEETING)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="events",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    reminder_sent = models.BooleanField(default=False)
+    reminder_enabled = models.BooleanField(default=True)
+    reminder_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["event_date", "start_time"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.reminder_enabled and not self.reminder_date and self.event_date:
+            self.reminder_date = self.event_date - timedelta(days=1)
+        super().save(*args, **kwargs)
+
+
+# -------------------------
 # PROJECTS
 # -------------------------
 
@@ -234,3 +308,126 @@ class Client(models.Model):
 
     def __str__(self):
         return self.company_name
+
+
+# -------------------------
+# NOTES
+# -------------------------
+
+class NoteVisibility(models.TextChoices):
+    PRIVATE = "PRIVATE", "Private"
+    SHARED = "SHARED", "Shared"
+
+
+class Note(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    tags = models.CharField(max_length=255, blank=True)
+    visibility = models.CharField(max_length=10, choices=NoteVisibility.choices, default=NoteVisibility.PRIVATE)
+    attachment = models.FileField(upload_to="notes/", null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="notes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+
+# -------------------------
+# TIMELINE
+# -------------------------
+
+class TimelinePostType(models.TextChoices):
+    UPDATE = "UPDATE", "Update"
+    IDEA = "IDEA", "Idea"
+    DOCUMENT = "DOCUMENT", "Document"
+    INFORMATION = "INFORMATION", "Information"
+
+
+class TimelinePost(models.Model):
+    title = models.CharField(max_length=255, blank=True)
+    message = models.TextField()
+    file_attachment = models.FileField(upload_to="timeline/", null=True, blank=True)
+    link_attachment = models.URLField(blank=True)
+    post_type = models.CharField(max_length=20, choices=TimelinePostType.choices, default=TimelinePostType.UPDATE)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="timeline_posts")
+    created_at = models.DateTimeField(auto_now_add=True)
+    view_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title or self.message[:50]
+
+
+class TimelineLike(models.Model):
+    post = models.ForeignKey(TimelinePost, on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="timeline_likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [("post", "user")]
+
+
+class TimelineComment(models.Model):
+    post = models.ForeignKey(TimelinePost, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="timeline_comments")
+    comment_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+# -------------------------
+# HELP ARTICLES
+# -------------------------
+from django.utils.text import slugify
+
+class HelpCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+class HelpArticle(models.Model):
+    title = models.CharField(max_length=255)
+    category = models.ForeignKey(HelpCategory, on_delete=models.CASCADE, related_name="articles")
+    content = models.TextField()
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="help_articles")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+# -------------------------
+# PERSONAL TO-DO
+# -------------------------
+class PersonalTask(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="personal_tasks")
+    description = models.CharField(max_length=255)
+    due_date = models.DateField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["is_completed", "due_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.description[:50]}"
