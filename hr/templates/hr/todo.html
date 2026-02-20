@@ -1,526 +1,280 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HR Portal | Personal To-Do List</title>
+{% extends "hr/dashboard.html" %}
+{% block content %}
 
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
-    />
-    <!-- Shared dashboard styles -->
-    <link rel="stylesheet" href="dashboard.css" />
-  </head>
-  <body>
-    <div class="d-flex">
-      <!-- Sidebar -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
-        <div class="mb-4">
-          <div class="d-flex align-items-center mb-2">
-            <div
-              class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
-              style="width: 36px; height: 36px"
-            >
-              HR
-            </div>
-            <div>
-              <div class="fw-semibold small">HR Portal</div>
-              <div class="text-secondary small">Personal To-Do List</div>
-            </div>
-          </div>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-1">Personal To-Do List</h1>
+    <p class="text-muted small mb-0">Manage your daily tasks and reminders</p>
+  </div>
+</div>
 
-        <div class="mb-2 sidebar-heading">Main</div>
-        <ul class="nav nav-pills flex-column mb-3 gap-1">
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="index.html">
-              <span class="me-2">🏠</span> Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="team.html">
-              <span class="me-2">👥</span> Team Management
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="attendance.html">
-              <span class="me-2">⏱️</span> Time Cards / Attendance
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="leave.html">
-              <span class="me-2">📝</span> Leave Management
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="announcements.html">
-              <span class="me-2">📢</span> Announcements
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="events.html">
-              <span class="me-2">📅</span> Event Calendar
-            </a>
-          </li>
-        </ul>
+{% if messages %}
+<div class="mb-3">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show small" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
-        <div class="mb-2 sidebar-heading">Personal & Tools</div>
-        <ul class="nav nav-pills flex-column mb-3 gap-1">
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notes.html">
-              <span class="me-2">🗒️</span> Notes
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="timeline.html">
-              <span class="me-2">📊</span> Timeline
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="help.html">
-              <span class="me-2">📚</span> Help Articles
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active d-flex align-items-center" href="todo.html">
-              <span class="me-2">✅</span> Personal To-Do List
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="notifications.html">
-              <span class="me-2">🔔</span> Notifications
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="settings.html">
-              <span class="me-2">⚙️</span> Settings / Security
-            </a>
-          </li>
-        </ul>
-      </nav>
+<div class="row g-3">
 
-      <!-- Main content -->
-      <div class="flex-grow-1 content-wrapper d-flex flex-column">
-        <!-- Top navbar -->
-        <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
-          <div class="container-fluid px-0">
-            <button
-              class="navbar-toggler me-2"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#topNav"
-              aria-controls="topNav"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
+  <!-- ═══ Left column: form + task list ═══ -->
+  <div class="col-12 col-lg-8">
 
-            <a class="navbar-brand d-lg-none" href="index.html">
-              <span>HR Portal</span>
-            </a>
+    <!-- Add / Edit Task Form -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header">
+        <h2 class="h6 mb-0">
+          {% if editing %}
+          Edit Task
+          {% else %}
+          Add New Task
+          {% endif %}
+        </h2>
+      </div>
+      <div class="card-body">
 
-            <div class="collapse navbar-collapse" id="topNav">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <span class="nav-link disabled">Logged in as: <strong>HR</strong></span>
-                </li>
-              </ul>
+        {% if editing %}
+        <form method="post" action="{% url 'hr:edit_task' edit_task.pk %}">
+          {% else %}
+          <form method="post" action="{% url 'hr:add_task' %}">
+            {% endif %}
 
-              <div class="d-flex align-items-center gap-3">
-                <button
-                  type="button"
-                  class="btn btn-light position-relative rounded-circle p-2"
-                  aria-label="Notifications"
-                >
-                  🔔
-                  <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  >
-                    4
-                  </span>
-                </button>
-                <div class="dropdown">
-                  <button
-                    class="btn btn-outline-secondary d-flex align-items-center gap-2"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <span
-                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
-                      style="width: 32px; height: 32px"
-                      >HR</span
-                    >
-                    <span class="d-none d-sm-inline small">HR Admin</span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><h6 class="dropdown-header">HR Admin</h6></li>
-                    <li><a class="dropdown-item" href="settings.html">Settings &amp; Security</a></li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
+            {% csrf_token %}
 
-        <!-- Page content -->
-        <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <h1 class="h4 mb-1">Personal To-Do List</h1>
-              <p class="text-muted small mb-0">
-                Manage your daily tasks and reminders
-              </p>
-            </div>
-            <span class="badge text-bg-light d-none d-md-inline"></span>
-          </div>
-
-          <div class="row g-3">
-            <!-- Main Content Area -->
-            <div class="col-12 col-lg-8">
-              <!-- Add To-Do Task Section -->
-              <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header">
-                  <h2 class="h6 mb-0">Add New Task</h2>
-                </div>
-                <div class="card-body">
-                  <form>
-                    <div class="mb-3">
-                      <label for="taskDescription" class="form-label">Task Description <span class="text-danger">*</span></label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="taskDescription"
-                        placeholder="Enter your task..."
-                        required
-                      />
-                    </div>
-                    <div class="mb-3">
-                      <label for="taskDueDate" class="form-label">Due Date (Optional)</label>
-                      <input
-                        type="date"
-                        class="form-control"
-                        id="taskDueDate"
-                      />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Task</button>
-                  </form>
-                </div>
-              </div>
-
-              <!-- To-Do Tasks List -->
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="h6 mb-0">My Tasks</h2>
-                <div class="btn-group btn-group-sm" role="group">
-                  <input type="radio" class="btn-check" name="filterTasks" id="filterAll" checked />
-                  <label class="btn btn-outline-secondary" for="filterAll">All</label>
-                  <input type="radio" class="btn-check" name="filterTasks" id="filterPending" />
-                  <label class="btn btn-outline-secondary" for="filterPending">Pending</label>
-                  <input type="radio" class="btn-check" name="filterTasks" id="filterCompleted" />
-                  <label class="btn btn-outline-secondary" for="filterCompleted">Completed</label>
-                </div>
-              </div>
-
-              <!-- Task List -->
-              <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                  <ul class="list-group list-group-flush">
-                    <!-- Task 1 - Pending -->
-                    <li class="list-group-item">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task1" />
-                          <label class="form-check-label" for="task1"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0">Review pending leave requests</h3>
-                            <span class="badge bg-warning-subtle text-warning">Pending</span>
-                          </div>
-                          <p class="text-muted small mb-2">3 leave requests need review and approval</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Due: 25 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <!-- Task 2 - Pending -->
-                    <li class="list-group-item">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task2" />
-                          <label class="form-check-label" for="task2"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0">Publish Q1 policy update announcement</h3>
-                            <span class="badge bg-warning-subtle text-warning">Pending</span>
-                          </div>
-                          <p class="text-muted small mb-2">Draft announcement ready for review and publication</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Due: 24 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <!-- Task 3 - Pending -->
-                    <li class="list-group-item">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task3" />
-                          <label class="form-check-label" for="task3"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0">Finalize attendance exceptions for this week</h3>
-                            <span class="badge bg-warning-subtle text-warning">Pending</span>
-                          </div>
-                          <p class="text-muted small mb-2">Review and resolve attendance discrepancies</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Due: 23 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <!-- Task 4 - Pending -->
-                    <li class="list-group-item">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task4" />
-                          <label class="form-check-label" for="task4"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0">Prepare new hire orientation materials</h3>
-                            <span class="badge bg-warning-subtle text-warning">Pending</span>
-                          </div>
-                          <p class="text-muted small mb-2">Update onboarding documents and presentation slides</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Due: 26 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <!-- Task 5 - Pending -->
-                    <li class="list-group-item">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task5" />
-                          <label class="form-check-label" for="task5"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0">Schedule quarterly team meeting</h3>
-                            <span class="badge bg-warning-subtle text-warning">Pending</span>
-                          </div>
-                          <p class="text-muted small mb-2">Coordinate with team leads for Q1 meeting</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Due: 28 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <!-- Task 6 - Completed -->
-                    <li class="list-group-item bg-light">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task6" checked disabled />
-                          <label class="form-check-label" for="task6"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0 text-decoration-line-through text-muted">Update employee handbook</h3>
-                            <span class="badge bg-success-subtle text-success">Completed</span>
-                          </div>
-                          <p class="text-muted small mb-2 text-decoration-line-through">Revised policies and procedures section</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Completed: 20 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary" disabled>Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <!-- Task 7 - Completed -->
-                    <li class="list-group-item bg-light">
-                      <div class="d-flex align-items-start">
-                        <div class="form-check me-3 mt-1">
-                          <input class="form-check-input" type="checkbox" id="task7" checked disabled />
-                          <label class="form-check-label" for="task7"></label>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h3 class="h6 mb-0 text-decoration-line-through text-muted">Review performance review submissions</h3>
-                            <span class="badge bg-success-subtle text-success">Completed</span>
-                          </div>
-                          <p class="text-muted small mb-2 text-decoration-line-through">All self-assessments reviewed and processed</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                              <span>📅</span> Completed: 19 Jan 2026
-                            </small>
-                            <div class="d-flex gap-2">
-                              <button class="btn btn-sm btn-outline-secondary" disabled>Edit</button>
-                              <button class="btn btn-sm btn-outline-danger">Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+            <div class="mb-3">
+              <label for="taskDescription" class="form-label">
+                Task Description <span class="text-danger">*</span>
+              </label>
+              {% if editing %}
+              <input type="text" class="form-control" id="taskDescription" name="description"
+                placeholder="Enter your task..." required value="{{ edit_task.description }}" />
+              {% else %}
+              <input type="text" class="form-control" id="taskDescription" name="description"
+                placeholder="Enter your task..." required />
+              {% endif %}
             </div>
 
-            <!-- Sidebar - Task Status Overview -->
-            <div class="col-12 col-lg-4">
-              <!-- Task Status Overview -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-header">
-                  <h2 class="h6 mb-0">Task Status Overview</h2>
-                </div>
-                <div class="card-body">
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <span class="small">Total Tasks</span>
-                      <span class="badge bg-primary-subtle text-primary fs-6">7</span>
-                    </div>
-                    <div class="progress mb-3" style="height: 8px">
-                      <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <span class="small">Completed Tasks</span>
-                      <span class="badge bg-success-subtle text-success fs-6">2</span>
-                    </div>
-                    <div class="progress mb-3" style="height: 8px">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: 28.6%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <span class="small">Pending Tasks</span>
-                      <span class="badge bg-warning-subtle text-warning fs-6">5</span>
-                    </div>
-                    <div class="progress" style="height: 8px">
-                      <div class="progress-bar bg-warning" role="progressbar" style="width: 71.4%"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Quick Stats -->
-              <div class="card border-0 shadow-sm mb-3">
-                <div class="card-header">
-                  <h2 class="h6 mb-0">Quick Stats</h2>
-                </div>
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <div class="text-muted small">Tasks Due Today</div>
-                      <div class="fs-5 fw-semibold">0</div>
-                    </div>
-                    <div class="text-primary fs-3">📅</div>
-                  </div>
-                  <hr />
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <div class="text-muted small">Tasks Due This Week</div>
-                      <div class="fs-5 fw-semibold">3</div>
-                    </div>
-                    <div class="text-warning fs-3">⏰</div>
-                  </div>
-                  <hr />
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <div class="text-muted small">Completion Rate</div>
-                      <div class="fs-5 fw-semibold">28.6%</div>
-                    </div>
-                    <div class="text-success fs-3">✅</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Security Note -->
-              <div class="card border-0 shadow-sm">
-                <div class="card-header">
-                  <h2 class="h6 mb-0">Privacy & Security</h2>
-                </div>
-                <div class="card-body">
-                  <div class="alert alert-info py-2 mb-0 small">
-                    <strong>Personal Tasks:</strong> All tasks in your to-do list are personal and visible only to you. 
-                    Your task data is private and not accessible to other team members or administrators.
-                  </div>
-                </div>
-              </div>
+            <div class="mb-3">
+              <label for="taskDueDate" class="form-label">Due Date (Optional)</label>
+              {% if editing %}
+              {% if edit_task.due_date %}
+              <input type="date" class="form-control" id="taskDueDate" name="due_date"
+                value="{{ edit_task.due_date|date:'Y-m-d' }}" />
+              {% else %}
+              <input type="date" class="form-control" id="taskDueDate" name="due_date" />
+              {% endif %}
+              {% else %}
+              <input type="date" class="form-control" id="taskDueDate" name="due_date" />
+              {% endif %}
             </div>
-          </div>
-        </main>
 
-        <footer class="border-top bg-white py-2 px-3 px-lg-4">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span>© <span id="year"></span> HR Portal • Personal To-Do List</span>
-            <span class="text-muted">Secure access · Personal tasks</span>
-          </div>
-        </footer>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-sm">
+                {% if editing %}Save Changes{% else %}Add Task{% endif %}
+              </button>
+              {% if editing %}
+              <a href="{% url 'hr:todo' %}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+              {% endif %}
+            </div>
+
+          </form>
       </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
-  </body>
-</html>
+    <!-- Task filter buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h6 mb-0">My Tasks</h2>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Filter tasks">
+        <input type="radio" class="btn-check" name="filterTasks" id="filterAll" checked />
+        <label class="btn btn-outline-secondary" for="filterAll">All</label>
+        <input type="radio" class="btn-check" name="filterTasks" id="filterPending" />
+        <label class="btn btn-outline-secondary" for="filterPending">Pending</label>
+        <input type="radio" class="btn-check" name="filterTasks" id="filterCompleted" />
+        <label class="btn btn-outline-secondary" for="filterCompleted">Completed</label>
+      </div>
+    </div>
+
+    <!-- Task list -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+
+          {% for task in tasks %}
+
+          {% if task.is_completed %}
+          <li class="list-group-item bg-light">
+            {% else %}
+          <li class="list-group-item">
+            {% endif %}
+
+            <div class="d-flex align-items-start">
+
+              <!-- Checkbox to toggle status -->
+              <div class="form-check me-3 mt-1">
+                <form method="post" action="{% url 'hr:toggle_task_status' task.pk %}">
+                  {% csrf_token %}
+                  {% if task.is_completed %}
+                  <input class="form-check-input" type="checkbox" id="task{{ task.pk }}" checked
+                    onchange="this.form.submit()" />
+                  {% else %}
+                  <input class="form-check-input" type="checkbox" id="task{{ task.pk }}"
+                    onchange="this.form.submit()" />
+                  {% endif %}
+                  <label class="form-check-label" for="task{{ task.pk }}"></label>
+                </form>
+              </div>
+
+              <!-- Task content -->
+              <div class="flex-grow-1">
+
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  {% if task.is_completed %}
+                  <h3 class="h6 mb-0 text-decoration-line-through text-muted">{{ task.description }}</h3>
+                  <span class="badge bg-success-subtle text-success">Completed</span>
+                  {% else %}
+                  <h3 class="h6 mb-0">{{ task.description }}</h3>
+                  <span class="badge bg-warning-subtle text-warning">Pending</span>
+                  {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                  <small class="text-muted">
+                    <span>📅</span>
+                    {% if task.is_completed %}
+                    {% if task.due_date %}
+                    Due was: {{ task.due_date|date:"d M Y" }}
+                    {% else %}
+                    Completed
+                    {% endif %}
+                    {% else %}
+                    {% if task.due_date %}
+                    Due: {{ task.due_date|date:"d M Y" }}
+                    {% else %}
+                    No due date
+                    {% endif %}
+                    {% endif %}
+                  </small>
+
+                  <div class="d-flex gap-2">
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'hr:edit_task' task.pk %}">Edit</a>
+                    <form method="post" action="{% url 'hr:delete_task' task.pk %}">
+                      {% csrf_token %}
+                      <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </li>
+
+          {% empty %}
+          <li class="list-group-item">
+            <div class="text-muted small py-2">No tasks yet. Add your first task above.</div>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  <!-- /col-lg-8 -->
+
+  <!-- ═══ Right column: stats ═══ -->
+  <div class="col-12 col-lg-4">
+
+    <!-- Task Status Overview -->
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-header">
+        <h2 class="h6 mb-0">Task Status Overview</h2>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small">Total Tasks</span>
+            <span class="badge bg-primary-subtle text-primary fs-6">{{ total_tasks }}</span>
+          </div>
+          <div class="progress" style="height: 8px">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small">Completed</span>
+            <span class="badge bg-success-subtle text-success fs-6">{{ completed_tasks }}</span>
+          </div>
+          <div class="progress" style="height: 8px">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ completion_rate }}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small">Pending</span>
+            <span class="badge bg-warning-subtle text-warning fs-6">{{ pending_tasks }}</span>
+          </div>
+          <div class="progress" style="height: 8px">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ pending_rate }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-header">
+        <h2 class="h6 mb-0">Quick Stats</h2>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="text-muted small">Tasks Due Today</div>
+            <div class="fs-5 fw-semibold">{{ tasks_due_today }}</div>
+          </div>
+          <div class="text-primary fs-3">📅</div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="text-muted small">Tasks Due This Week</div>
+            <div class="fs-5 fw-semibold">{{ tasks_due_this_week }}</div>
+          </div>
+          <div class="text-warning fs-3">⏰</div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small">Completion Rate</div>
+            <div class="fs-5 fw-semibold">{{ completion_rate }}%</div>
+          </div>
+          <div class="text-success fs-3">✅</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy note -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header">
+        <h2 class="h6 mb-0">Privacy &amp; Security</h2>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info py-2 mb-0 small">
+          <strong>Personal Tasks:</strong> All tasks in your to-do list are personal
+          and visible only to you. Your task data is private and not accessible to
+          other team members or administrators.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- /col-lg-4 -->
+
+</div>
+<!-- /row -->
+
+{% endblock %}
