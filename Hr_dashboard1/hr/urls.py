@@ -34,6 +34,23 @@ urlpatterns = [
     path("projects/<int:pk>/edit/", views.project_update, name="project_update"),
     path("projects/<int:pk>/delete/", views.project_delete, name="project_delete"),
 
+    path("payroll/", views.payroll_list_view, name="payroll_list"),
+    path("payroll/add/", views.payroll_create_view, name="payroll_create"),
+    path("payroll/<int:pk>/", views.payroll_detail_view, name="payroll_detail"),
+    path("payroll/<int:pk>/edit/", views.payroll_update_view, name="payroll_update"),
+    path("payroll/<int:pk>/delete/", views.payroll_delete_view, name="payroll_delete"),
+    path("invoices/", views.invoice_list_view, name="invoice_list"),
+    path("invoices/add/", views.invoice_create_view, name="invoice_create"),
+    path("invoices/<int:pk>/", views.invoice_detail_view, name="invoice_detail"),
+    path("invoices/<int:pk>/edit/", views.invoice_update_view, name="invoice_update"),
+    path("invoices/<int:pk>/delete/", views.invoice_delete_view, name="invoice_delete"),
+    path("payments/", views.payment_list_view, name="payment_list"),
+    path("tickets/", views.ticket_list_view, name="ticket_list"),
+    path("tickets/<int:pk>/", views.ticket_detail_view, name="ticket_detail"),
+    path("tickets/<int:pk>/edit/", views.ticket_update_view, name="ticket_update"),
+    path("tickets/<int:pk>/delete/", views.ticket_delete_view, name="ticket_delete"),
+    path("tickets/<int:ticket_id>/comment/", views.ticket_comment_create_view, name="ticket_comment"),
+
     path("tasks/", views.task_list, name="task_list"),
     path("tasks/add/", views.task_create, name="task_create"),
     path("tasks/<int:pk>/edit/", views.task_update, name="task_update"),
@@ -83,4 +100,3 @@ urlpatterns = [
     path("settings/update-profile/", views.update_profile_view, name="update_profile"),
     path("settings/change-password/", views.change_password_view, name="change_password"),
 ]
-

@@ -10,11 +10,8 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-<<<<<<< HEAD
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-=======
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
   <!-- Dashboard custom CSS -->
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 </head>
@@ -22,7 +19,7 @@
 <body>
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
       <div class="mb-4">
         <div class="d-flex align-items-center mb-2">
           <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
@@ -45,7 +42,6 @@
           </a>
         </li>
         <li class="nav-item">
-<<<<<<< HEAD
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %}"
             href="{% url 'hr:employee_list' %}">
             <span class="me-2">👥</span> Employee Management
@@ -55,11 +51,6 @@
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'team_list' or request.resolver_match.url_name == 'team_add' or request.resolver_match.url_name == 'team_detail' or request.resolver_match.url_name == 'team_edit' %}active{% endif %}"
             href="{% url 'hr:team_list' %}">
             <span class="me-2">&#129309;</span> Team Management
-=======
-          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'team_list' %}active{% endif %}"
-            href="{% url 'hr:team_list' %}">
-            <span class="me-2">👥</span> Team Management
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
           </a>
         </li>
         <li class="nav-item">
@@ -102,6 +93,30 @@
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'events' %}active{% endif %}"
             href="{% url 'hr:events' %}">
             <span class="me-2">📅</span> Event Calendar
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'payroll_list' or request.resolver_match.url_name == 'payroll_create' or request.resolver_match.url_name == 'payroll_detail' or request.resolver_match.url_name == 'payroll_update' %}active{% endif %}"
+            href="{% url 'hr:payroll_list' %}">
+            <span class="me-2">💰</span> Payroll
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'invoice_list' or request.resolver_match.url_name == 'invoice_create' or request.resolver_match.url_name == 'invoice_detail' or request.resolver_match.url_name == 'invoice_update' %}active{% endif %}"
+            href="{% url 'hr:invoice_list' %}">
+            <span class="me-2">🧾</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'payment_list' %}active{% endif %}"
+            href="{% url 'hr:payment_list' %}">
+            <span class="me-2">💳</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'ticket_list' or request.resolver_match.url_name == 'ticket_detail' or request.resolver_match.url_name == 'ticket_update' or request.resolver_match.url_name == 'ticket_comment' %}active{% endif %}"
+            href="{% url 'hr:ticket_list' %}">
+            <span class="me-2">🎫</span> Support Tickets
           </a>
         </li>
       </ul>
@@ -169,13 +184,14 @@
             </ul>
 
             <div class="d-flex align-items-center gap-3">
-              <button type="button" class="btn btn-light position-relative rounded-circle p-2"
-                aria-label="Notifications">
+              <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
                 🔔
+                {% if navbar_unread_notifications > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  4
+                  {{ navbar_unread_notifications }}
                 </span>
-              </button>
+                {% endif %}
+              </a>
               <div class="dropdown">
                 <button class="btn btn-outline-secondary d-flex align-items-center gap-2" type="button"
                   data-bs-toggle="dropdown" aria-expanded="false">
@@ -219,11 +235,7 @@
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
-<<<<<<< HEAD
                   <div class="text-muted small">Total Employees</div>
-=======
-                  <div class="text-muted small">Total Team Members</div>
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
                   <div class="fs-4 fw-semibold">128</div>
                 </div>
                 <div class="summary-card-icon">👥</div>
@@ -265,6 +277,143 @@
                   <span class="badge bg-info-subtle text-info border border-info-subtle mt-1">2 new this week</span>
                 </div>
                 <div class="summary-card-icon">📢</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-muted small">Total Revenue</div>
+                  <div class="fs-4 fw-semibold">{{ invoice_total_revenue }}</div>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">Paid:
+                    {{ invoice_paid_count }}</span>
+                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle mt-1">Pending:
+                    {{ invoice_pending_count }}</span>
+                </div>
+                <div class="summary-card-icon">🧾</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3 mb-md-4">
+          <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h6 mb-2">Support Ticket Summary</h2>
+                <p class="small mb-1 text-muted">Open Tickets</p>
+                <div class="fs-5 fw-semibold mb-2">{{ open_tickets_count }}</div>
+                <p class="small mb-1 text-muted">High Priority Tickets</p>
+                <div class="fs-6 fw-semibold mb-2 text-danger">{{ high_priority_tickets_count }}</div>
+                <div class="mt-3">
+                  <a href="{% url 'hr:ticket_list' %}" class="btn btn-sm btn-outline-primary">Open Tickets</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Latest Support Tickets</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Latest 5</span>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                  {% for ticket in recent_tickets %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <div>
+                        <div class="fw-semibold">{{ ticket.ticket_id }}</div>
+                        <div class="text-muted">{{ ticket.client.company_name }} · {{ ticket.subject }}</div>
+                      </div>
+                      <span class="badge bg-primary-subtle text-primary">{{ ticket.get_status_display }}</span>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item px-0 text-muted">No support tickets available</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3 mb-md-4">
+          <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h6 mb-2">Payroll Summary</h2>
+                <p class="small mb-1 text-muted">Total Net Payroll</p>
+                <div class="fs-5 fw-semibold mb-2">{{ payroll_total_net }}</div>
+                <p class="small mb-1 text-muted">This Month Payroll</p>
+                <div class="fs-6 fw-semibold mb-2">{{ this_month_payroll_total }}</div>
+                <span class="badge bg-success-subtle text-success me-1">Paid: {{ payroll_paid_count }}</span>
+                <span class="badge bg-warning-subtle text-warning">Pending: {{ payroll_pending_count }}</span>
+                <div class="mt-3">
+                  <a href="{% url 'hr:payroll_list' %}" class="btn btn-sm btn-outline-primary">Open Payroll</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Latest Payroll Records</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Latest 5</span>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                  {% for record in latest_payroll_records %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <div>
+                        <div class="fw-semibold">{{ record.employee_name }}</div>
+                        <div class="text-muted">{{ record.month }}</div>
+                      </div>
+                      <span class="badge bg-primary-subtle text-primary">{{ record.net_salary }}</span>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item px-0 text-muted">No payroll records available</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3 mb-md-4">
+          <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h6 mb-2">Invoice Summary</h2>
+                <p class="small mb-1 text-muted">Total Revenue</p>
+                <div class="fs-5 fw-semibold mb-2">{{ invoice_total_revenue }}</div>
+                <span class="badge bg-success-subtle text-success me-1">Paid: {{ invoice_paid_count }}</span>
+                <span class="badge bg-warning-subtle text-warning">Pending: {{ invoice_pending_count }}</span>
+                <div class="mt-3">
+                  <a href="{% url 'hr:invoice_list' %}" class="btn btn-sm btn-outline-primary">Open Invoices</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Recent Invoices</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Latest 5</span>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                  {% for invoice in recent_invoices %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <div>
+                        <div class="fw-semibold">{{ invoice.invoice_number }}</div>
+                        <div class="text-muted">{{ invoice.client.company_name }} · {{ invoice.project.name }}</div>
+                      </div>
+                      <span class="badge bg-primary-subtle text-primary">{{ invoice.total_amount }}</span>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item px-0 text-muted">No invoice records available</li>
+                  {% endfor %}
+                </ul>
               </div>
             </div>
           </div>
@@ -509,8 +658,6 @@
       </footer>
     </div>
   </div>
-<<<<<<< HEAD
-
   <!-- Bootstrap JS (optional for basic navbar/ dropdowns) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -521,19 +668,3 @@
 </body>
 
 </html>
-
-
-
-=======
-
-  <!-- Bootstrap JS (optional for basic navbar/ dropdowns) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-</body>
-
-</html>
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc

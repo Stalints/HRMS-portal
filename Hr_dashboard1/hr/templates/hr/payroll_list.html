@@ -1,0 +1,54 @@
+{% extends "hr/dashboard.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-1">Payroll Management</h1>
+    <p class="text-muted small mb-0">Payroll records overview</p>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="h6 mb-0">Payroll Records</h2>
+    <span class="badge bg-secondary-subtle text-secondary">{{ payroll_records|length }} record{{ payroll_records|length|pluralize }}</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Employee Name</th>
+            <th>Month</th>
+            <th>Basic Salary</th>
+            <th>Allowances</th>
+            <th>Deductions</th>
+            <th>Net Salary</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="small">
+          {% for p in payroll_records %}
+          <tr>
+            <td>{{ p.employee_name }}</td>
+            <td>{{ p.month }}</td>
+            <td>{{ p.basic_salary }}</td>
+            <td>{{ p.allowances }}</td>
+            <td>{{ p.deductions }}</td>
+            <td>{{ p.net_salary }}</td>
+            <td>{{ p.get_status_display }}</td>
+            <td class="text-end">
+              <a href="{% url 'hr:payroll_detail' p.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="text-center py-4 text-muted">No payroll records found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

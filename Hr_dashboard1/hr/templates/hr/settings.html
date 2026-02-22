@@ -19,7 +19,7 @@
   <body>
     <div class="d-flex">
       <!-- Sidebar -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
         <div class="mb-4">
           <div class="d-flex align-items-center mb-2">
             <div
@@ -43,7 +43,6 @@
             </a>
           </li>
           <li class="nav-item">
-<<<<<<< HEAD
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
               <span class="me-2">👥</span> Employee Management
             </a>
@@ -54,13 +53,6 @@
             </a>
           </li>
           <li class="nav-item">
-=======
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2">👥</span> Team Management
-            </a>
-          </li>
-          <li class="nav-item">
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
@@ -76,10 +68,45 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}">
+              <span class="me-2">💰</span> Payroll
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}">
+            <span class="me-2">🧾</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}">
+            <span class="me-2">💳</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2">🎫</span> Support Tickets
+          </a>
+        </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
@@ -146,18 +173,14 @@
               </ul>
 
               <div class="d-flex align-items-center gap-3">
-                <button
-                  type="button"
-                  class="btn btn-light position-relative rounded-circle p-2"
-                  aria-label="Notifications"
-                >
-                  🔔
-                  <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  >
-                    4
-                  </span>
-                </button>
+                <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                🔔
+                {% if navbar_unread_notifications > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ navbar_unread_notifications }}
+                </span>
+                {% endif %}
+              </a>
                 <div class="dropdown">
                   <button
                     class="btn btn-outline-secondary d-flex align-items-center gap-2"

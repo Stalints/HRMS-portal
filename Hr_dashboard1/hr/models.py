@@ -2,6 +2,8 @@ from django.conf import settings
 from datetime import timedelta
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Sum
+from decimal import Decimal
 
 
 # -------------------------
@@ -278,6 +280,38 @@ class AdminProfile(models.Model):
 
 
 # -------------------------
+# PAYROLL
+# -------------------------
+
+class PayrollStatus(models.TextChoices):
+    PAID = "PAID", "Paid"
+    PENDING = "PENDING", "Pending"
+
+
+class Payroll(models.Model):
+    employee_name = models.CharField(max_length=255)
+    month = models.CharField(max_length=20)
+    basic_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    allowances = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    deductions = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    gross_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0, editable=False)
+    net_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0, editable=False)
+    status = models.CharField(max_length=10, choices=PayrollStatus.choices, default=PayrollStatus.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        self.gross_salary = self.basic_salary + self.allowances
+        self.net_salary = self.gross_salary - self.deductions
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.employee_name} - {self.month}"
+
+
+# -------------------------
 # PROJECTS
 # -------------------------
 
@@ -356,6 +390,160 @@ class Client(models.Model):
 
     def __str__(self):
         return self.company_name
+
+
+# -------------------------
+# INVOICES & PAYMENTS
+# -------------------------
+
+class InvoiceStatus(models.TextChoices):
+    PAID = "PAID", "Paid"
+    UNPAID = "UNPAID", "Unpaid"
+    PARTIAL = "PARTIAL", "Partial"
+
+
+class Invoice(models.Model):
+    invoice_number = models.CharField(max_length=20, unique=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="invoices")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="invoices")
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    tax_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    tax_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, editable=False)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, editable=False)
+    due_date = models.DateField()
+    status = models.CharField(max_length=10, choices=InvoiceStatus.choices, default=InvoiceStatus.UNPAID)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.invoice_number
+
+    def save(self, *args, **kwargs):
+        if not self.invoice_number:
+            last_invoice = Invoice.objects.order_by("-id").first()
+            next_number = 1
+            if last_invoice and last_invoice.invoice_number.startswith("INV"):
+                numeric_part = last_invoice.invoice_number.replace("INV", "")
+                if numeric_part.isdigit():
+                    next_number = int(numeric_part) + 1
+            self.invoice_number = f"INV{next_number:04d}"
+
+        self.tax_amount = (self.amount * self.tax_percentage / Decimal("100")).quantize(Decimal("0.01"))
+        self.total_amount = (self.amount + self.tax_amount).quantize(Decimal("0.01"))
+        super().save(*args, **kwargs)
+
+    def refresh_payment_status(self):
+        paid_total = self.payments.aggregate(total=Sum("amount_paid"))["total"] or Decimal("0")
+        if paid_total >= self.total_amount and self.total_amount > 0:
+            new_status = InvoiceStatus.PAID
+        elif paid_total > 0:
+            new_status = InvoiceStatus.PARTIAL
+        else:
+            new_status = InvoiceStatus.UNPAID
+
+        if self.status != new_status:
+            self.status = new_status
+            self.save(update_fields=["status"])
+
+
+class PaymentMethod(models.TextChoices):
+    CASH = "CASH", "Cash"
+    BANK = "BANK", "Bank"
+    UPI = "UPI", "UPI"
+    CARD = "CARD", "Card"
+
+
+class Payment(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="payments")
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_date = models.DateField()
+    payment_method = models.CharField(max_length=10, choices=PaymentMethod.choices)
+    reference_number = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-payment_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.invoice.invoice_number} - {self.amount_paid}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.invoice.refresh_payment_status()
+
+    def delete(self, *args, **kwargs):
+        invoice = self.invoice
+        super().delete(*args, **kwargs)
+        invoice.refresh_payment_status()
+
+
+# -------------------------
+# SUPPORT TICKETS
+# -------------------------
+
+class TicketPriority(models.TextChoices):
+    LOW = "LOW", "Low"
+    MEDIUM = "MEDIUM", "Medium"
+    HIGH = "HIGH", "High"
+
+
+class TicketStatus(models.TextChoices):
+    OPEN = "OPEN", "Open"
+    IN_PROGRESS = "IN_PROGRESS", "In Progress"
+    RESOLVED = "RESOLVED", "Resolved"
+    CLOSED = "CLOSED", "Closed"
+
+
+class Ticket(models.Model):
+    ticket_id = models.CharField(max_length=20, unique=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="tickets")
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name="tickets")
+    subject = models.CharField(max_length=255)
+    description = models.TextField()
+    priority = models.CharField(max_length=10, choices=TicketPriority.choices, default=TicketPriority.MEDIUM)
+    status = models.CharField(max_length=20, choices=TicketStatus.choices, default=TicketStatus.OPEN)
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_tickets",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.ticket_id
+
+    def save(self, *args, **kwargs):
+        if not self.ticket_id:
+            last_ticket = Ticket.objects.order_by("-id").first()
+            next_number = 1
+            if last_ticket and last_ticket.ticket_id.startswith("TKT"):
+                numeric_part = last_ticket.ticket_id.replace("TKT", "")
+                if numeric_part.isdigit():
+                    next_number = int(numeric_part) + 1
+            self.ticket_id = f"TKT{next_number:04d}"
+        if not self.status:
+            self.status = TicketStatus.OPEN
+        super().save(*args, **kwargs)
+
+
+class TicketComment(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comments")
+    comment_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"{self.ticket.ticket_id} comment"
 
 
 # -------------------------
