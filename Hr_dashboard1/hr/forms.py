@@ -3,11 +3,26 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password   
 
 from .models import Attendance
-<<<<<<< HEAD
-from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask, Team
-=======
-from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
+from .models import (
+    LeaveCategory,
+    Announcement,
+    Project,
+    Task,
+    Client,
+    Event,
+    Note,
+    TimelinePost,
+    TimelineComment,
+    HelpArticle,
+    HelpCategory,
+    PersonalTask,
+    Team,
+    Payroll,
+    Invoice,
+    Payment,
+    Ticket,
+    TicketComment,
+)
 
 User = get_user_model()
 
@@ -167,6 +182,23 @@ class AnnouncementForm(forms.ModelForm):
 
 
 class ProjectForm(forms.ModelForm):
+    client_name = forms.ChoiceField(
+        choices=[],
+        widget=forms.Select(attrs={"class": "form-select form-select-sm"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        client_choices = [("", "Select Client")]
+        for client in Client.objects.order_by("company_name"):
+            client_choices.append((client.company_name, client.company_name))
+
+        current_value = self.initial.get("client_name") or getattr(self.instance, "client_name", "")
+        if current_value and current_value not in dict(client_choices):
+            client_choices.append((current_value, current_value))
+
+        self.fields["client_name"].choices = client_choices
+
     class Meta:
         model = Project
         fields = [
@@ -180,7 +212,6 @@ class ProjectForm(forms.ModelForm):
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Project name"}),
-            "client_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Client name"}),
             "start_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
             "deadline": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
             "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
@@ -233,6 +264,43 @@ class ClientForm(forms.ModelForm):
         }
 
 
+class PayrollForm(forms.ModelForm):
+    employee_name = forms.ChoiceField(
+        choices=[],
+        widget=forms.Select(attrs={"class": "form-select form-select-sm"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        employees = User.objects.filter(is_superuser=False).order_by("first_name", "last_name", "username")
+        choices = [("", "Select Employee")]
+        for employee in employees:
+            value = employee.get_full_name().strip() or employee.username
+            choices.append((value, value))
+        current_value = self.initial.get("employee_name") or getattr(self.instance, "employee_name", "")
+        if current_value and current_value not in dict(choices):
+            choices.append((current_value, current_value))
+        self.fields["employee_name"].choices = choices
+
+    class Meta:
+        model = Payroll
+        fields = [
+            "employee_name",
+            "month",
+            "basic_salary",
+            "allowances",
+            "deductions",
+            "status",
+        ]
+        widgets = {
+            "month": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "e.g., February 2026"}),
+            "basic_salary": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
+            "allowances": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
+            "deductions": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
+
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
@@ -257,6 +325,88 @@ class EventForm(forms.ModelForm):
             "event_type": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "reminder_enabled": forms.CheckboxInput(attrs={"class": "form-check-input"}),
             "reminder_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+        }
+
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ["client", "project", "amount", "tax_percentage", "due_date", "status"]
+        widgets = {
+            "client": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "amount": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
+            "tax_percentage": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
+            "due_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
+
+
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ["amount_paid", "payment_date", "payment_method", "reference_number"]
+        widgets = {
+            "amount_paid": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0.01"}),
+            "payment_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "payment_method": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "reference_number": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Optional reference"}),
+        }
+
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["client", "project", "subject", "description", "priority", "assigned_to", "status"]
+        widgets = {
+            "client": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "subject": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Ticket subject"}),
+            "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Describe the issue"}),
+            "priority": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "assigned_to": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["project"].required = False
+        self.fields["assigned_to"].required = False
+        self.fields["assigned_to"].queryset = User.objects.filter(is_superuser=False).order_by(
+            "first_name",
+            "last_name",
+            "username",
+        )
+        self.fields["assigned_to"].empty_label = "Unassigned"
+
+
+class TicketManagementForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["priority", "status", "assigned_to"]
+        widgets = {
+            "priority": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "assigned_to": forms.Select(attrs={"class": "form-select form-select-sm"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["assigned_to"].required = False
+        self.fields["assigned_to"].queryset = User.objects.filter(is_superuser=False).order_by(
+            "first_name",
+            "last_name",
+            "username",
+        )
+        self.fields["assigned_to"].empty_label = "Unassigned"
+
+
+class TicketCommentForm(forms.ModelForm):
+    class Meta:
+        model = TicketComment
+        fields = ["comment_text"]
+        widgets = {
+            "comment_text": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Add an update/comment"}),
         }
 
 

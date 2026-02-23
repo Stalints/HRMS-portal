@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Portal | Payroll Detail</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+</head>
+<body>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h1 class="h6 mb-0">Payroll Breakdown</h1>
+            <a href="{% url 'hr:payroll_list' %}" class="btn btn-sm btn-outline-secondary">Back to Payroll</a>
+          </div>
+          <div class="card-body">
+            <div class="row g-3 small">
+              <div class="col-md-6"><strong>Employee Name:</strong> {{ payroll.employee_name }}</div>
+              <div class="col-md-6"><strong>Month:</strong> {{ payroll.month }}</div>
+              <div class="col-md-6"><strong>Status:</strong> {{ payroll.get_status_display }}</div>
+              <div class="col-md-6"><strong>Basic Salary:</strong> {{ payroll.basic_salary }}</div>
+              <div class="col-md-6"><strong>Allowances:</strong> {{ payroll.allowances }}</div>
+              <div class="col-md-6"><strong>Deductions:</strong> {{ payroll.deductions }}</div>
+              <div class="col-md-6"><strong>Gross Salary:</strong> {{ payroll.gross_salary }}</div>
+              <div class="col-md-6"><strong>Net Salary:</strong> {{ payroll.net_salary }}</div>
+              <div class="col-md-6"><strong>Created At:</strong> {{ payroll.created_at }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+</html>

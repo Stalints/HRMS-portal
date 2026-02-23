@@ -16,7 +16,7 @@
   <body>
     <div class="d-flex">
       <!-- Sidebar -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
         <div class="mb-4">
           <div class="d-flex align-items-center mb-2">
             <div
@@ -84,6 +84,26 @@
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}">
+              <span class="me-2">💰</span> Payroll
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}">
+            <span class="me-2">🧾</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}">
+            <span class="me-2">💳</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2">🎫</span> Support Tickets
+          </a>
+        </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
