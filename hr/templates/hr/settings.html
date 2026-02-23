@@ -19,7 +19,7 @@
   <body>
     <div class="d-flex">
       <!-- Sidebar -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
         <div class="mb-4">
           <div class="d-flex align-items-center mb-2">
             <div
@@ -43,8 +43,13 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+              <span class="me-2">👥</span> Employee Management
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2">👥</span> Team Management
+              <span class="me-2">&#129309;</span> Team Management
             </a>
           </li>
           <li class="nav-item">
@@ -63,10 +68,45 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2">📁</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2">✅</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2">🏢</span> Clients
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
               <span class="me-2">📅</span> Event Calendar
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}">
+              <span class="me-2">💰</span> Payroll
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}">
+            <span class="me-2">🧾</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}">
+            <span class="me-2">💳</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2">🎫</span> Support Tickets
+          </a>
+        </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
@@ -133,18 +173,14 @@
               </ul>
 
               <div class="d-flex align-items-center gap-3">
-                <button
-                  type="button"
-                  class="btn btn-light position-relative rounded-circle p-2"
-                  aria-label="Notifications"
-                >
-                  🔔
-                  <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  >
-                    4
-                  </span>
-                </button>
+                <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                🔔
+                {% if navbar_unread_notifications > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ navbar_unread_notifications }}
+                </span>
+                {% endif %}
+              </a>
                 <div class="dropdown">
                   <button
                     class="btn btn-outline-secondary d-flex align-items-center gap-2"
@@ -192,14 +228,16 @@
                   <h2 class="h6 mb-0">Account Settings</h2>
                 </div>
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="{% url 'hr:update_profile' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                       <label for="profileName" class="form-label">Full Name <span class="text-danger">*</span></label>
                       <input
                         type="text"
                         class="form-control"
                         id="profileName"
-                        value="HR Admin"
+                        name="full_name"
+                        value="{{ profile.full_name }}"
                         required
                       />
                     </div>
@@ -209,7 +247,8 @@
                         type="email"
                         class="form-control"
                         id="profileEmail"
-                        value="hr.admin@company.com"
+                        name="email"
+                        value="{{ profile.email }}"
                         required
                       />
                     </div>
@@ -219,7 +258,7 @@
                         type="text"
                         class="form-control"
                         id="profileRole"
-                        value="HR"
+                        value="{{ profile.role }}"
                         disabled
                       />
                       <div class="form-text">Role cannot be changed from this page</div>
@@ -235,13 +274,15 @@
                   <h2 class="h6 mb-0">Password & Security</h2>
                 </div>
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="{% url 'hr:change_password' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                       <label for="currentPassword" class="form-label">Current Password <span class="text-danger">*</span></label>
                       <input
                         type="password"
                         class="form-control"
                         id="currentPassword"
+                        name="current_password"
                         placeholder="Enter current password"
                         required
                       />
@@ -252,6 +293,7 @@
                         type="password"
                         class="form-control"
                         id="newPassword"
+                        name="new_password"
                         placeholder="Enter new password"
                         required
                       />
@@ -262,6 +304,7 @@
                         type="password"
                         class="form-control"
                         id="confirmPassword"
+                        name="confirm_password"
                         placeholder="Confirm new password"
                         required
                       />
@@ -423,3 +466,7 @@
     </script>
   </body>
 </html>
+
+
+
+

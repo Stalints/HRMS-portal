@@ -1,0 +1,264 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Portal | Payroll Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+</head>
+<body>
+  <div class="d-flex">
+    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
+      <div class="mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
+            style="width: 36px; height: 36px">HR</div>
+          <div>
+            <div class="fw-semibold small">HR Portal</div>
+            <div class="text-secondary small">Payroll Management</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2 sidebar-heading">Main</div>
+      <ul class="nav nav-pills flex-column mb-3 gap-1">
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}"><span class="me-2">🏠</span> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}"><span class="me-2">👥</span> Employee Management</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}"><span class="me-2">&#129309;</span> Team Management</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}"><span class="me-2">⏱️</span> Time Cards / Attendance</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}"><span class="me-2">📝</span> Leave Management</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}"><span class="me-2">📢</span> Announcements</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}"><span class="me-2">📁</span> Projects</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}"><span class="me-2">✅</span> Tasks</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}"><span class="me-2">🏢</span> Clients</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}"><span class="me-2">📅</span> Event Calendar</a></li>
+        <li class="nav-item"><a class="nav-link active d-flex align-items-center" href="{% url 'hr:payroll_list' %}"><span class="me-2">💰</span> Payroll</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}"><span class="me-2">🧾</span> Invoices</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}"><span class="me-2">💳</span> Payments</a></li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2">🎫</span> Support Tickets
+          </a>
+        </li>
+      </ul>
+
+      <div class="mb-2 sidebar-heading">Personal & Tools</div>
+      <ul class="nav nav-pills flex-column mb-3 gap-1">
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}"><span class="me-2">🗒️</span> Notes</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}"><span class="me-2">📊</span> Timeline</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}"><span class="me-2">📚</span> Help Articles</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}"><span class="me-2">✅</span> Personal To-Do List</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}"><span class="me-2">🔔</span> Notifications</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}"><span class="me-2">⚙️</span> Settings / Security</a></li>
+      </ul>
+    </nav>
+
+    <div class="flex-grow-1 content-wrapper d-flex flex-column">
+      <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
+        <div class="container-fluid px-0">
+          <button
+            class="navbar-toggler me-2"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#topNav"
+            aria-controls="topNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
+            <span>HR Portal</span>
+          </a>
+          <div class="collapse navbar-collapse" id="topNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <span class="nav-link disabled">
+                  Logged in as: <strong>HR</strong>
+                </span>
+              </li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+              <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                🔔
+                {% if navbar_unread_notifications > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ navbar_unread_notifications }}
+                </span>
+                {% endif %}
+              </a>
+              <div class="dropdown">
+                <button
+                  class="btn btn-outline-secondary d-flex align-items-center gap-2"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span
+                    class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
+                    style="width: 32px; height: 32px"
+                  >
+                    HR
+                  </span>
+                  <span class="d-none d-sm-inline small">HR Admin</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><h6 class="dropdown-header">HR Admin</h6></li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'hr:settings' %}">
+                      Settings &amp; Security
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item disabled" href="#">
+                      Sign out
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h1 class="h4 mb-1">Payroll Management</h1>
+            <p class="text-muted small mb-0">Manage employee salaries and payroll processing</p>
+          </div>
+          <a href="#payrollFormCard" class="btn btn-primary btn-sm">Add Payroll</a>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6 col-xl-2">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="small text-muted">Total Employees</div><div class="fs-5 fw-semibold">{{ total_employees }}</div></div></div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-2">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="small text-muted">Total Gross</div><div class="fs-5 fw-semibold">{{ total_gross_salary }}</div></div></div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-2">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="small text-muted">Total Deductions</div><div class="fs-5 fw-semibold">{{ total_deductions }}</div></div></div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-2">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="small text-muted">Total Net Payroll</div><div class="fs-5 fw-semibold">{{ total_net_salary }}</div></div></div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-2">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="small text-muted">Paid Count</div><div class="fs-5 fw-semibold text-success">{{ paid_count }}</div></div></div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-2">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="small text-muted">Pending Count</div><div class="fs-5 fw-semibold text-warning">{{ pending_count }}</div></div></div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3" id="payrollFormCard">
+          <div class="card-header">
+            <h2 class="h6 mb-0">{% if editing %}Edit Payroll{% else %}Add Payroll{% endif %}</h2>
+          </div>
+          <div class="card-body">
+            <form method="post" action="{% if editing %}{% url 'hr:payroll_update' edit_payroll.pk %}{% else %}{% url 'hr:payroll_create' %}{% endif %}">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold mb-1">Employee Name</label>
+                  {{ form.employee_name }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold mb-1">Month</label>
+                  {{ form.month }}
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-semibold mb-1">Basic Salary</label>
+                  {{ form.basic_salary }}
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-semibold mb-1">Allowances</label>
+                  {{ form.allowances }}
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-semibold mb-1">Deductions</label>
+                  {{ form.deductions }}
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-semibold mb-1">Status</label>
+                  {{ form.status }}
+                </div>
+              </div>
+              <div class="mt-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">{% if editing %}Update Payroll{% else %}Save Payroll{% endif %}</button>
+                {% if editing %}
+                  <a class="btn btn-outline-secondary btn-sm" href="{% url 'hr:payroll_list' %}">Cancel</a>
+                {% endif %}
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">Payroll Records</h2>
+            <span class="badge bg-secondary-subtle text-secondary">{{ payroll_records|length }} record{{ payroll_records|length|pluralize }}</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Month</th>
+                    <th>Basic Salary</th>
+                    <th>Allowances</th>
+                    <th>Deductions</th>
+                    <th>Gross Salary</th>
+                    <th>Net Salary</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="small">
+                  {% for p in payroll_records %}
+                    <tr>
+                      <td>{{ p.employee_name }}</td>
+                      <td>{{ p.month }}</td>
+                      <td>{{ p.basic_salary }}</td>
+                      <td>{{ p.allowances }}</td>
+                      <td>{{ p.deductions }}</td>
+                      <td>{{ p.gross_salary }}</td>
+                      <td class="fw-semibold">{{ p.net_salary }}</td>
+                      <td>
+                        {% if p.status == "PAID" %}
+                          <span class="badge bg-success-subtle text-success">Paid</span>
+                        {% else %}
+                          <span class="badge bg-warning-subtle text-warning">Pending</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'hr:payroll_detail' p.pk %}">View</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'hr:payroll_update' p.pk %}">Edit</a>
+                        <form method="post" action="{% url 'hr:payroll_delete' p.pk %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr><td colspan="9" class="text-center py-4 text-muted">No payroll records found.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+</html>

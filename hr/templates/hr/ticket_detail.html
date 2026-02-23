@@ -1,0 +1,61 @@
+{% extends "hr/dashboard.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-1">Ticket {{ ticket.ticket_id }}</h1>
+    <p class="text-muted small mb-0">{{ ticket.subject }}</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'hr:ticket_update' ticket.pk %}">Edit</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'hr:ticket_list' %}">Back</a>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header"><h2 class="h6 mb-0">Ticket Information</h2></div>
+  <div class="card-body small">
+    <div class="row g-3">
+      <div class="col-md-6"><strong>Client:</strong> {{ ticket.client.company_name }}</div>
+      <div class="col-md-6"><strong>Project:</strong> {% if ticket.project %}{{ ticket.project.name }}{% else %}-{% endif %}</div>
+      <div class="col-md-6"><strong>Priority:</strong> {{ ticket.get_priority_display }}</div>
+      <div class="col-md-6"><strong>Status:</strong> {{ ticket.get_status_display }}</div>
+      <div class="col-md-6"><strong>Assigned Employee:</strong> {% if ticket.assigned_to %}{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}{% else %}-{% endif %}</div>
+      <div class="col-md-6"><strong>Created:</strong> {{ ticket.created_at }}</div>
+      <div class="col-12"><strong>Description:</strong><div class="mt-1">{{ ticket.description }}</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header"><h2 class="h6 mb-0">Add Comment</h2></div>
+  <div class="card-body">
+    <form method="post" action="{% url 'hr:ticket_comment' ticket.pk %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label small fw-semibold mb-1">Comment</label>
+        {{ comment_form.comment_text }}
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Add Comment</button>
+    </form>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="h6 mb-0">Ticket Updates / Comments</h2>
+    <span class="badge bg-secondary-subtle text-secondary">{{ comments|length }} comment{{ comments|length|pluralize }}</span>
+  </div>
+  <div class="card-body">
+    <ul class="list-group list-group-flush small">
+      {% for comment in comments %}
+        <li class="list-group-item px-0">
+          <div>{{ comment.comment_text }}</div>
+          <div class="text-muted">{{ comment.created_at }}</div>
+        </li>
+      {% empty %}
+        <li class="list-group-item px-0 text-muted">No comments yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -4,6 +4,12 @@ body {
 
 .sidebar {
   min-height: 100vh;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  flex: 0 0 280px !important;
+  box-sizing: border-box;
+  overflow-x: hidden;
   background: #0b1120;
   color: #e5e7eb;
 }
@@ -35,6 +41,7 @@ body {
 
 .content-wrapper {
   min-height: 100vh;
+  min-width: 0;
 }
 
 .navbar-brand span {

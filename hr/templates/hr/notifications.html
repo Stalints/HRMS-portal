@@ -1,4 +1,4 @@
-{% load static %}
+{% load static hr_filters %}
 <!doctype html>
 <html lang="en">
 
@@ -39,6 +39,13 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
+            <span class="me-2">👥</span> Employee Management
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+            <span class="me-2">&#129309;</span> Team Management
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
             <span class="me-2">👥</span> Team Management
           </a>
@@ -56,6 +63,21 @@
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
             <span class="me-2">📢</span> Announcements
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+            <span class="me-2">📁</span> Projects
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+            <span class="me-2">✅</span> Tasks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+            <span class="me-2">🏢</span> Clients
           </a>
         </li>
         <li class="nav-item">
@@ -126,7 +148,7 @@
                 aria-label="Notifications">
                 🔔
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  4
+                  {{ unread_count }}
                 </span>
               </button>
               <div class="dropdown">
@@ -163,8 +185,14 @@
             </p>
           </div>
           <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-primary">Mark All as Read</button>
-            <button class="btn btn-sm btn-outline-secondary">Clear All</button>
+            <form method="post" action="{% url 'hr:read_all' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-primary">Mark All as Read</button>
+            </form>
+            <form method="post" action="{% url 'hr:clear_all' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-secondary">Clear All</button>
+            </form>
           </div>
         </div>
 
@@ -176,12 +204,12 @@
               <div class="card-body">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                   <label class="small fw-semibold mb-0">Filter by Type:</label>
-                  <button type="button" class="btn btn-sm btn-primary">All</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Attendance</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Leave</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Event</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Announcement</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Timeline</button>
+                  <a href="{% url 'hr:notifications' %}" class="btn btn-sm {% if not selected_type %}btn-primary{% else %}btn-outline-secondary{% endif %}">All</a>
+                  <a href="{% url 'hr:notifications' %}?type=ATTENDANCE" class="btn btn-sm {% if selected_type == 'ATTENDANCE' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Attendance</a>
+                  <a href="{% url 'hr:notifications' %}?type=LEAVE" class="btn btn-sm {% if selected_type == 'LEAVE' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Leave</a>
+                  <a href="{% url 'hr:notifications' %}?type=EVENT" class="btn btn-sm {% if selected_type == 'EVENT' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Event</a>
+                  <a href="{% url 'hr:notifications' %}?type=ANNOUNCEMENT" class="btn btn-sm {% if selected_type == 'ANNOUNCEMENT' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Announcement</a>
+                  <a href="{% url 'hr:notifications' %}?type=TIMELINE" class="btn btn-sm {% if selected_type == 'TIMELINE' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Timeline</a>
                 </div>
               </div>
             </div>
@@ -189,202 +217,65 @@
             <!-- Notifications List -->
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h2 class="h6 mb-0">All Notifications</h2>
-              <span class="badge bg-danger-subtle text-danger">4 unread</span>
+              <span class="badge bg-danger-subtle text-danger">{{ unread_count }} unread</span>
             </div>
 
-            <!-- Notification 1 - Unread -->
-            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1">Pending Leave Request Approval</h3>
-                    <p class="text-muted small mb-2">
-                      Leave request #LR-1024 submitted by <strong>Aarav Patel</strong> requires your review and
-                      approval.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-warning-subtle text-warning">Leave</span>
-                      <span class="badge bg-danger-subtle text-danger">Unread</span>
-                      <small class="text-muted">2 minutes ago</small>
+            {% for n in notifications %}
+              <div class="card border-0 shadow-sm mb-2 {% if not n.is_read %}border-start border-primary border-3{% endif %}">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="flex-grow-1">
+                      <h3 class="h6 mb-1 {% if n.is_read %}text-muted{% endif %}">{{ n.title }}</h3>
+                      <p class="text-muted small mb-2">
+                        {{ n.message }}
+                      </p>
+                      <div class="d-flex gap-2 align-items-center">
+                        {% if n.type == "LEAVE" %}
+                          <span class="badge bg-warning-subtle text-warning">{{ n.get_type_display }}</span>
+                        {% elif n.type == "ATTENDANCE" %}
+                          <span class="badge bg-info-subtle text-info">{{ n.get_type_display }}</span>
+                        {% elif n.type == "ANNOUNCEMENT" %}
+                          <span class="badge bg-primary-subtle text-primary">{{ n.get_type_display }}</span>
+                        {% elif n.type == "EVENT" %}
+                          <span class="badge bg-success-subtle text-success">{{ n.get_type_display }}</span>
+                        {% elif n.type == "TIMELINE" %}
+                          <span class="badge bg-secondary-subtle text-secondary">{{ n.get_type_display }}</span>
+                        {% else %}
+                          <span class="badge bg-danger-subtle text-danger">{{ n.get_type_display }}</span>
+                        {% endif %}
+                        {% if n.is_read %}
+                          <span class="badge bg-success-subtle text-success">Read</span>
+                        {% else %}
+                          <span class="badge bg-danger-subtle text-danger">Unread</span>
+                        {% endif %}
+                        <small class="text-muted">{{ n.created_at|timesince }} ago</small>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Notification 2 - Unread -->
-            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1">Attendance Exception Flagged</h3>
-                    <p class="text-muted small mb-2">
-                      2 employees forgot to check-out yesterday. Review and resolve attendance discrepancies.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-info-subtle text-info">Attendance</span>
-                      <span class="badge bg-danger-subtle text-danger">Unread</span>
-                      <small class="text-muted">1 hour ago</small>
-                    </div>
+                  <div class="d-flex gap-2 mt-3">
+                    {% if n.is_read %}
+                      <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
+                    {% else %}
+                      <form method="post" action="{% url 'hr:mark_read' n.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Mark as Read</button>
+                      </form>
+                    {% endif %}
+                    <a href="{{ detail_urls|get_item:n.type }}" class="btn btn-sm btn-outline-secondary">View Details</a>
+                    <form method="post" action="{% url 'hr:clear_notification' n.pk %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Clear</button>
+                    </form>
                   </div>
                 </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
+              </div>
+            {% empty %}
+              <div class="card border-0 shadow-sm mb-2">
+                <div class="card-body">
+                  <p class="text-muted small mb-0">No notifications available.</p>
                 </div>
               </div>
-            </div>
-
-            <!-- Notification 3 - Unread -->
-            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1">Policy Acknowledgement Due</h3>
-                    <p class="text-muted small mb-2">
-                      18 employees have not acknowledged the new hybrid work policy. Follow up required.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-primary-subtle text-primary">Announcement</span>
-                      <span class="badge bg-danger-subtle text-danger">Unread</span>
-                      <small class="text-muted">3 hours ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Notification 4 - Unread -->
-            <div class="card border-0 shadow-sm mb-2 border-start border-primary border-3">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1">Event RSVP Status Update</h3>
-                    <p class="text-muted small mb-2">
-                      63% of invited employees responded to Quarterly Town Hall invite. 45 responses pending.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-success-subtle text-success">Event</span>
-                      <span class="badge bg-danger-subtle text-danger">Unread</span>
-                      <small class="text-muted">5 hours ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-primary">Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Notification 5 - Read -->
-            <div class="card border-0 shadow-sm mb-2">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1 text-muted">New Timeline Post</h3>
-                    <p class="text-muted small mb-2">
-                      <strong>Mia Rodriguez</strong> shared a new post: "Onboarding Checklist Template" on the timeline.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-secondary-subtle text-secondary">Timeline</span>
-                      <span class="badge bg-success-subtle text-success">Read</span>
-                      <small class="text-muted">Yesterday, 2:30 PM</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Notification 6 - Read -->
-            <div class="card border-0 shadow-sm mb-2">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1 text-muted">Leave Request Approved</h3>
-                    <p class="text-muted small mb-2">
-                      Leave request #LR-1019 for <strong>Mia Rodriguez</strong> has been approved successfully.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-warning-subtle text-warning">Leave</span>
-                      <span class="badge bg-success-subtle text-success">Read</span>
-                      <small class="text-muted">Yesterday, 11:00 AM</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Notification 7 - Read -->
-            <div class="card border-0 shadow-sm mb-2">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1 text-muted">New Announcement Published</h3>
-                    <p class="text-muted small mb-2">
-                      Announcement "Hybrid Work Policy Refresh" has been published and is now visible to all team
-                      members.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-primary-subtle text-primary">Announcement</span>
-                      <span class="badge bg-success-subtle text-success">Read</span>
-                      <small class="text-muted">2 days ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Notification 8 - Read -->
-            <div class="card border-0 shadow-sm mb-2">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="flex-grow-1">
-                    <h3 class="h6 mb-1 text-muted">Security Reminder</h3>
-                    <p class="text-muted small mb-2">
-                      HR admins are reminded to review access and permissions this week as part of security audit.
-                    </p>
-                    <div class="d-flex gap-2 align-items-center">
-                      <span class="badge bg-danger-subtle text-danger">Security</span>
-                      <span class="badge bg-success-subtle text-success">Read</span>
-                      <small class="text-muted">3 days ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-sm btn-outline-secondary" disabled>Mark as Read</button>
-                  <button class="btn btn-sm btn-outline-secondary">View Details</button>
-                  <button class="btn btn-sm btn-outline-danger">Clear</button>
-                </div>
-              </div>
-            </div>
+            {% endfor %}
           </div>
 
           <!-- Sidebar Information -->
@@ -398,19 +289,19 @@
                 <div class="mb-3">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="small">Total Notifications</span>
-                    <span class="badge bg-primary-subtle text-primary fs-6">8</span>
+                    <span class="badge bg-primary-subtle text-primary fs-6">{{ total_count }}</span>
                   </div>
                 </div>
                 <div class="mb-3">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="small">Unread Notifications</span>
-                    <span class="badge bg-danger-subtle text-danger fs-6">4</span>
+                    <span class="badge bg-danger-subtle text-danger fs-6">{{ unread_count }}</span>
                   </div>
                 </div>
                 <div>
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="small">Read Notifications</span>
-                    <span class="badge bg-success-subtle text-success fs-6">4</span>
+                    <span class="badge bg-success-subtle text-success fs-6">{{ read_count }}</span>
                   </div>
                 </div>
               </div>
@@ -425,27 +316,27 @@
                 <div class="d-flex flex-column gap-2">
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small">Leave</span>
-                    <span class="badge bg-warning-subtle text-warning">2</span>
+                    <span class="badge bg-warning-subtle text-warning">{{ type_counts.LEAVE }}</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small">Attendance</span>
-                    <span class="badge bg-info-subtle text-info">1</span>
+                    <span class="badge bg-info-subtle text-info">{{ type_counts.ATTENDANCE }}</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small">Announcement</span>
-                    <span class="badge bg-primary-subtle text-primary">2</span>
+                    <span class="badge bg-primary-subtle text-primary">{{ type_counts.ANNOUNCEMENT }}</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small">Event</span>
-                    <span class="badge bg-success-subtle text-success">1</span>
+                    <span class="badge bg-success-subtle text-success">{{ type_counts.EVENT }}</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small">Timeline</span>
-                    <span class="badge bg-secondary-subtle text-secondary">1</span>
+                    <span class="badge bg-secondary-subtle text-secondary">{{ type_counts.TIMELINE }}</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small">Security</span>
-                    <span class="badge bg-danger-subtle text-danger">1</span>
+                    <span class="badge bg-danger-subtle text-danger">{{ type_counts.SECURITY }}</span>
                   </div>
                 </div>
               </div>
@@ -476,6 +367,20 @@
     </div>
   </div>
 
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+
+
+</html>
+</html>
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -486,3 +391,4 @@
 </body>
 
 </html>
+

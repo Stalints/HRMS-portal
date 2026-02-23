@@ -1,0 +1,703 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Base | HR Portal</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
+  <style>
+    :root{
+      --brand:#1e3a8a;
+      --bg:#f6f8ff;
+      --text:#0f172a;
+      --muted:#6b7280;
+
+      --border: rgba(15,23,42,.10);
+      --border-strong: rgba(15,23,42,.14);
+
+      --shadow: 0 22px 60px rgba(2,6,23,.10);
+      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
+
+      --radius: 22px;
+      --radius-lg: 28px;
+
+      --glass: rgba(255,255,255,.78);
+      --glass-strong: rgba(255,255,255,.88);
+    }
+
+    body{
+      background:
+        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
+        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
+        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page{ width:100%; max-width:none; }
+
+    /* Topbar (dashboard style) */
+    .topbar{
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.45);
+    }
+    .brand{
+      display:flex; align-items:center; gap:.6rem;
+      text-decoration:none; color: var(--text);
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+    .brand:hover{
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(2,6,23,.07);
+    }
+    .pill{
+      display:flex; align-items:center; gap:.55rem;
+      padding:.48rem .85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: rgba(15,23,42,.85);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,.55);
+      background:
+        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
+        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-120px; top:-120px;
+      width: 340px; height: 340px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      pointer-events:none;
+      z-index:0;
+    }
+    .hero-inner{
+      padding: 22px 22px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+      color:#fff;
+      position:relative;
+      z-index:1;
+      flex-wrap: wrap;
+    }
+    .hero h1{
+      margin:0;
+      font-size: 1.5rem;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+    .hero p{
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.86);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+    .hero-actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-left:auto;
+    }
+    .hero-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding: .6rem .95rem;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 12px 26px rgba(2,6,23,.10);
+    }
+    .hero-btn:hover{
+      color:#fff;
+      background: rgba(255,255,255,.18);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(2,6,23,.14);
+    }
+    .hero-btn.secondary{
+      background: rgba(255,255,255,.94);
+      color: rgba(2,6,23,.90);
+      border-color: rgba(255,255,255,.70);
+    }
+    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
+
+    /* Glass cards */
+    .glass-card{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--glass-strong);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Search */
+    .search-wrap{
+      padding: 14px 14px;
+    }
+    .search-input{
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      padding: 12px 14px;
+      font-weight: 700;
+    }
+    .search-input:focus{
+      border-color: rgba(30,58,138,.35);
+      box-shadow: 0 0 0 .22rem rgba(30,58,138,.12);
+    }
+    .search-btn{
+      border-radius: 999px;
+      font-weight: 900;
+      padding: 12px 14px;
+      border: 1px solid rgba(30,58,138,.22);
+      background: rgba(30,58,138,.08);
+      color: rgba(30,58,138,1);
+      transition: transform .15s ease, background .15s ease;
+    }
+    .search-btn:hover{
+      background: rgba(30,58,138,.12);
+      transform: translateY(-1px);
+    }
+
+    /* Category chips */
+    .cat-strip{
+      padding: 0 14px 14px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .cat-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding: .6rem .85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 12px 22px rgba(2,6,23,.05);
+      text-decoration:none;
+      color: rgba(2,6,23,.88);
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cat-chip:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(2,6,23,.07);
+      color: rgba(2,6,23,.88);
+    }
+    .cat-chip.active{
+      border-color: rgba(30,58,138,.28);
+      background: rgba(30,58,138,.10);
+      color: rgba(30,58,138,1);
+    }
+
+    /* Article list cards */
+    .kb-section-title{
+      font-weight: 950;
+      letter-spacing: -.01em;
+      margin: 0;
+      color: rgba(2,6,23,.92);
+    }
+    .kb-subtitle{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .95rem;
+      margin-top: 2px;
+    }
+
+    .article-card{
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.90);
+      box-shadow: 0 12px 26px rgba(2,6,23,.06);
+      padding: 14px 14px;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      height: 100%;
+      display:flex;
+      gap: 12px;
+      text-decoration:none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    .article-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(2,6,23,.10);
+      border-color: rgba(30,58,138,.20);
+      color: inherit;
+    }
+    .a-icon{
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      display:grid;
+      place-items:center;
+      font-size: 1.25rem;
+      border: 1px solid rgba(255,255,255,.62);
+      box-shadow: 0 14px 28px rgba(2,6,23,.08);
+      flex: 0 0 auto;
+    }
+    .a-body{ min-width: 0; }
+    .a-title{
+      font-weight: 950;
+      margin: 0 0 4px;
+      letter-spacing: -.01em;
+      color: rgba(2,6,23,.92);
+      line-height: 1.2;
+    }
+    .a-desc{
+      margin: 0;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: .95rem;
+      line-height: 1.35;
+    }
+    .a-meta{
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: rgba(2,6,23,.65);
+      font-weight: 800;
+      font-size: .86rem;
+    }
+    .badge-soft{
+      border-radius: 999px;
+      padding: .25rem .6rem;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.78);
+      color: rgba(15,23,42,.70);
+      font-weight: 900;
+    }
+
+    /* icon theme blocks */
+    .ic-billing{ background: linear-gradient(135deg, rgba(16,185,129,.22), rgba(16,185,129,.08)); color: rgba(5,150,105,1); }
+    .ic-payments{ background: linear-gradient(135deg, rgba(245,158,11,.22), rgba(245,158,11,.08)); color: rgba(217,119,6,1); }
+    .ic-support{ background: linear-gradient(135deg, rgba(244,63,94,.20), rgba(244,63,94,.07)); color: rgba(225,29,72,1); }
+    .ic-projects{ background: linear-gradient(135deg, rgba(59,130,246,.22), rgba(59,130,246,.08)); color: rgba(30,58,138,1); }
+    .ic-events{ background: linear-gradient(135deg, rgba(34,197,94,.20), rgba(34,197,94,.07)); color: rgba(22,163,74,1); }
+
+    /* Right side panel */
+    .side-card{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--glass-strong);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px;
+    }
+    .side-title{
+      font-weight: 950;
+      margin: 0 0 8px;
+      letter-spacing: -.01em;
+    }
+    .quick-link{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.90);
+      text-decoration:none;
+      color: inherit;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+      margin-top: 10px;
+    }
+    .quick-link:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(2,6,23,.08);
+      color: inherit;
+    }
+    .quick-link small{
+      color: var(--muted);
+      font-weight: 800;
+      display:block;
+      margin-top: 2px;
+    }
+
+    /* Footer */
+    .footerbar{
+      margin: 18px 0 26px;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--glass-strong);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      flex-wrap: wrap;
+    }
+    .footerbar .small-note{
+      color: var(--muted);
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px){
+      .hero-actions{ width:100%; justify-content:flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Topbar -->
+  <nav class="navbar topbar py-3">
+    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
+      <a class="brand" href="{% url 'core:client_dashboard' %}">
+        <i class="bi bi-building"></i>
+        <span>HR Portal</span>
+      </a>
+
+      <div class="pill">
+        <i class="bi bi-person-circle"></i>
+        <span>Client</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid page px-4 px-lg-5">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div>
+          <h1>Knowledge Base</h1>
+          <p>Find answers fast — guides, FAQs, and step-by-step help.</p>
+        </div>
+
+        <div class="hero-actions">
+          <a class="hero-btn secondary" href="{% url 'core:support' %}">
+            <i class="bi bi-headset"></i> Raise Ticket
+          </a>
+          <a class="hero-btn" href="{% url 'core:client_dashboard' %}">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search + Categories -->
+    <div class="glass-card mt-3">
+      <div class="search-wrap">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-lg-9">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-0" style="border-radius:999px 0 0 999px; padding-left:14px;">
+                <i class="bi bi-search"></i>
+              </span>
+              <input id="kbSearch" type="text" class="form-control search-input border-0"
+                     style="border-radius:0 999px 999px 0;"
+                     placeholder="Search articles… e.g., invoice payment, events, profile update">
+            </div>
+          </div>
+          <div class="col-12 col-lg-3 d-grid">
+            <button id="kbClear" class="search-btn">
+              <i class="bi bi-x-circle me-1"></i> Clear / Show All
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cat-strip">
+        <span class="cat-chip active" data-cat="all"><i class="bi bi-grid"></i> All</span>
+        <span class="cat-chip" data-cat="billing"><i class="bi bi-receipt"></i> Billing</span>
+        <span class="cat-chip" data-cat="payments"><i class="bi bi-credit-card"></i> Payments</span>
+        <span class="cat-chip" data-cat="projects"><i class="bi bi-kanban"></i> Projects</span>
+        <span class="cat-chip" data-cat="events"><i class="bi bi-calendar-event"></i> Events</span>
+        <span class="cat-chip" data-cat="support"><i class="bi bi-headset"></i> Support</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="row g-4 mt-2">
+      <!-- Main -->
+      <div class="col-12 col-lg-8">
+
+        <!-- Popular articles -->
+        <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-2">
+          <div>
+            <h4 class="kb-section-title">Popular Articles</h4>
+            <div class="kb-subtitle">Most viewed guides to get you started</div>
+          </div>
+          <div class="text-muted fw-bold small">
+            <i class="bi bi-lightning-charge me-1"></i> Tip: Use search + category filter
+          </div>
+        </div>
+
+        <div class="row g-3" id="kbList">
+          <!-- Article 1 -->
+          <div class="col-12">
+            <a href="#" class="article-card kb-item" data-cat="billing" data-title="Download invoices and understand invoice status">
+              <div class="a-icon ic-billing"><i class="bi bi-receipt"></i></div>
+              <div class="a-body">
+                <div class="a-title">Download invoices & understand status</div>
+                <p class="a-desc">Where to view invoices, what “Pending / Paid” means, and how to download PDFs.</p>
+                <div class="a-meta">
+                  <span class="badge-soft">Billing</span>
+                  <span><i class="bi bi-clock me-1"></i> 2 min read</span>
+                  <span><i class="bi bi-eye me-1"></i> Popular</span>
+                </div>
+              </div>
+              <div class="ms-auto d-flex align-items-center text-muted fw-bold">
+                <i class="bi bi-chevron-right"></i>
+              </div>
+            </a>
+          </div>
+
+          <!-- Article 2 -->
+          <div class="col-12">
+            <a href="#" class="article-card kb-item" data-cat="payments" data-title="Pay an invoice and confirm payment success">
+              <div class="a-icon ic-payments"><i class="bi bi-credit-card"></i></div>
+              <div class="a-body">
+                <div class="a-title">Pay an invoice & confirm payment</div>
+                <p class="a-desc">Step-by-step payment flow, receipts, and what to do if payment is stuck.</p>
+                <div class="a-meta">
+                  <span class="badge-soft">Payments</span>
+                  <span><i class="bi bi-clock me-1"></i> 3 min read</span>
+                </div>
+              </div>
+              <div class="ms-auto d-flex align-items-center text-muted fw-bold">
+                <i class="bi bi-chevron-right"></i>
+              </div>
+            </a>
+          </div>
+
+          <!-- Article 3 -->
+          <div class="col-12">
+            <a href="#" class="article-card kb-item" data-cat="events" data-title="View events calendar and export events to ics">
+              <div class="a-icon ic-events"><i class="bi bi-calendar-event"></i></div>
+              <div class="a-body">
+                <div class="a-title">Events calendar + export (.ics)</div>
+                <p class="a-desc">How to view HR shared events and add them to Google Calendar / Outlook.</p>
+                <div class="a-meta">
+                  <span class="badge-soft">Events</span>
+                  <span><i class="bi bi-clock me-1"></i> 2 min read</span>
+                </div>
+              </div>
+              <div class="ms-auto d-flex align-items-center text-muted fw-bold">
+                <i class="bi bi-chevron-right"></i>
+              </div>
+            </a>
+          </div>
+
+          <!-- Article 4 -->
+          <div class="col-12">
+            <a href="#" class="article-card kb-item" data-cat="support" data-title="Raise a support ticket and track updates">
+              <div class="a-icon ic-support"><i class="bi bi-headset"></i></div>
+              <div class="a-body">
+                <div class="a-title">Raise a support ticket & track updates</div>
+                <p class="a-desc">Create tickets, attach files, and check status changes from your dashboard.</p>
+                <div class="a-meta">
+                  <span class="badge-soft">Support</span>
+                  <span><i class="bi bi-clock me-1"></i> 4 min read</span>
+                </div>
+              </div>
+              <div class="ms-auto d-flex align-items-center text-muted fw-bold">
+                <i class="bi bi-chevron-right"></i>
+              </div>
+            </a>
+          </div>
+
+          <!-- Article 5 -->
+          <div class="col-12">
+            <a href="#" class="article-card kb-item" data-cat="projects" data-title="How to follow project progress and milestones">
+              <div class="a-icon ic-projects"><i class="bi bi-kanban"></i></div>
+              <div class="a-body">
+                <div class="a-title">Follow project progress & milestones</div>
+                <p class="a-desc">Understand task status, milestones, and how to track ongoing work.</p>
+                <div class="a-meta">
+                  <span class="badge-soft">Projects</span>
+                  <span><i class="bi bi-clock me-1"></i> 3 min read</span>
+                </div>
+              </div>
+              <div class="ms-auto d-flex align-items-center text-muted fw-bold">
+                <i class="bi bi-chevron-right"></i>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="kbEmpty" class="glass-card mt-3 p-3" style="display:none;">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-search fs-4 text-primary"></i>
+            <div>
+              <div class="fw-black" style="font-weight:950;">No articles found</div>
+              <div class="text-muted fw-bold">Try a different keyword or switch category.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Side panel -->
+      <div class="col-12 col-lg-4">
+        <div class="side-card">
+          <h5 class="side-title">Quick Actions</h5>
+
+          <a class="quick-link" href="{% url 'core:invoices' %}">
+            <div>
+              <div><i class="bi bi-receipt me-2"></i> Open Invoices</div>
+              <small>Download / check status</small>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+
+          <a class="quick-link" href="{% url 'core:payments' %}">
+            <div>
+              <div><i class="bi bi-credit-card me-2"></i> Payments</div>
+              <small>History & confirmations</small>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+
+          <a class="quick-link" href="{% url 'core:events' %}">
+            <div>
+              <div><i class="bi bi-calendar-event me-2"></i> Events</div>
+              <small>View calendar & export</small>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+
+          <a class="quick-link" href="{% url 'core:profile' %}">
+            <div>
+              <div><i class="bi bi-person-circle me-2"></i> Profile</div>
+              <small>Update your details</small>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+
+          <div class="mt-3 p-3" style="border-radius:18px; border:1px solid rgba(15,23,42,.10); background: rgba(255,255,255,.85);">
+            <div class="fw-black" style="font-weight:950;">
+              <i class="bi bi-info-circle me-1"></i> Need human help?
+            </div>
+            <div class="text-muted fw-bold mb-2">If an article doesn’t solve it, raise a ticket.</div>
+            <a class="btn btn-sm w-100" href="{% url 'core:support' %}"
+               style="border-radius:999px; font-weight:950; border:1px solid rgba(30,58,138,.22); background: rgba(30,58,138,.08); color: rgba(30,58,138,1);">
+              <i class="bi bi-headset me-1"></i> Raise Support Ticket
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer bar -->
+    <div class="footerbar">
+      <div class="small-note">
+        <i class="bi bi-shield-check me-1"></i>
+        Your data is protected. Contact support if you need help.
+      </div>
+      <a href="{% url 'core:client_dashboard' %}" class="text-decoration-none fw-black" style="font-weight:950; color: rgba(30,58,138,1);">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // Simple client-side filter (no backend needed)
+    const searchInput = document.getElementById("kbSearch");
+    const clearBtn = document.getElementById("kbClear");
+    const chips = document.querySelectorAll(".cat-chip");
+    const items = document.querySelectorAll(".kb-item");
+    const empty = document.getElementById("kbEmpty");
+
+    let activeCat = "all";
+
+    function normalize(s){ return (s || "").toLowerCase().trim(); }
+
+    function applyFilter(){
+      const q = normalize(searchInput.value);
+      let shown = 0;
+
+      items.forEach(el => {
+        const cat = el.getAttribute("data-cat");
+        const title = normalize(el.getAttribute("data-title"));
+        const text = normalize(el.innerText);
+
+        const catOk = (activeCat === "all") || (cat === activeCat);
+        const qOk = !q || title.includes(q) || text.includes(q);
+
+        const ok = catOk && qOk;
+        el.parentElement.style.display = ok ? "" : "none";
+        if(ok) shown++;
+      });
+
+      empty.style.display = (shown === 0) ? "block" : "none";
+    }
+
+    chips.forEach(ch => {
+      ch.addEventListener("click", () => {
+        chips.forEach(c => c.classList.remove("active"));
+        ch.classList.add("active");
+        activeCat = ch.getAttribute("data-cat");
+        applyFilter();
+      });
+    });
+
+    searchInput.addEventListener("input", applyFilter);
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      activeCat = "all";
+      chips.forEach(c => c.classList.remove("active"));
+      document.querySelector('.cat-chip[data-cat="all"]').classList.add("active");
+      applyFilter();
+      searchInput.focus();
+    });
+
+    applyFilter();
+  </script>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
