@@ -4,159 +4,256 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Payments | HR Portal</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 55%),
-        radial-gradient(900px 500px at 90% 15%, #ede9fe 0%, transparent 55%),
-        #f6f7fb;
+    :root{
+      --brand:#1e3a8a;
+      --bg:#f6f8ff;
+      --text:#0f172a;
+      --muted:#6b7280;
+
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 22px 60px rgba(2,6,23,.10);
+      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
+
+      --radius: 22px;
+      --radius-lg: 28px;
+
+      --glass: rgba(255,255,255,.78);
+      --glass-strong: rgba(255,255,255,.88);
     }
 
-    .navbar {
-      background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
-      box-shadow: 0 10px 30px rgba(2, 6, 23, .12);
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      background:
+        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
+        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
+        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
     }
-    .navbar .navbar-brand {
-      color: #fff;
+
+    .page{ width:100%; max-width:none; }
+
+    /* Topbar (dashboard style) */
+    .topbar{
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.45);
+    }
+    .brand{
+      display:flex; align-items:center; gap:.6rem;
+      text-decoration:none; color: var(--text);
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+    .brand:hover{
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(2,6,23,.07);
+    }
+    .pill{
+      display:flex; align-items:center; gap:.55rem;
+      padding:.48rem .85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: rgba(15,23,42,.85);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      font-size: .92rem;
       font-weight: 700;
-      letter-spacing: .2px;
-    }
-    .navbar span {
-      color: #e2e8f0;
-      font-weight: 500;
     }
 
-    .page-head {
-      display: flex;
-      align-items: center;
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,.55);
+      background:
+        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
+        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-120px; top:-120px;
+      width: 340px; height: 340px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      pointer-events:none;
+      z-index:0;
+    }
+    .hero-inner{
+      padding: 22px 22px;
+      display:flex;
+      align-items:center;
       justify-content: space-between;
-      padding: 18px 18px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, .75);
-      box-shadow: 0 10px 28px rgba(2, 6, 23, .08);
-      backdrop-filter: blur(8px);
-      gap: 12px;
+      gap: 14px;
+      color:#fff;
+      position:relative;
+      z-index:1;
       flex-wrap: wrap;
     }
-
-    .page-title {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      min-width: 260px;
+    .hero h1{
+      margin:0;
+      font-size: 1.5rem;
+      font-weight: 950;
+      letter-spacing: -.02em;
     }
-    .page-title .icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
-      color: #1e3a8a;
-      box-shadow: inset 0 0 0 1px rgba(30, 58, 138, .12);
+    .hero p{
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.86);
+      font-size: 1rem;
+      line-height: 1.35;
     }
-
-    h2 {
-      font-weight: 800;
-      margin: 0;
+    .hero-actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-left:auto;
     }
-
-    .btn-success {
-      border-radius: 14px;
-      padding: 10px 14px;
-      box-shadow: 0 10px 18px rgba(34, 197, 94, .18);
-      transition: transform .15s ease, box-shadow .15s ease;
+    .hero-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding: .6rem .95rem;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 12px 26px rgba(2,6,23,.10);
     }
-    .btn-success:hover {
+    .hero-btn:hover{
+      color:#fff;
+      background: rgba(255,255,255,.18);
       transform: translateY(-1px);
-      box-shadow: 0 16px 26px rgba(34, 197, 94, .22);
+      box-shadow: 0 16px 34px rgba(2,6,23,.14);
     }
+    .hero-btn.secondary{
+      background: rgba(255,255,255,.94);
+      color: rgba(2,6,23,.90);
+      border-color: rgba(255,255,255,.70);
+    }
+    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
 
-    .btn-primary,
-    .btn-outline-success,
-    .btn-outline-danger,
-    .btn-outline-secondary {
-      border-radius: 14px;
+    /* Glass cards */
+    .glass-card{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--glass-strong);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
     }
-
-    /* Stat cards */
-    .stat {
-      border-radius: 20px;
-      background: rgba(255, 255, 255, .8);
-      box-shadow: 0 12px 30px rgba(2, 6, 23, .08);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(148, 163, 184, .22);
-      overflow: hidden;
+    .card-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-    .stat .topline {
-      height: 4px;
-      background: linear-gradient(90deg, #22c55e, #60a5fa, #a78bfa);
+    .title{
+      margin:0;
+      font-weight: 950;
+      letter-spacing: -.01em;
+      color: rgba(2,6,23,.92);
     }
-    .stat .inner {
-      padding: 16px;
-    }
-    .stat .label {
-      color: #64748b;
-      font-weight: 600;
+    .sub{
+      color: var(--muted);
+      font-weight: 800;
       font-size: .92rem;
     }
-    .stat .value {
-      font-weight: 900;
-      letter-spacing: .2px;
-      margin: 6px 0 0;
-    }
-    .stat .sub {
-      color: #94a3b8;
-      font-size: .85rem;
-    }
 
-    .chip {
+    /* Stats */
+    .stat{
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.86);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      position: relative;
+    }
+    .stat::before{
+      content:"";
+      position:absolute; left:0; right:0; top:0;
+      height: 4px;
+      background: linear-gradient(90deg, rgba(34,197,94,1), rgba(96,165,250,1), rgba(167,139,250,1));
+    }
+    .stat .inner{ padding: 16px; }
+    .stat .label{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+    .stat .value{
+      font-weight: 950;
+      letter-spacing: .2px;
+      margin-top: 6px;
+      color: rgba(2,6,23,.92);
+    }
+    .stat .subline{
+      color: rgba(100,116,139,.95);
+      font-size: .86rem;
       font-weight: 700;
+    }
+    .chip{
+      font-weight: 900;
       border-radius: 999px;
       padding: 6px 10px;
       font-size: .75rem;
       letter-spacing: .4px;
       text-transform: uppercase;
       white-space: nowrap;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.82);
+      color: rgba(2,6,23,.75);
     }
 
-    /* Payment card */
-    .p-card {
+    /* Payment cards */
+    .p-card{
       border-radius: 22px;
-      background: rgba(255, 255, 255, .85);
-      box-shadow: 0 12px 30px rgba(2, 6, 23, .08);
-      border: 1px solid rgba(148, 163, 184, .2);
-      transition: transform .18s ease, box-shadow .18s ease;
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148,163,184,.20);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
       position: relative;
+      overflow:hidden;
     }
-    .p-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 18px 40px rgba(2, 6, 23, .12);
+    .p-card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(30,58,138,.18);
     }
-    .p-id {
-      font-weight: 900;
-      color: #0f172a;
-    }
-    .p-muted {
-      color: #64748b;
-    }
-    .p-amount {
-      font-weight: 900;
-      color: #1e3a8a;
-      font-size: 1.25rem;
-    }
-    .p-meta i {
-      color: #1e3a8a;
-    }
+    .p-id{ font-weight: 950; color: rgba(2,6,23,.92); }
+    .p-muted{ color: rgba(100,116,139,.95); font-weight: 700; }
+    .p-amount{ font-weight: 950; color: var(--brand); font-size: 1.25rem; }
 
-    /* ❌ Hide button */
     .hide-btn{
       width: 34px;
       height: 34px;
@@ -164,162 +261,155 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background: rgba(255,255,255,.8);
+      background: rgba(255,255,255,.85);
       border: 1px solid rgba(148,163,184,.35);
-      color: #0f172a;
+      color: rgba(2,6,23,.88);
       transition: transform .12s ease, background .12s ease;
     }
-    .hide-btn:hover{
-      transform: scale(1.04);
-      background: rgba(248,250,252,1);
-    }
+    .hide-btn:hover{ transform: scale(1.04); background: rgba(248,250,252,1); }
 
-    /* Modal */
-    .modal-content {
+    .btn, .form-control, .form-select{ border-radius: 14px; }
+    .btn-pill{ border-radius: 999px; font-weight: 900; }
+    .btn-soft{
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.80);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 22px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+      font-weight: 900;
+    }
+    .btn-soft:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(2,6,23,.08); }
+
+    /* Modal polish */
+    .modal-content{
       border-radius: 22px;
-      border: 0;
-      box-shadow: 0 18px 60px rgba(2, 6, 23, .25);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 18px 60px rgba(2,6,23,.25);
+      overflow:hidden;
     }
-    .modal-header { border: 0; }
-    .modal-title { font-weight: 900; }
-
-    .form-control,
-    .form-select {
-      border-radius: 14px;
+    .modal-header{
+      background: linear-gradient(135deg, rgba(30,58,138,1), rgba(30,58,138,.88));
+      color:#fff;
+      border:0;
     }
-    .form-control:focus,
-    .form-select:focus {
-      box-shadow: 0 0 0 .25rem rgba(59, 130, 246, .18);
+    .modal-title{ font-weight: 950; }
+    .modal-footer{
+      background: rgba(248,250,252,.85);
+      border-top: 1px solid rgba(15,23,42,.10);
+    }
+    .form-control:focus, .form-select:focus{
+      box-shadow: 0 0 0 .25rem rgba(30,58,138,.14);
+      border-color: rgba(30,58,138,.30);
     }
 
     /* Processing overlay */
-    .processing {
-      position: absolute;
-      inset: 0;
-      background: rgba(255, 255, 255, .88);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
+    .processing{
+      position:absolute;
+      inset:0;
+      background: rgba(255,255,255,.88);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
       gap: 10px;
       border-radius: 22px;
       z-index: 10;
       backdrop-filter: blur(4px);
     }
-    .processing.show { display: flex; }
+    .processing.show{ display:flex; }
 
     /* Toast */
-    .toast-container { z-index: 2000; }
-    .toast {
-      border-radius: 16px;
-      box-shadow: 0 18px 40px rgba(2, 6, 23, .22);
+    .toast-container{ z-index: 2000; }
+    .toast{ border-radius: 16px; box-shadow: 0 18px 40px rgba(2,6,23,.22); }
+
+    @media (max-width: 768px){
+      .hero-actions{ width:100%; justify-content:flex-start; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar py-2">
-    <div class="container d-flex justify-content-between align-items-center">
-      <a class="navbar-brand d-flex align-items-center" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building me-2"></i> HR Portal
+  <!-- Topbar -->
+  <nav class="navbar topbar py-3">
+    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
+      <a class="brand" href="{% url 'core:client_dashboard' %}">
+        <i class="bi bi-building"></i>
+        <span>HR Portal</span>
       </a>
-      <span><i class="bi bi-person-circle me-1"></i> Client</span>
+      <div class="pill">
+        <i class="bi bi-person-circle"></i>
+        <span>Client</span>
+      </div>
     </div>
   </nav>
 
-  <!-- Toasts -->
-  <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="payToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
-      aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body" id="payToastMsg">Payment successful.</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>
+  <div class="container-fluid page px-4 px-lg-5">
 
-    <div id="payToastErr" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive"
-      aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body" id="payToastErrMsg">Payment failed.</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="container my-4 my-md-5">
-
-    <!-- Page Header -->
-    <div class="page-head mb-4">
-      <div class="page-title">
-        <div class="icon"><i class="bi bi-receipt-cutoff fs-5"></i></div>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
         <div>
-          <h2>Payments</h2>
-          <div class="text-muted small">Track invoices, pay pending items (dummy), and view history.</div>
+          <h1>Payments</h1>
+          <p>Track invoices, pay pending items (dummy), and view history.</p>
         </div>
-      </div>
 
-      <!-- ✅ Actions (Back + Show Hidden + Add) -->
-      <div class="d-flex gap-2 ms-auto">
-        <a href="{% url 'core:client_dashboard' %}" class="btn btn-outline-secondary">
-          <i class="bi bi-arrow-left me-1"></i> Dashboard
-        </a>
-
-        <button class="btn btn-outline-secondary" type="button" onclick="resetHiddenPayments()">
-          <i class="bi bi-arrow-counterclockwise me-1"></i> Show Hidden
-        </button>
-
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
-          <i class="bi bi-plus-circle me-1"></i> Add Payment
-        </button>
+        <div class="hero-actions">
+          <a href="{% url 'core:client_dashboard' %}" class="hero-btn secondary">
+            <i class="bi bi-arrow-left"></i> Dashboard
+          </a>
+          <button class="hero-btn" type="button" onclick="resetHiddenPayments()">
+            <i class="bi bi-arrow-counterclockwise"></i> Show Hidden
+          </button>
+          <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#addPaymentModal" type="button">
+            <i class="bi bi-plus-circle"></i> Add Payment
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Summary Cards -->
-    <div class="row g-3 g-md-4 mb-4">
+    <div class="row g-3 g-md-4 mt-3">
       <div class="col-md-4">
         <div class="stat">
-          <div class="topline"></div>
           <div class="inner">
             <div class="d-flex align-items-center justify-content-between">
               <div class="label">Total Paid</div>
-              <span class="chip bg-success-subtle text-success"><i class="bi bi-check2-circle me-1"></i>Settled</span>
+              <span class="chip"><i class="bi bi-check2-circle me-1"></i>Settled</span>
             </div>
-            <div class="value text-success fs-3">₹{{ total_paid }}</div>
-            <div class="sub">Sum of completed payments</div>
+            <div class="value fs-3 text-success">₹{{ total_paid }}</div>
+            <div class="subline">Sum of completed payments</div>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="stat">
-          <div class="topline"></div>
           <div class="inner">
             <div class="d-flex align-items-center justify-content-between">
               <div class="label">Pending Payments</div>
-              <span class="chip bg-warning-subtle text-warning"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+              <span class="chip"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
             </div>
-            <div class="value text-warning fs-3">₹{{ pending }}</div>
-            <div class="sub">Total amount waiting to be paid</div>
+            <div class="value fs-3 text-warning">₹{{ pending }}</div>
+            <div class="subline">Total amount waiting to be paid</div>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="stat">
-          <div class="topline"></div>
           <div class="inner">
             <div class="d-flex align-items-center justify-content-between">
               <div class="label">Last Payment</div>
-              <span class="chip bg-info-subtle text-info"><i class="bi bi-clock me-1"></i>Latest</span>
+              <span class="chip"><i class="bi bi-clock me-1"></i>Latest</span>
             </div>
             {% if last_payment %}
               <div class="value fs-4">₹{{ last_payment.amount_paid }}</div>
-              <div class="sub">{{ last_payment.payment_date|date:"d M Y" }}</div>
+              <div class="subline">{{ last_payment.payment_date|date:"d M Y" }}</div>
             {% else %}
               <div class="value fs-4">—</div>
-              <div class="sub">No completed payment yet</div>
+              <div class="subline">No completed payment yet</div>
             {% endif %}
           </div>
         </div>
@@ -327,214 +417,252 @@
     </div>
 
     <!-- Payments List -->
-    <div class="row g-3 g-md-4" id="paymentCards">
-      {% for p in payments %}
-      <div class="col-md-6 payment-item" data-payment-id="{{ p.id }}">
-        <div class="p-card p-3">
-
-          <!-- top row -->
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <div class="p-id">{{ p.payment_id }}</div>
-              <div class="p-muted small">Invoice: <strong>INV-{{ p.invoice.id }}</strong></div>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-              {% if p.status == "COMPLETED" %}
-                <span class="chip bg-success text-white"><i class="bi bi-check2-circle me-1"></i>Completed</span>
-              {% else %}
-                <span class="chip bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
-              {% endif %}
-
-              <!-- ✅ Hide (frontend only) -->
-              <button type="button" class="hide-btn" title="Hide from list" onclick="hidePaymentPersistent(this)">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </div>
-          </div>
-
-          <hr class="my-3">
-
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="p-meta small">
-              <div class="mb-1"><i class="bi bi-wallet2 me-1"></i> {{ p.get_method_display }}</div>
-              <div><i class="bi bi-calendar-event me-1"></i> {{ p.payment_date|date:"Y-m-d" }}</div>
-            </div>
-
-            <div class="text-end">
-              <div class="p-amount">₹{{ p.amount_paid }}</div>
-
-              <!-- ✅ Buttons -->
-              <div class="d-flex gap-2 justify-content-end mt-2">
-
-                {% if p.status == "PENDING" %}
-                  <button class="btn btn-primary btn-sm"
-                    data-bs-toggle="modal" data-bs-target="#payNowModal"
-                    data-pay-url="{% url 'core:payment_pay_now' p.id %}"
-                    data-pay-id="{{ p.payment_id }}"
-                    data-pay-amount="{{ p.amount_paid }}">
-                    Pay Now
-                  </button>
-
-                  <!-- (Optional) DB delete only for pending -->
-                  <form method="POST" action="{% url 'core:payment_delete' p.id %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger btn-sm"
-                      onclick="return confirm('Delete {{ p.payment_id }}?');">
-                      <i class="bi bi-trash3 me-1"></i> Delete
-                    </button>
-                  </form>
-                {% else %}
-                  <button class="btn btn-outline-success btn-sm" disabled>
-                    Paid
-                  </button>
-                {% endif %}
-
-              </div>
-            </div>
-
-          </div>
+    <div class="glass-card mt-3">
+      <div class="card-head">
+        <div>
+          <div class="title">Payment History</div>
+          <div class="sub">Pending payments can be paid (dummy) or deleted</div>
         </div>
       </div>
-      {% empty %}
-      <div class="col-12">
-        <div class="alert alert-info mb-0">No payments found.</div>
-      </div>
-      {% endfor %}
-    </div>
 
-    <!-- Add Payment Modal -->
-    <div class="modal fade" id="addPaymentModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-3">
-          <div class="modal-header">
-            <h5 class="modal-title">Add Payment</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+      <div class="p-3 p-lg-4">
+        <div class="row g-3 g-md-4" id="paymentCards">
+          {% for p in payments %}
+          <div class="col-md-6 payment-item" data-payment-id="{{ p.id }}">
+            <div class="p-card p-3 p-lg-4">
 
-          <div class="modal-body">
-            <form method="POST" action="{% url 'core:payment_create' %}">
-              {% csrf_token %}
-
-              <div class="mb-3">
-                <label class="form-label">Payment ID</label>
-                <input type="text" class="form-control" name="payment_id" placeholder="PAY-201" required>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Invoice</label>
-                <select class="form-select" name="invoice_id" required>
-                  <option value="">Select invoice</option>
-                  {% for inv in invoices %}
-                    <option value="{{ inv.id }}">
-                      INV-{{ inv.id }} ({{ inv.project.name }}) - ₹{{ inv.amount }}
-                    </option>
-                  {% endfor %}
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Amount</label>
-                <input type="number" class="form-control" name="amount_paid" step="0.01" required>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Payment Date</label>
-                <input type="date" class="form-control" name="payment_date" required>
-              </div>
-
-              <button type="submit" class="btn btn-success w-100">Save Payment</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pay Now Modal -->
-    <div class="modal fade" id="payNowModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-3 position-relative">
-
-          <!-- Processing overlay -->
-          <div class="processing" id="processingOverlay">
-            <div class="spinner-border" role="status"></div>
-            <div class="fw-semibold">Processing payment…</div>
-            <div class="text-muted small">This is a dummy flow (no real money).</div>
-          </div>
-
-          <div class="modal-header">
-            <div>
-              <h5 class="modal-title mb-0">Pay Now</h5>
-              <small class="text-muted" id="payNowMeta">—</small>
-            </div>
-            <button class="btn-close" id="payModalCloseBtn" data-bs-dismiss="modal"></button>
-          </div>
-
-          <div class="modal-body">
-            <form id="payNowForm">
-              {% csrf_token %}
-
-              <div class="mb-3">
-                <label class="form-label">Payment Method</label>
-                <select class="form-select" id="payMethod" name="method" required>
-                  <option value="CARD">Credit Card</option>
-                  <option value="UPI">UPI</option>
-                  <option value="BANK">Bank Transfer</option>
-                </select>
-              </div>
-
-              <!-- Card -->
-              <div id="cardFields">
-                <div class="mb-3">
-                  <label class="form-label">Card Number</label>
-                  <input type="text" class="form-control" name="card_number" placeholder="1234 5678 9012 3456">
+              <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                <div>
+                  <div class="p-id">{{ p.payment_id }}</div>
+                  <div class="p-muted small">Invoice: <strong>INV-{{ p.invoice.id }}</strong></div>
                 </div>
-                <div class="row g-2">
-                  <div class="col-6">
-                    <label class="form-label">Expiry (MM/YY)</label>
-                    <input type="text" class="form-control" name="card_expiry" placeholder="08/28">
+
+                <div class="d-flex align-items-center gap-2">
+                  {% if p.status == "COMPLETED" %}
+                    <span class="badge rounded-pill text-bg-success px-3 py-2 fw-semibold">
+                      <i class="bi bi-check2-circle me-1"></i> Completed
+                    </span>
+                  {% else %}
+                    <span class="badge rounded-pill text-bg-warning px-3 py-2 fw-semibold text-dark">
+                      <i class="bi bi-hourglass-split me-1"></i> Pending
+                    </span>
+                  {% endif %}
+
+                  <button type="button" class="hide-btn" title="Hide from list" onclick="hidePaymentPersistent(this)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </div>
+
+              <hr class="my-3">
+
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="small">
+                  <div class="mb-1">
+                    <i class="bi bi-wallet2 me-1"></i>
+                    <span class="fw-semibold">{{ p.get_method_display }}</span>
                   </div>
-                  <div class="col-6">
-                    <label class="form-label">CVV</label>
-                    <input type="password" class="form-control" name="card_cvv" placeholder="123">
+                  <div class="text-muted fw-semibold">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ p.payment_date|date:"Y-m-d" }}
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  <div class="p-amount">₹{{ p.amount_paid }}</div>
+
+                  <div class="d-flex gap-2 justify-content-end mt-2">
+                    {% if p.status == "PENDING" %}
+                      <button class="btn btn-primary btn-sm btn-pill"
+                        data-bs-toggle="modal" data-bs-target="#payNowModal"
+                        data-pay-url="{% url 'core:payment_pay_now' p.id %}"
+                        data-pay-id="{{ p.payment_id }}"
+                        data-pay-amount="{{ p.amount_paid }}">
+                        Pay Now
+                      </button>
+
+                      <form method="POST" action="{% url 'core:payment_delete' p.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm btn-pill"
+                          onclick="return confirm('Delete {{ p.payment_id }}?');">
+                          <i class="bi bi-trash3 me-1"></i> Delete
+                        </button>
+                      </form>
+                    {% else %}
+                      <button class="btn btn-outline-success btn-sm btn-pill" disabled>
+                        Paid
+                      </button>
+                    {% endif %}
                   </div>
                 </div>
               </div>
 
-              <!-- UPI -->
-              <div id="upiFields" class="d-none">
-                <div class="mb-3">
-                  <label class="form-label">UPI ID</label>
-                  <input type="text" class="form-control" name="upi_id" placeholder="name@bank">
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">UPI PIN</label>
-                  <input type="password" class="form-control" name="upi_pin" placeholder="****">
-                </div>
-              </div>
-
-              <!-- Bank -->
-              <div id="bankFields" class="d-none">
-                <div class="mb-3">
-                  <label class="form-label">Bank Reference No.</label>
-                  <input type="text" class="form-control" name="bank_ref" placeholder="UTR / Ref No">
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-primary w-100" id="payBtn">
-                Pay (Dummy)
-              </button>
-            </form>
+            </div>
           </div>
-
+          {% empty %}
+          <div class="col-12">
+            <div class="alert alert-info mb-0">No payments found.</div>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
+
+    <div class="pb-4"></div>
 
   </div>
 
+  <!-- Toasts -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="payToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="payToastMsg">Payment successful.</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+
+    <div id="payToastErr" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="payToastErrMsg">Payment failed.</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Payment Modal -->
+  <div class="modal fade" id="addPaymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-0">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Payment</h5>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body p-3 p-lg-4">
+          <form method="POST" action="{% url 'core:payment_create' %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Payment ID</label>
+              <input type="text" class="form-control" name="payment_id" placeholder="PAY-201" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Invoice</label>
+              <select class="form-select" name="invoice_id" required>
+                <option value="">Select invoice</option>
+                {% for inv in invoices %}
+                  <option value="{{ inv.id }}">
+                    INV-{{ inv.id }} ({{ inv.project.name }}) - ₹{{ inv.amount }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Amount</label>
+              <input type="number" class="form-control" name="amount_paid" step="0.01" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Payment Date</label>
+              <input type="date" class="form-control" name="payment_date" required>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 btn-pill">
+              <i class="bi bi-check2-circle me-1"></i> Save Payment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pay Now Modal -->
+  <div class="modal fade" id="payNowModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-0 position-relative">
+
+        <div class="processing" id="processingOverlay">
+          <div class="spinner-border" role="status"></div>
+          <div class="fw-semibold">Processing payment…</div>
+          <div class="text-muted small">This is a dummy flow (no real money).</div>
+        </div>
+
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title mb-0">Pay Now</h5>
+            <small class="text-white-50" id="payNowMeta">—</small>
+          </div>
+          <button class="btn-close btn-close-white" id="payModalCloseBtn" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body p-3 p-lg-4">
+          <form id="payNowForm">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Payment Method</label>
+              <select class="form-select" id="payMethod" name="method" required>
+                <option value="CARD">Credit Card</option>
+                <option value="UPI">UPI</option>
+                <option value="BANK">Bank Transfer</option>
+              </select>
+            </div>
+
+            <div id="cardFields">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Card Number</label>
+                <input type="text" class="form-control" name="card_number" placeholder="1234 5678 9012 3456">
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label fw-bold">Expiry (MM/YY)</label>
+                  <input type="text" class="form-control" name="card_expiry" placeholder="08/28">
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-bold">CVV</label>
+                  <input type="password" class="form-control" name="card_cvv" placeholder="123">
+                </div>
+              </div>
+            </div>
+
+            <div id="upiFields" class="d-none">
+              <div class="mb-3">
+                <label class="form-label fw-bold">UPI ID</label>
+                <input type="text" class="form-control" name="upi_id" placeholder="name@bank">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-bold">UPI PIN</label>
+                <input type="password" class="form-control" name="upi_pin" placeholder="****">
+              </div>
+            </div>
+
+            <div id="bankFields" class="d-none">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Bank Reference No.</label>
+                <input type="text" class="form-control" name="bank_ref" placeholder="UTR / Ref No">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-pill" id="payBtn">
+              <i class="bi bi-credit-card me-1"></i> Pay (Dummy)
+            </button>
+          </form>
+        </div>
+
+        <div class="modal-footer px-3 px-lg-4 py-3">
+          <button type="button" class="btn btn-outline-light btn-pill" data-bs-dismiss="modal" id="payModalCloseBtn2">
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     function getCookie(name) {
@@ -566,11 +694,8 @@
     toggleMethodFields();
     payMethod.addEventListener("change", toggleMethodFields);
 
-    // Toast helpers (longer display)
-    const toastOkEl = document.getElementById("payToast");
-    const toastErrEl = document.getElementById("payToastErr");
-    const toastOk = new bootstrap.Toast(toastOkEl, { delay: 3000 });
-    const toastErr = new bootstrap.Toast(toastErrEl, { delay: 3500 });
+    const toastOk = new bootstrap.Toast(document.getElementById("payToast"), { delay: 3000 });
+    const toastErr = new bootstrap.Toast(document.getElementById("payToastErr"), { delay: 3500 });
 
     payNowModalEl.addEventListener("show.bs.modal", function (event) {
       const button = event.relatedTarget;
@@ -587,16 +712,19 @@
       processingOverlay.classList.remove("show");
       payBtn.disabled = false;
       payModalCloseBtn.disabled = false;
+      const altClose = document.getElementById("payModalCloseBtn2");
+      if (altClose) altClose.disabled = false;
     });
 
     payNowForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!currentPayUrl) return;
 
-      // Show processing state (slower / realistic)
       processingOverlay.classList.add("show");
       payBtn.disabled = true;
       payModalCloseBtn.disabled = true;
+      const altClose = document.getElementById("payModalCloseBtn2");
+      if (altClose) altClose.disabled = true;
 
       const formData = new FormData(payNowForm);
 
@@ -611,10 +739,7 @@
         });
 
         const data = await resp.json();
-
-        // Artificial delay so it doesn't feel instant
         await new Promise(r => setTimeout(r, 1800));
-
         processingOverlay.classList.remove("show");
 
         if (!resp.ok || !data.ok) {
@@ -622,6 +747,7 @@
           toastErr.show();
           payBtn.disabled = false;
           payModalCloseBtn.disabled = false;
+          if (altClose) altClose.disabled = false;
           return;
         }
 
@@ -629,8 +755,6 @@
         toastOk.show();
 
         bootstrap.Modal.getInstance(payNowModalEl).hide();
-
-        // Wait a bit before reload so user sees toast
         setTimeout(() => window.location.reload(), 1100);
 
       } catch (err) {
@@ -639,10 +763,11 @@
         toastErr.show();
         payBtn.disabled = false;
         payModalCloseBtn.disabled = false;
+        if (altClose) altClose.disabled = false;
       }
     });
 
-    // ✅ FRONTEND ONLY hide (persistent)
+    // Frontend-only hide (persistent)
     const HIDDEN_PAYMENTS_KEY = "hiddenPayments";
 
     function getHiddenPayments() {

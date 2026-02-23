@@ -2,13 +2,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.db.models import Sum
+from django.core.files.storage import default_storage
 
 from .models import (
     ClientProfile, Project, Invoice, Payment, Message, SupportTicket,
     PaymentStatus, PaymentMethod
 )
+
+from hr.models import Event
+from django.db.models import Q
+from django.utils import timezone
+
+from datetime import date, timedelta
+from calendar import monthrange
+
+from hr.models import Event  
 
 
 
@@ -21,6 +31,94 @@ def get_client_profile(user):
     return profile
 
 
+# -------------------------
+# ✅ PROFILE API (Traditional Django JSON)
+# -------------------------
+def client_profile_to_dict(p):
+    return {
+        "full_name": p.full_name,
+        "email": p.user.email,
+        "phone": p.phone,
+        "company": p.company,
+        "address": p.address,
+        "profile_image": p.profile_image.url if p.profile_image else None,
+        "client_id": p.client_id,
+        "member_since": p.member_since,
+        "is_active": p.is_active,
+    }
+
+
+@login_required
+@require_GET
+def api_profile_get(request):
+    if not is_client(request.user):
+        return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
+
+    p = get_client_profile(request.user)
+    return JsonResponse(client_profile_to_dict(p), status=200)
+
+
+@login_required
+@require_POST
+def api_profile_update(request):
+    if not is_client(request.user):
+        return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
+
+    p = get_client_profile(request.user)
+
+    # normal fields (partial update)
+    if "full_name" in request.POST:
+        p.full_name = request.POST.get("full_name", "").strip()
+
+    if "phone" in request.POST:
+        p.phone = request.POST.get("phone", "").strip()
+
+    if "company" in request.POST:
+        p.company = request.POST.get("company", "").strip()
+
+    if "address" in request.POST:
+        p.address = request.POST.get("address", "").strip()
+
+    # update Django auth user email (your UI has Email)
+    if "email" in request.POST:
+        email = request.POST.get("email", "").strip()
+        if email:
+            request.user.email = email
+            request.user.save(update_fields=["email"])
+
+    # profile image upload (same endpoint)
+    if "profile_image" in request.FILES:
+        # delete old image file if exists
+        if p.profile_image and default_storage.exists(p.profile_image.name):
+            default_storage.delete(p.profile_image.name)
+
+        p.profile_image = request.FILES["profile_image"]
+
+    p.save()
+
+    return JsonResponse({"ok": True, "data": client_profile_to_dict(p)}, status=200)
+
+
+@login_required
+@require_POST
+def api_profile_remove_photo(request):
+    if not is_client(request.user):
+        return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
+
+    p = get_client_profile(request.user)
+
+    if p.profile_image:
+        if default_storage.exists(p.profile_image.name):
+            default_storage.delete(p.profile_image.name)
+        p.profile_image = None
+        p.save(update_fields=["profile_image"])
+
+    return JsonResponse({"ok": True}, status=200)
+
+
+# -------------------------
+# CLIENT PAGES
+# -------------------------
 @login_required
 def index(request):
     if not is_client(request.user):
@@ -142,7 +240,6 @@ def invoices(request):
     return render(request, "core/invoices.html", {"invoices": invoices_qs, "projects": projects_qs})
 
 
-# ✅ Step 7.4 (correct): summary + invoices dropdown
 @login_required
 def payments(request):
     if not is_client(request.user):
@@ -172,7 +269,6 @@ def payments(request):
     })
 
 
-# ✅ Create payment row from Add Payment modal
 @login_required
 @require_POST
 def payment_create(request):
@@ -198,7 +294,6 @@ def payment_create(request):
     return redirect("core:payments")
 
 
-# ✅ Dummy pay-now handler (AJAX)
 @login_required
 @require_POST
 def payment_pay_now(request, pk):
@@ -213,7 +308,6 @@ def payment_pay_now(request, pk):
     if method not in [PaymentMethod.CARD, PaymentMethod.UPI, PaymentMethod.BANK]:
         return JsonResponse({"ok": False, "message": "Invalid method"}, status=400)
 
-    # --- dummy validation based on method ---
     if method == PaymentMethod.CARD:
         card_number = (request.POST.get("card_number") or "").strip().replace(" ", "")
         card_expiry = (request.POST.get("card_expiry") or "").strip()
@@ -246,29 +340,20 @@ def payment_pay_now(request, pk):
 
         payment.bank_ref = bank_ref
 
-    # mark completed (dummy success)
     payment.method = method
     payment.status = PaymentStatus.COMPLETED
     payment.txn_id = f"DUMMY-{payment.payment_id}"
     payment.save()
 
-    # mark invoice paid too
     payment.invoice.status = "PAID"
     payment.invoice.save()
 
     return JsonResponse({"ok": True, "message": "Payment successful (dummy)."})
 
 
-
 @login_required
 @require_POST
 def invoice_pay_now(request):
-    """
-    Called by Invoice page modal (AJAX).
-    Expects: invoice_id + method + fields
-    Creates/updates a Payment as COMPLETED and marks invoice PAID (dummy success).
-    Returns JSON {ok: True/False, message: "..."}
-    """
     if not is_client(request.user):
         return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
 
@@ -284,7 +369,6 @@ def invoice_pay_now(request):
     if method not in [PaymentMethod.CARD, PaymentMethod.UPI, PaymentMethod.BANK]:
         return JsonResponse({"ok": False, "message": "Invalid method"}, status=400)
 
-    # --- dummy validation based on method ---
     if method == PaymentMethod.CARD:
         card_number = (request.POST.get("card_number") or "").strip().replace(" ", "")
         card_expiry = (request.POST.get("card_expiry") or "").strip()
@@ -321,8 +405,7 @@ def invoice_pay_now(request):
         last4 = ""
         upi_id = ""
 
-    # ✅ Create a COMPLETED payment for this invoice (dummy)
-    pay = Payment.objects.create(
+    Payment.objects.create(
         invoice=invoice,
         payment_id=f"PAY-INV-{invoice.id}-{int(timezone.now().timestamp())}",
         amount_paid=invoice.amount,
@@ -330,45 +413,17 @@ def invoice_pay_now(request):
         status=PaymentStatus.COMPLETED,
         method=method,
         txn_id=f"DUMMY-INV-{invoice.id}",
-
-        # ✅ if your DB columns are NOT NULL, never send None
         card_last4=(last4 or ""),
         upi_id=(upi_id or ""),
         bank_ref=(bank_ref or ""),
     )
 
-
-    # ✅ Mark invoice paid
     invoice.status = "PAID"
     invoice.save()
 
     return JsonResponse({"ok": True, "message": f"Invoice INV-{invoice.id} paid successfully (dummy)."})
 
 
-
-@login_required
-@require_POST
-def payment_delete(request, pk):
-    if not is_client(request.user):
-        return redirect("login")
-
-    client = get_client_profile(request.user)
-
-    payment = get_object_or_404(
-        Payment,
-        pk=pk,
-        invoice__project__client=client
-    )
-
-    # Optional rule: do NOT allow deleting completed payments
-    # If you WANT to allow delete for completed also, comment these 2 lines.
-    if payment.status == PaymentStatus.COMPLETED:
-        return redirect("core:payments")
-
-    payment.delete()
-    return redirect("core:payments")
-
-
 @login_required
 @require_POST
 def payment_delete(request, pk):
@@ -384,7 +439,6 @@ def payment_delete(request, pk):
     )
     payment.delete()
     return redirect("core:payments")
-
 
 
 @login_required
@@ -402,16 +456,8 @@ def profile(request):
     if not is_client(request.user):
         return redirect("login")
 
-    client = get_client_profile(request.user)
-
-    if request.method == "POST":
-        client.company_name = request.POST.get("company_name", "")
-        client.phone = request.POST.get("phone", "")
-        client.address = request.POST.get("address", "")
-        client.save()
-        return redirect("core:profile")
-
-    return render(request, "core/profile.html", {"client": client})
+    # ✅ only render the template (your JS will call the API endpoints)
+    return render(request, "core/profile.html")
 
 
 @login_required
@@ -425,13 +471,15 @@ def support(request):
         title = request.POST.get("title", "").strip()
         description = request.POST.get("description", "").strip()
         priority = request.POST.get("priority", "MEDIUM")
+        category = request.POST.get("category", "LOGIN")
 
         if title and description:
             SupportTicket.objects.create(
                 client=client,
                 title=title,
                 description=description,
-                priority=priority
+                priority=priority,
+                category=category
             )
         return redirect("core:support")
 
@@ -462,3 +510,67 @@ def pay_invoice(request, invoice_id):
         return redirect("core:payments")
 
     return redirect("core:invoices")
+
+
+
+
+@login_required
+def client_events(request):
+    # Only clients can view this page
+    if not is_client(request.user):
+        return redirect("login")
+
+    return render(request, "core/events.html")
+
+
+@login_required
+@require_GET
+def client_events_api(request):
+    # Only clients can load events
+    if not is_client(request.user):
+        return JsonResponse({"error": "Not allowed"}, status=403)
+
+    # Client sees only Client / All events
+    qs = Event.objects.filter(
+        Q(share_with__icontains="Client") | Q(share_with__icontains="All")
+    ).order_by("event_date", "start_time")
+
+    events = []
+    for ev in qs:
+        # FullCalendar expects ISO date-time strings
+        start_dt = timezone.make_aware(
+            timezone.datetime.combine(ev.event_date, ev.start_time)
+        )
+
+        if ev.end_time:
+            end_dt = timezone.make_aware(
+                timezone.datetime.combine(ev.event_date, ev.end_time)
+            )
+        else:
+            end_dt = None
+
+        events.append({
+            "id": ev.id,
+            "title": ev.title,
+            "start": start_dt.isoformat(),
+            "end": end_dt.isoformat() if end_dt else None,
+            "extendedProps": {
+                "description": ev.description or "",
+                "share_with": ev.share_with,
+                "event_type": ev.event_type,
+                "date": ev.event_date.strftime("%d %b %Y"),
+                "start_time": ev.start_time.strftime("%H:%M"),
+                "end_time": ev.end_time.strftime("%H:%M") if ev.end_time else "",
+            }
+        })
+
+    return JsonResponse(events, safe=False)
+
+
+@login_required
+def knowledge_base(request):
+    return render(request, "core/knowledge_base.html")
+
+
+
+   

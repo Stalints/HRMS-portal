@@ -1,244 +1,575 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Support | HR Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support | HR Portal</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 
-    <!-- Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
-    <style>
-        body {
-            background: #f8fafc;
-        }
+  <style>
+    :root{
+      --brand:#1e3a8a;
+      --bg:#f6f8ff;
+      --text:#0f172a;
+      --muted:#6b7280;
 
-        .ticket-card {
-            border-left: 5px solid #dc2626;
-            cursor: pointer;
-            transition: transform .2s, box-shadow .2s;
-        }
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 22px 60px rgba(2,6,23,.10);
+      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
 
-        .ticket-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
-        }
+      --radius: 22px;
+      --radius-lg: 28px;
 
-        .status-open {
-            border-color: #dc2626;
-        }
+      --glass: rgba(255,255,255,.78);
+      --glass-strong: rgba(255,255,255,.88);
+    }
 
-        .status-resolved {
-            border-color: #16a34a;
-        }
+    body{
+      background:
+        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
+        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
+        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-        .floating-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            border-radius: 50px;
-            padding: 12px 22px;
-        }
+    .page{ width:100%; max-width:none; }
 
-        .btn {
-            border-radius: 8px;
-        }
-    </style>
+    /* Topbar (dashboard style) */
+    .topbar{
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.45);
+    }
+    .brand{
+      display:flex; align-items:center; gap:.6rem;
+      text-decoration:none; color: var(--text);
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+    .brand:hover{
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(2,6,23,.07);
+    }
+    .pill{
+      display:flex; align-items:center; gap:.55rem;
+      padding:.48rem .85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: rgba(15,23,42,.85);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,.55);
+      background:
+        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
+        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-120px; top:-120px;
+      width: 340px; height: 340px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      pointer-events:none;
+      z-index:0;
+    }
+    .hero-inner{
+      padding: 22px 22px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+      color:#fff;
+      position:relative;
+      z-index:1;
+      flex-wrap: wrap;
+    }
+    .hero h1{
+      margin:0;
+      font-size: 1.5rem;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+    .hero p{
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.86);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+    .hero-actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-left:auto;
+    }
+    .hero-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding: .6rem .95rem;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 12px 26px rgba(2,6,23,.10);
+    }
+    .hero-btn:hover{
+      color:#fff;
+      background: rgba(255,255,255,.18);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(2,6,23,.14);
+    }
+    .hero-btn.secondary{
+      background: rgba(255,255,255,.94);
+      color: rgba(2,6,23,.90);
+      border-color: rgba(255,255,255,.70);
+    }
+    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
+
+    /* Glass card shell */
+    .glass-card{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--glass-strong);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .card-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .title{
+      margin:0;
+      font-weight: 950;
+      letter-spacing: -.01em;
+      color: rgba(2,6,23,.92);
+    }
+    .sub{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    .search-input{
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      font-weight: 700;
+      min-width: 280px;
+    }
+    .search-input:focus{
+      border-color: rgba(30,58,138,.35);
+      box-shadow: 0 0 0 .22rem rgba(30,58,138,.12);
+    }
+
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .seg button{
+      border-radius: 999px;
+      font-weight: 900;
+      padding: .45rem .85rem;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 22px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .seg button:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(2,6,23,.08); }
+    .seg button.active{
+      background: rgba(30,58,138,.10);
+      border-color: rgba(30,58,138,.25);
+      color: rgba(30,58,138,1);
+    }
+
+    /* Ticket cards (glass + status stripe) */
+    .ticket-card{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 12px 24px rgba(2,6,23,.06);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      position: relative;
+    }
+    .ticket-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px rgba(2,6,23,.10);
+      border-color: rgba(30,58,138,.20);
+    }
+
+    .stripe{
+      position:absolute;
+      left:0; top:0; bottom:0;
+      width: 6px;
+      background: rgba(245,158,11,.9);
+    }
+    .ticket-card.open .stripe{ background: rgba(244,63,94,.92); }
+    .ticket-card.resolved .stripe{ background: rgba(16,185,129,.92); }
+
+    .meta{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    .badge-soft{
+      border-radius: 999px;
+      padding: .35rem .6rem;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.78);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .b-open{ background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.22); color: rgba(225,29,72,1); }
+    .b-res{ background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.22); color: rgba(5,150,105,1); }
+
+    .pill-mini{
+      border-radius: 999px;
+      padding: .28rem .55rem;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.82);
+      color: rgba(2,6,23,.75);
+      font-weight: 900;
+      font-size: .78rem;
+    }
+
+    /* Modal polish */
+    .modal-content{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 22px 60px rgba(2,6,23,.20);
+      overflow: hidden;
+    }
+    .modal-header{
+      background: linear-gradient(135deg, rgba(30,58,138,1), rgba(30,58,138,.88));
+      color:#fff;
+      border: 0;
+    }
+    .modal-title{ font-weight: 950; letter-spacing: -.01em; }
+    .modal-footer{
+      background: rgba(248,250,252,.85);
+      border-top: 1px solid rgba(15,23,42,.10);
+    }
+    .form-control, .form-select{ border-radius: 14px; font-weight: 700; }
+
+    @media (max-width: 768px){
+      .hero-actions{ width:100%; justify-content:flex-start; }
+      .search-input{ width:100%; min-width: unset; }
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar shadow-sm" style="background:#1e3a8a;">
-        <div class="container">
-            <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="{% url 'core:client_dashboard' %}">
-                <i class="bi bi-building me-2"></i>
-                HR Portal
-            </a>
+  <!-- Topbar -->
+  <nav class="navbar topbar py-3">
+    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
+      <a class="brand" href="{% url 'core:client_dashboard' %}">
+        <i class="bi bi-building"></i>
+        <span>HR Portal</span>
+      </a>
 
-            <span class="text-white-50">
-                <i class="bi bi-person-circle me-1"></i> Client
-            </span>
+      <div class="pill">
+        <i class="bi bi-person-circle"></i>
+        <span>Client</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid page px-4 px-lg-5">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div>
+          <h1>Support Tickets</h1>
+          <p>Raise a ticket, track updates, and review past resolutions.</p>
         </div>
-    </nav>
 
-    <div class="container my-5">
+        <div class="hero-actions">
+          <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#ticketModal" type="button">
+            <i class="bi bi-life-preserver"></i> Raise Ticket
+          </button>
+          <a class="hero-btn secondary" href="{% url 'core:client_dashboard' %}">
+            <i class="bi bi-arrow-left"></i> Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
 
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-semibold">Support Tickets</h2>
-            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ticketModal">
-                <i class="bi bi-life-preserver me-1"></i> Raise Ticket
+    <!-- Ticket list -->
+    <div class="glass-card mt-3">
+      <div class="card-head">
+        <div>
+          <div class="title">Your Tickets</div>
+          <div class="sub">Use search or filters to find tickets quickly</div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+          <input id="ticketSearch" class="form-control search-input" placeholder="Search by title, id, category…" />
+          <div class="seg" role="group" aria-label="Filter tickets">
+            <button type="button" class="active" data-filter="all" onclick="setFilter('all')">
+              <i class="bi bi-grid-1x2 me-1"></i> All
             </button>
+            <button type="button" data-filter="open" onclick="setFilter('open')">
+              <i class="bi bi-exclamation-circle me-1"></i> Open
+            </button>
+            <button type="button" data-filter="resolved" onclick="setFilter('resolved')">
+              <i class="bi bi-check2-circle me-1"></i> Resolved
+            </button>
+          </div>
         </div>
+      </div>
 
-        <!-- Filters -->
-        <div class="mb-4 d-flex gap-2">
-            <button class="btn btn-outline-danger btn-sm" onclick="filterTickets('open')">Open</button>
-            <button class="btn btn-outline-success btn-sm" onclick="filterTickets('resolved')">Resolved</button>
-            <button class="btn btn-outline-secondary btn-sm" onclick="filterTickets('all')">All</button>
-        </div>
-
-        <!-- Ticket Feed -->
+      <div class="p-3 p-lg-4">
         <div id="ticketFeed" class="d-flex flex-column gap-3">
 
-            <div class="card shadow-sm ticket-card status-open open"
-                onclick="openTicket('SUP-101','Open','High','Login','Unable to login to the HR Portal dashboard.')">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <strong>Login Issue</strong>
-                        <span class="badge bg-danger">Open</span>
-                    </div>
-                    <p class="text-muted mb-1">Ticket ID: SUP-101</p>
-                    <p>Unable to login to the HR Portal dashboard.</p>
-                </div>
-            </div>
+          {% for t in tickets %}
+          <div class="ticket-card
+              {% if t.status == 'OPEN' %}open{% else %}resolved{% endif %}"
+            data-status="{% if t.status == 'OPEN' %}open{% else %}resolved{% endif %}"
+            data-text="{{ t.title }} {{ t.ticket_id }} {{ t.get_category_display }} {{ t.get_priority_display }} {{ t.get_status_display }}"
+            onclick="openTicket(
+              '{{ t.ticket_id }}',
+              '{{ t.get_status_display }}',
+              '{{ t.get_priority_display }}',
+              '{{ t.get_category_display }}',
+              '{{ t.description|escapejs }}'
+            )">
 
-            <div class="card shadow-sm ticket-card status-resolved resolved"
-                onclick="openTicket('SUP-102','Resolved','Medium','Payment','Payment receipt was missing earlier.')">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <strong>Payment Confirmation</strong>
-                        <span class="badge bg-success">Resolved</span>
-                    </div>
-                    <p class="text-muted mb-1">Ticket ID: SUP-102</p>
-                    <p>Payment receipt was missing earlier.</p>
+            <div class="stripe" aria-hidden="true"></div>
+
+            <div class="p-3 p-lg-4">
+              <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                <div>
+                  <div class="fw-bold" style="font-size:1.02rem;">{{ t.title }}</div>
+                  <div class="meta mt-1">
+                    <i class="bi bi-hash me-1"></i> {{ t.ticket_id }}
+                    <span class="mx-2 opacity-50">•</span>
+                    <span class="pill-mini"><i class="bi bi-tag me-1"></i>{{ t.get_category_display }}</span>
+                    <span class="pill-mini ms-1"><i class="bi bi-flag me-1"></i>{{ t.get_priority_display }}</span>
+                  </div>
                 </div>
+
+                {% if t.status == "OPEN" %}
+                  <span class="badge-soft b-open"><i class="bi bi-exclamation-circle me-1"></i>Open</span>
+                {% else %}
+                  <span class="badge-soft b-res"><i class="bi bi-check2-circle me-1"></i>Resolved</span>
+                {% endif %}
+              </div>
+
+              <div class="mt-2 text-muted fw-semibold">
+                {{ t.description|truncatechars:140 }}
+              </div>
             </div>
+          </div>
+          {% empty %}
+          <div class="alert alert-light border" style="border-radius:18px;">
+            No tickets yet. Click <strong>Raise Ticket</strong> to create one.
+          </div>
+          {% endfor %}
 
         </div>
+      </div>
     </div>
 
-    <!-- Floating Button
-<button class="btn btn-danger floating-btn" data-bs-toggle="modal" data-bs-target="#ticketModal">
-    <i class="bi bi-plus-lg"></i> New Ticket
-</button> -->
+    <div class="pb-4"></div>
+  </div>
 
-    <!-- Raise Ticket Modal -->
-    <div class="modal fade" id="ticketModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Raise Support Ticket</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <form id="ticketForm">
-                        <div class="mb-3">
-                            <label class="form-label">Issue Title</label>
-                            <input type="text" class="form-control" id="issueTitle" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select class="form-select" id="category">
-                                <option>Login</option>
-                                <option>Invoice</option>
-                                <option>Payment</option>
-                                <option>Project</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Priority</label>
-                            <select class="form-select" id="priority">
-                                <option>Low</option>
-                                <option>Medium</option>
-                                <option>High</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" rows="4" id="description" required></textarea>
-                        </div>
-
-                        <button class="btn btn-danger w-100">Submit Ticket</button>
-                    </form>
-                </div>
-            </div>
+  <!-- Raise Ticket Modal -->
+  <div class="modal fade" id="ticketModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title mb-0">Raise Support Ticket</h5>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-    </div>
 
-    <!-- Ticket Detail Modal -->
-    <div class="modal fade" id="ticketDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ticket Details</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'core:support' %}">
+            {% csrf_token %}
 
-                <div class="modal-body">
-                    <p><strong>Ticket ID:</strong> <span id="detailId"></span></p>
-                    <p><strong>Status:</strong> <span id="detailStatus"></span></p>
-                    <p><strong>Priority:</strong> <span id="detailPriority"></span></p>
-                    <p><strong>Category:</strong> <span id="detailCategory"></span></p>
-                    <hr>
-                    <p id="detailDescription"></p>
-                </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Issue Title</label>
+              <input type="text" class="form-control" name="title" required>
             </div>
-        </div>
-    </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        function openTicket(id, status, priority, category, description) {
-            detailId.innerText = id;
-            detailStatus.innerText = status;
-            detailPriority.innerText = priority;
-            detailCategory.innerText = category;
-            detailDescription.innerText = description;
-
-            new bootstrap.Modal(document.getElementById("ticketDetailModal")).show();
-        }
-
-        function filterTickets(type) {
-            document.querySelectorAll(".ticket-card").forEach(card => {
-                if (type === "all") {
-                    card.style.display = "block";
-                } else if (!card.classList.contains(type)) {
-                    card.style.display = "none";
-                } else {
-                    card.style.display = "block";
-                }
-            });
-        }
-
-        document.getElementById("ticketForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const title = issueTitle.value;
-            const desc = description.value;
-            const id = "SUP-" + Math.floor(Math.random() * 900 + 100);
-
-            ticketFeed.innerHTML =
-                `
-    <div class="card shadow-sm ticket-card status-open open"
-         onclick="openTicket('${id}','Open','${priority.value}','${category.value}','${desc}')">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <strong>${title}</strong>
-                <span class="badge bg-danger">Open</span>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Category</label>
+              <select class="form-select" name="category" required>
+                <option value="LOGIN">Login</option>
+                <option value="INVOICE">Invoice</option>
+                <option value="PAYMENT">Payment</option>
+                <option value="PROJECT">Project</option>
+              </select>
             </div>
-            <p class="text-muted mb-1">Ticket ID: ${id}</p>
-            <p>${desc}</p>
-        </div>
-    </div>
-    ` + ticketFeed.innerHTML;
 
-            bootstrap.Modal.getInstance(document.getElementById("ticketModal")).hide();
-            this.reset();
-        });
-    </script>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Priority</label>
+              <select class="form-select" name="priority" required>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM" selected>Medium</option>
+                <option value="HIGH">High</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Description</label>
+              <textarea class="form-control" rows="4" name="description" required></textarea>
+            </div>
+
+            <button class="btn btn-danger w-100" style="border-radius:999px; font-weight:950;" type="submit">
+              <i class="bi bi-send me-1"></i> Submit Ticket
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket Detail Modal -->
+  <div class="modal fade" id="ticketDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title mb-0">Ticket Details</h5>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 border rounded-4 bg-light">
+                <div class="text-muted fw-bold small">Ticket ID</div>
+                <div class="fw-bold" id="detailId">—</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 border rounded-4 bg-light">
+                <div class="text-muted fw-bold small">Status</div>
+                <div class="fw-bold" id="detailStatus">—</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 border rounded-4 bg-light">
+                <div class="text-muted fw-bold small">Priority</div>
+                <div class="fw-bold" id="detailPriority">—</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 border rounded-4 bg-light">
+                <div class="text-muted fw-bold small">Category</div>
+                <div class="fw-bold" id="detailCategory">—</div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="p-3 border rounded-4 bg-white">
+            <div class="text-muted fw-bold small">Description</div>
+            <div class="mt-1" id="detailDescription">—</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" style="border-radius:999px; font-weight:900;" data-bs-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function openTicket(id, status, priority, category, description) {
+      document.getElementById("detailId").innerText = id;
+      document.getElementById("detailStatus").innerText = status;
+      document.getElementById("detailPriority").innerText = priority;
+      document.getElementById("detailCategory").innerText = category;
+      document.getElementById("detailDescription").innerText = description;
+
+      new bootstrap.Modal(document.getElementById("ticketDetailModal")).show();
+    }
+
+    // Filter + search (client-side)
+    let currentFilter = "all";
+
+    function setFilter(type){
+      currentFilter = type;
+
+      document.querySelectorAll(".seg button").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-filter") === type);
+      });
+
+      applyTicketFilters();
+    }
+
+    function applyTicketFilters(){
+      const q = (document.getElementById("ticketSearch").value || "").toLowerCase().trim();
+
+      document.querySelectorAll(".ticket-card").forEach(card => {
+        const status = card.getAttribute("data-status");
+        const text = (card.getAttribute("data-text") || card.innerText || "").toLowerCase();
+
+        const statusOk = (currentFilter === "all") || (status === currentFilter);
+        const searchOk = !q || text.includes(q);
+
+        card.style.display = (statusOk && searchOk) ? "" : "none";
+      });
+    }
+
+    document.getElementById("ticketSearch").addEventListener("input", applyTicketFilters);
+
+    // default
+    setFilter("all");
+  </script>
 
 </body>
-
 </html>

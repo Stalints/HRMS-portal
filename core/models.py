@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.conf import settings
+from django.db import models
 
 
 class ClientProfile(models.Model):
@@ -145,21 +147,39 @@ class Message(models.Model):
 class SupportTicket(models.Model):
     STATUS_CHOICES = [
         ("OPEN", "Open"),
-        ("IN_PROGRESS", "In Progress"),
-        ("CLOSED", "Closed"),
+        ("RESOLVED", "Resolved"),
     ]
+
     PRIORITY_CHOICES = [
         ("LOW", "Low"),
         ("MEDIUM", "Medium"),
         ("HIGH", "High"),
     ]
 
+    CATEGORY_CHOICES = [
+        ("LOGIN", "Login"),
+        ("INVOICE", "Invoice"),
+        ("PAYMENT", "Payment"),
+        ("PROJECT", "Project"),
+    ]
+
+    ticket_id = models.CharField(max_length=20, unique=True, blank=True)
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name="tickets")
     title = models.CharField(max_length=200)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES)
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="OPEN")
-    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default="MEDIUM")
+
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.ticket_id:
+            import random
+            self.ticket_id = f"SUP-{random.randint(10000, 99999)}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return f"{self.ticket_id} - {self.title}"
+

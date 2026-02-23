@@ -1,7 +1,5 @@
 from django.urls import path
 from . import views
-from django.urls import path
-from . import api_views
 
 app_name = "core"
 
@@ -29,7 +27,13 @@ urlpatterns = [
 
     path("support/", views.support, name="support"),
 
-    path("api/profile/", api_views.profile_get, name="api_profile_get"),
-    path("api/profile/update/", api_views.profile_update, name="api_profile_update"),
-    path("api/profile/remove-photo/", api_views.profile_remove_photo, name="api_profile_remove_photo"),
+    # ✅ Profile APIs (Traditional Django JSON)
+    path("api/profile/", views.api_profile_get, name="api_profile_get"),
+    path("api/profile/update/", views.api_profile_update, name="api_profile_update"),
+    path("api/profile/remove-photo/", views.api_profile_remove_photo, name="api_profile_remove_photo"),
+
+    path("events/", views.client_events, name="events"),
+    path("api/events/", views.client_events_api, name="client_events_api"),
+
+    path("knowledge-base/", views.knowledge_base, name="knowledge_base"),
 ]

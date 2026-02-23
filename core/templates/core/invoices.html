@@ -1,33 +1,290 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Invoices | HR Portal</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
   <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
   <style>
-    .invoice-card {
-      background-color: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.1);
-      overflow: hidden;
-      transition: all 0.4s ease;
-      will-change: transform;
+    :root{
+      --brand:#1e3a8a;
+      --bg:#f6f8ff;
+      --text:#0f172a;
+      --muted:#6b7280;
+
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 22px 60px rgba(2,6,23,.10);
+      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
+
+      --radius: 22px;
+      --radius-lg: 28px;
+
+      --glass: rgba(255,255,255,.78);
+      --glass-strong: rgba(255,255,255,.88);
     }
-    #invoiceTable { transform: translateZ(0); }
-    .table-hover tbody tr { backface-visibility: hidden; will-change: transform, opacity; }
 
-    .modal-content { border-radius: 18px; }
-    .form-control, .form-select { border-radius: 12px; }
+    body{
+      background:
+        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
+        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
+        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-    /* Processing overlay (same feel as payments) */
+    .page{ width:100%; max-width:none; }
+
+    /* Topbar (dashboard style) */
+    .topbar{
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.45);
+    }
+    .brand{
+      display:flex; align-items:center; gap:.6rem;
+      text-decoration:none; color: var(--text);
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+    .brand:hover{
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(2,6,23,.07);
+    }
+    .pill{
+      display:flex; align-items:center; gap:.55rem;
+      padding:.48rem .85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: rgba(15,23,42,.85);
+      box-shadow: 0 10px 25px rgba(2,6,23,.05);
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,.55);
+      background:
+        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
+        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-120px; top:-120px;
+      width: 340px; height: 340px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      pointer-events:none;
+      z-index:0;
+    }
+    .hero-inner{
+      padding: 22px 22px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+      color:#fff;
+      position:relative;
+      z-index:1;
+      flex-wrap: wrap;
+    }
+    .hero h1{
+      margin:0;
+      font-size: 1.5rem;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+    .hero p{
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.86);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+    .hero-actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-left:auto;
+    }
+    .hero-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding: .6rem .95rem;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 12px 26px rgba(2,6,23,.10);
+    }
+    .hero-btn:hover{
+      color:#fff;
+      background: rgba(255,255,255,.18);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(2,6,23,.14);
+    }
+    .hero-btn.secondary{
+      background: rgba(255,255,255,.94);
+      color: rgba(2,6,23,.90);
+      border-color: rgba(255,255,255,.70);
+    }
+    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
+
+    /* Glass card */
+    .glass-card{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--glass-strong);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .card-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .card-title{
+      margin:0;
+      font-weight: 950;
+      letter-spacing: -.01em;
+      color: rgba(2,6,23,.92);
+    }
+    .card-sub{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    /* Search + filters */
+    .search-input{
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      font-weight: 700;
+    }
+    .search-input:focus{
+      border-color: rgba(30,58,138,.35);
+      box-shadow: 0 0 0 .22rem rgba(30,58,138,.12);
+    }
+    .filter-pill{
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      font-weight: 800;
+      padding: 10px 12px;
+    }
+
+    /* Table polish */
+    .table-wrap{ overflow:auto; }
+    table{ margin:0; }
+    .table thead th{
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: rgba(15,23,42,.94) !important;
+      color:#fff;
+      border-color: rgba(255,255,255,.08) !important;
+      font-weight: 900;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      font-size: .78rem;
+      padding: .85rem .85rem;
+    }
+    .table tbody td{
+      padding: .85rem .85rem;
+      vertical-align: middle;
+      color: rgba(2,6,23,.88);
+      font-weight: 700;
+      border-color: rgba(15,23,42,.08);
+      background: transparent;
+      white-space: nowrap;
+    }
+    .table-hover tbody tr:hover td{
+      background: rgba(30,58,138,.06);
+    }
+
+    .badge-soft{
+      border-radius: 999px;
+      padding: .35rem .6rem;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.78);
+      font-weight: 900;
+    }
+    .b-paid{ background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.22); color: rgba(5,150,105,1); }
+    .b-over{ background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.22); color: rgba(225,29,72,1); }
+    .b-pend{ background: rgba(245,158,11,.16); border-color: rgba(245,158,11,.26); color: rgba(180,83,9,1); }
+
+    .btn-soft{
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.85);
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(2,6,23,.05);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-soft:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(2,6,23,.08); }
+
+    .btn-icon{
+      border-radius: 999px;
+      font-weight: 900;
+      padding: .42rem .75rem;
+      box-shadow: 0 10px 18px rgba(2,6,23,.05);
+    }
+
+    /* Modal */
+    .modal-content{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 22px 60px rgba(2,6,23,.20);
+      overflow: hidden;
+    }
+    .modal-header{
+      background: linear-gradient(135deg, rgba(30,58,138,1), rgba(30,58,138,.88));
+      color:#fff;
+      border: 0;
+    }
+    .modal-title{ font-weight: 950; letter-spacing: -.01em; }
+    .modal-footer{
+      background: rgba(248,250,252,.85);
+      border-top: 1px solid rgba(15,23,42,.10);
+    }
+    .form-control, .form-select{ border-radius: 14px; font-weight: 700; }
+
+    /* Processing overlay */
     .processing{
       position:absolute; inset:0;
       background: rgba(255,255,255,.88);
@@ -38,25 +295,32 @@
       gap:10px;
       border-radius: 18px;
       z-index: 10;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
     .processing.show{ display:flex; }
 
     .toast-container{ z-index:2000; }
+
+    @media (max-width: 768px){
+      .hero-actions{ width:100%; justify-content:flex-start; }
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg shadow-sm" style="background-color:#1e3a8a;">
-    <div class="container">
-      <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building me-2"></i> HR Portal
+  <!-- Topbar -->
+  <nav class="navbar topbar py-3">
+    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
+      <a class="brand" href="{% url 'core:client_dashboard' %}">
+        <i class="bi bi-building"></i>
+        <span>HR Portal</span>
       </a>
-      <span class="text-white-50 d-flex align-items-center">
-        <i class="bi bi-person-circle me-1"></i> Client
-      </span>
+
+      <div class="pill">
+        <i class="bi bi-person-circle"></i>
+        <span>Client</span>
+      </div>
     </div>
   </nav>
 
@@ -77,33 +341,57 @@
     </div>
   </div>
 
-  <!-- Page -->
-  <div class="container my-5">
+  <div class="container-fluid page px-4 px-lg-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Invoices</h2>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div>
+          <h1>Invoices</h1>
+          <p>View invoice details, track payment status, and pay pending invoices.</p>
+        </div>
 
-      <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary" href="{% url 'core:client_dashboard' %}">
-          <i class="bi bi-arrow-left me-1"></i> Dashboard
-        </a>
-
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
-          <i class="bi bi-plus-circle me-1"></i> New Invoice
-        </button>
+        <div class="hero-actions">
+          <a class="hero-btn secondary" href="{% url 'core:client_dashboard' %}">
+            <i class="bi bi-arrow-left"></i> Dashboard
+          </a>
+          <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#newInvoiceModal" type="button">
+            <i class="bi bi-plus-circle"></i> New Invoice
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Invoice Table -->
-    <div class="card shadow-sm">
-      <div class="card-body p-0">
-        <table class="table table-hover mb-0" id="invoiceTable">
-          <thead class="table-dark">
+    <!-- Table card -->
+    <div class="glass-card mt-3">
+
+      <div class="card-head">
+        <div>
+          <div class="card-title">All Invoices</div>
+          <div class="card-sub">Search and filter your invoices quickly</div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <input id="invSearch" class="form-control search-input" style="min-width:260px;"
+                 placeholder="Search: INV-12, project, status…">
+
+          <select id="invStatus" class="form-select filter-pill" style="min-width:190px;">
+            <option value="ALL" selected>All Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="PAID">Paid</option>
+            <option value="OVERDUE">Overdue</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0" id="invoiceTable">
+          <thead>
             <tr>
-              <th>Invoice ID</th>
+              <th>Invoice</th>
               <th>Project</th>
-              <th>Issue Date</th>
-              <th>Due Date</th>
+              <th>Issue</th>
+              <th>Due</th>
               <th>Amount</th>
               <th>Status</th>
               <th style="width:260px;">Action</th>
@@ -112,29 +400,31 @@
 
           <tbody>
             {% for inv in invoices %}
-            <tr>
-              <td>INV-{{ inv.id }}</td>
+            <tr
+              data-status="{{ inv.status }}"
+              data-text="INV-{{ inv.id }} {{ inv.project.name }} {{ inv.issued_date }} {{ inv.due_date|default:'' }} {{ inv.amount }} {{ inv.status }}"
+            >
+              <td class="fw-bold">INV-{{ inv.id }}</td>
               <td>{{ inv.project.name }}</td>
               <td>{{ inv.issued_date }}</td>
               <td>{{ inv.due_date|default:"-" }}</td>
-              <td>₹{{ inv.amount }}</td>
+              <td class="fw-bold">₹{{ inv.amount }}</td>
 
               <td>
                 {% if inv.status == "PAID" %}
-                  <span class="badge bg-success">Paid</span>
+                  <span class="badge-soft b-paid">Paid</span>
                 {% elif inv.status == "OVERDUE" %}
-                  <span class="badge bg-danger">Overdue</span>
+                  <span class="badge-soft b-over">Overdue</span>
                 {% else %}
-                  <span class="badge bg-warning text-dark">Pending</span>
+                  <span class="badge-soft b-pend">Pending</span>
                 {% endif %}
               </td>
 
               <td class="d-flex gap-2 flex-wrap">
-
                 <!-- View -->
                 <button
                   type="button"
-                  class="btn btn-sm btn-outline-primary"
+                  class="btn btn-soft btn-sm btn-icon"
                   data-bs-toggle="modal"
                   data-bs-target="#invoiceViewModal"
                   data-inv-id="{{ inv.id }}"
@@ -144,33 +434,32 @@
                   data-amount="{{ inv.amount }}"
                   data-status="{{ inv.status }}"
                 >
-                  <i class="bi bi-eye"></i> View
+                  <i class="bi bi-eye me-1"></i> View
                 </button>
 
                 <!-- Pay -->
                 {% if inv.status != "PAID" %}
                 <button
                   type="button"
-                  class="btn btn-sm btn-success"
+                  class="btn btn-success btn-sm btn-icon"
                   data-bs-toggle="modal"
                   data-bs-target="#invoicePayModal"
                   data-inv-id="{{ inv.id }}"
                   data-project="{{ inv.project.name }}"
                   data-amount="{{ inv.amount }}"
                 >
-                  <i class="bi bi-credit-card"></i> Pay
+                  <i class="bi bi-credit-card me-1"></i> Pay
                 </button>
                 {% else %}
-                <button class="btn btn-sm btn-outline-success" disabled>
-                  <i class="bi bi-check2-circle"></i> Paid
+                <button class="btn btn-outline-success btn-sm btn-icon" disabled>
+                  <i class="bi bi-check2-circle me-1"></i> Paid
                 </button>
                 {% endif %}
-
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="7" class="text-center py-4">No invoices found.</td>
+              <td colspan="7" class="text-center py-4 text-muted fw-bold">No invoices found.</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -178,51 +467,53 @@
         </table>
       </div>
     </div>
+
+    <div class="pb-4"></div>
   </div>
 
   <!-- Invoice View Modal -->
   <div class="modal fade" id="invoiceViewModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content p-2">
-        <div class="modal-header border-0">
+      <div class="modal-content">
+        <div class="modal-header">
           <div>
             <h5 class="modal-title mb-0">Invoice Details</h5>
-            <small class="text-muted" id="viewMeta">—</small>
+            <small class="opacity-75" id="viewMeta">—</small>
           </div>
-          <button class="btn-close" data-bs-dismiss="modal"></button>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
 
-        <div class="modal-body pt-0">
+        <div class="modal-body">
           <div class="list-group">
             <div class="list-group-item d-flex justify-content-between">
-              <span class="text-muted">Invoice</span>
+              <span class="text-muted fw-bold">Invoice</span>
               <strong id="vInv">—</strong>
             </div>
             <div class="list-group-item d-flex justify-content-between">
-              <span class="text-muted">Project</span>
+              <span class="text-muted fw-bold">Project</span>
               <strong id="vProject">—</strong>
             </div>
             <div class="list-group-item d-flex justify-content-between">
-              <span class="text-muted">Issue Date</span>
+              <span class="text-muted fw-bold">Issue Date</span>
               <strong id="vIssue">—</strong>
             </div>
             <div class="list-group-item d-flex justify-content-between">
-              <span class="text-muted">Due Date</span>
+              <span class="text-muted fw-bold">Due Date</span>
               <strong id="vDue">—</strong>
             </div>
             <div class="list-group-item d-flex justify-content-between">
-              <span class="text-muted">Amount</span>
+              <span class="text-muted fw-bold">Amount</span>
               <strong>₹<span id="vAmount">0</span></strong>
             </div>
             <div class="list-group-item d-flex justify-content-between">
-              <span class="text-muted">Status</span>
+              <span class="text-muted fw-bold">Status</span>
               <strong id="vStatus">—</strong>
             </div>
           </div>
         </div>
 
-        <div class="modal-footer border-0">
-          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" style="border-radius:999px; font-weight:900;" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -235,14 +526,14 @@
 
         <div class="processing" id="processingOverlay">
           <div class="spinner-border" role="status"></div>
-          <div class="fw-semibold">Processing payment…</div>
-          <div class="text-muted small">Dummy flow (no real money).</div>
+          <div class="fw-bold">Processing payment…</div>
+          <div class="text-muted small fw-bold">Dummy flow (no real money).</div>
         </div>
 
-        <div class="modal-header border-0">
+        <div class="modal-header border-0" style="padding-bottom:.25rem;">
           <div>
             <h5 class="modal-title mb-0">Pay Invoice</h5>
-            <small class="text-muted" id="payInvMeta">—</small>
+            <small class="text-muted fw-bold" id="payInvMeta">—</small>
           </div>
           <button class="btn-close" id="payModalCloseBtn" data-bs-dismiss="modal"></button>
         </div>
@@ -253,7 +544,7 @@
             <input type="hidden" name="invoice_id" id="payInvoiceId" value="">
 
             <div class="mb-3">
-              <label class="form-label">Payment Method</label>
+              <label class="form-label fw-bold">Payment Method</label>
               <select class="form-select" id="payMethod" name="method" required>
                 <option value="CARD">Credit Card</option>
                 <option value="UPI">UPI</option>
@@ -263,16 +554,16 @@
 
             <div id="cardFields">
               <div class="mb-3">
-                <label class="form-label">Card Number</label>
+                <label class="form-label fw-bold">Card Number</label>
                 <input type="text" class="form-control" name="card_number" placeholder="1234 5678 9012 3456">
               </div>
               <div class="row g-2">
                 <div class="col-6">
-                  <label class="form-label">Expiry (MM/YY)</label>
+                  <label class="form-label fw-bold">Expiry (MM/YY)</label>
                   <input type="text" class="form-control" name="card_expiry" placeholder="08/28">
                 </div>
                 <div class="col-6">
-                  <label class="form-label">CVV</label>
+                  <label class="form-label fw-bold">CVV</label>
                   <input type="password" class="form-control" name="card_cvv" placeholder="123">
                 </div>
               </div>
@@ -280,23 +571,25 @@
 
             <div id="upiFields" class="d-none">
               <div class="mb-3">
-                <label class="form-label">UPI ID</label>
+                <label class="form-label fw-bold">UPI ID</label>
                 <input type="text" class="form-control" name="upi_id" placeholder="name@bank">
               </div>
               <div class="mb-3">
-                <label class="form-label">UPI PIN</label>
+                <label class="form-label fw-bold">UPI PIN</label>
                 <input type="password" class="form-control" name="upi_pin" placeholder="****">
               </div>
             </div>
 
             <div id="bankFields" class="d-none">
               <div class="mb-3">
-                <label class="form-label">Bank Reference No.</label>
+                <label class="form-label fw-bold">Bank Reference No.</label>
                 <input type="text" class="form-control" name="bank_ref" placeholder="UTR / Ref No">
               </div>
             </div>
 
-            <button type="submit" class="btn btn-success w-100" id="payBtn">Pay (Dummy)</button>
+            <button type="submit" class="btn btn-success w-100" style="border-radius:999px; font-weight:950;" id="payBtn">
+              <i class="bi bi-credit-card me-1"></i> Pay (Dummy)
+            </button>
           </form>
         </div>
 
@@ -306,12 +599,11 @@
 
   <!-- New Invoice Modal -->
   <div class="modal fade" id="newInvoiceModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
-
         <div class="modal-header">
           <h5 class="modal-title">Create New Invoice</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body">
@@ -320,7 +612,7 @@
             <div class="row g-3">
 
               <div class="col-md-6">
-                <label class="form-label">Project</label>
+                <label class="form-label fw-bold">Project</label>
                 <select class="form-select" name="project_id" required>
                   <option value="" selected disabled>Select project</option>
                   {% for p in projects %}
@@ -330,22 +622,22 @@
               </div>
 
               <div class="col-md-6">
-                <label class="form-label">Amount</label>
+                <label class="form-label fw-bold">Amount</label>
                 <input type="number" class="form-control" name="amount" min="0" step="0.01" required>
               </div>
 
               <div class="col-md-6">
-                <label class="form-label">Issue Date</label>
+                <label class="form-label fw-bold">Issue Date</label>
                 <input type="date" class="form-control" name="issued_date" required>
               </div>
 
               <div class="col-md-6">
-                <label class="form-label">Due Date</label>
+                <label class="form-label fw-bold">Due Date</label>
                 <input type="date" class="form-control" name="due_date">
               </div>
 
               <div class="col-md-6">
-                <label class="form-label">Status</label>
+                <label class="form-label fw-bold">Status</label>
                 <select class="form-select" name="status" required>
                   <option value="PENDING" selected>Pending</option>
                   <option value="PAID">Paid</option>
@@ -355,7 +647,9 @@
 
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-4">Add Invoice</button>
+            <button type="submit" class="btn btn-primary w-100 mt-4" style="border-radius:999px; font-weight:950;">
+              <i class="bi bi-plus-circle me-1"></i> Add Invoice
+            </button>
           </form>
         </div>
 
@@ -364,16 +658,16 @@
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // ✅ best CSRF helper (from hidden input)
+    // ✅ CSRF helper
     function getCSRFToken() {
       const el = document.querySelector('#invoicePayForm input[name="csrfmiddlewaretoken"]');
       return el ? el.value : "";
     }
 
-    // Toast
+    // Toasts
     const toastOk = new bootstrap.Toast(document.getElementById("payToast"), { delay: 3000 });
     const toastErr = new bootstrap.Toast(document.getElementById("payToastErr"), { delay: 3500 });
 
@@ -440,7 +734,7 @@
       payModalCloseBtn.disabled = false;
     });
 
-    // ✅ SAFE submit
+    // Submit pay (unchanged logic)
     payForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!currentInvoiceId) return;
@@ -464,15 +758,10 @@
 
         const ct = resp.headers.get("content-type") || "";
         let data = {};
-        if (ct.includes("application/json")) {
-          data = await resp.json();
-        } else {
-          const text = await resp.text();
-          console.log("Non-JSON response:", text);
-          throw new Error("Backend returned non-JSON. Status=" + resp.status);
-        }
+        if (ct.includes("application/json")) data = await resp.json();
+        else throw new Error("Backend returned non-JSON. Status=" + resp.status);
 
-        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => setTimeout(r, 900));
         processingOverlay.classList.remove("show");
 
         if (!resp.ok || !data.ok) {
@@ -487,7 +776,7 @@
         toastOk.show();
 
         bootstrap.Modal.getInstance(payModalEl).hide();
-        setTimeout(() => window.location.reload(), 900);
+        setTimeout(() => window.location.reload(), 800);
 
       } catch (err) {
         console.log("PAY ERROR:", err);
@@ -499,6 +788,33 @@
         payModalCloseBtn.disabled = false;
       }
     });
+
+    // Client-side search + status filter
+    const invSearch = document.getElementById("invSearch");
+    const invStatus = document.getElementById("invStatus");
+    const rows = Array.from(document.querySelectorAll("#invoiceTable tbody tr"));
+
+    function applyInvoiceFilter(){
+      const q = (invSearch.value || "").toLowerCase().trim();
+      const s = invStatus.value;
+
+      rows.forEach(tr => {
+        const status = tr.getAttribute("data-status") || "";
+        const text = (tr.getAttribute("data-text") || tr.innerText || "").toLowerCase();
+
+        const statusOk = (s === "ALL") || (status === s);
+        const searchOk = !q || text.includes(q);
+
+        // don't hide "No invoices found" row (it has no data-status)
+        if (!tr.getAttribute("data-status")) return;
+
+        tr.style.display = (statusOk && searchOk) ? "" : "none";
+      });
+    }
+
+    invSearch.addEventListener("input", applyInvoiceFilter);
+    invStatus.addEventListener("change", applyInvoiceFilter);
+    applyInvoiceFilter();
   </script>
 
 </body>
