@@ -19,3 +19,12 @@ db.sqlite3
 **/.DS_Store
 .venv/
 venv/
+
+venv/
+hr_portal/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.sqlite3
+media/
+.DS_Store
