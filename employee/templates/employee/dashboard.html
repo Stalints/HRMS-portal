@@ -11,11 +11,11 @@
 <div class="card attendance-action">
     <h3>Today's Attendance</h3>
     <div class="attendance-buttons">
-        <a href="{% url 'clock_in' %}" class="btn-primary">
+        <a href="{% url 'employee:clock_in' %}" class="btn-primary">
             🟢 Clock In
         </a>
 
-        <a href="{% url 'clock_out' %}" class="btn-danger">
+        <a href="{% url 'employee:clock_out' %}" class="btn-danger">
             🔴 Clock Out
         </a>
     </div>
@@ -25,33 +25,33 @@
 <div class="dashboard-grid">
 
     <!-- ROW 1 -->
-    <a href="{% url 'employee_profile' %}" class="dash-card purple">
+    <a href="{% url 'employee:employee_profile' %}" class="dash-card purple">
         <h3>👤 My Profile</h3>
         <p>View & update profile</p>
     </a>
 
-    <a href="{% url 'employee_tasks' %}" class="dash-card green">
+    <a href="{% url 'employee:employee_tasks' %}" class="dash-card green">
         <h3>📝 My Tasks</h3>
         <p>View your assigned tasks</p>
     </a>
 
-    <a href="{% url 'employee_announcements' %}" class="dash-card pink">
+    <a href="{% url 'employee:employee_announcements' %}" class="dash-card pink">
         <h3>📢 Announcements</h3>
         <p>New Updates</p>
     </a>
 
     <!-- ROW 2 -->
-    <a href="{% url 'attendance_history' %}" class="dash-card blue">
+    <a href="{% url 'employee:attendance_history' %}" class="dash-card blue">
         <h3>📅 Attendance</h3>
         <p>Days Present</p>
     </a>
 
-    <a href="{% url 'employee_leaves' %}" class="dash-card yellow">
+    <a href="{% url 'employee:employee_leaves' %}" class="dash-card yellow">
         <h3>🏖 Apply Leave</h3>
         <p>{{ pending_leaves }} Pending Requests</p>
     </a>
 
-    <a href="{% url 'employee_events' %}" class="dash-card sky">
+    <a href="{% url 'employee:employee_events' %}" class="dash-card sky">
         <h3>🎉 Events</h3>
         <p>View company events</p>
     </a>

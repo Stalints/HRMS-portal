@@ -8,7 +8,7 @@
 
     <div class="profile-left">
         {% if profile.profile_image %}
-            <img src="{{ profile.profile_image.url }}" class="profile-img">
+            <img src="{{ profile.profile_image.url }}" class="profile-img" alt="Profile Image">
         {% else %}
             <div class="profile-avatar">
                 {{ request.user.username|slice:":1"|upper }}
@@ -17,15 +17,14 @@
     </div>
 
     <div class="profile-info">
-        <h2>
-            {{ request.user.get_full_name|default:request.user.username }}
-        </h2>
-        <p class="designation">{{ profile.designation }}</p>
-        <p class="department">{{ profile.department }} Department</p>
+        <h2>{{ request.user.get_full_name|default:request.user.username }}</h2>
+        <p class="designation">{{ profile.designation|default:"" }}</p>
+        <p class="department">
+            {{ profile.department|default:"" }}{% if profile.department %} Department{% endif %}
+        </p>
     </div>
 
 </div>
-
 
 <!-- DETAILS GRID -->
 <div class="profile-grid">
@@ -60,6 +59,42 @@
         </div>
     </div>
 
+</div>
+
+<!-- ✅ EDIT PROFILE (NEW) -->
+<div class="card profile-card" style="margin-top: 20px;">
+    <h3>✏️ Edit Profile</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="info-row" style="display:block; margin-bottom:12px;">
+            <label><strong>Profile Picture</strong></label><br>
+            <input type="file" name="profile_image" accept="image/*">
+        </div>
+
+        <div class="info-row" style="display:block; margin-bottom:12px;">
+            <label><strong>Employee ID</strong></label><br>
+            <input type="text" name="emp_id" value="{{ profile.emp_id }}" class="input">
+        </div>
+
+        <div class="info-row" style="display:block; margin-bottom:12px;">
+            <label><strong>Department</strong></label><br>
+            <input type="text" name="department" value="{{ profile.department }}" class="input">
+        </div>
+
+        <div class="info-row" style="display:block; margin-bottom:12px;">
+            <label><strong>Designation</strong></label><br>
+            <input type="text" name="designation" value="{{ profile.designation }}" class="input">
+        </div>
+
+        <div class="info-row" style="display:block; margin-bottom:12px;">
+            <label><strong>Phone</strong></label><br>
+            <input type="text" name="phone" value="{{ profile.phone }}" class="input">
+        </div>
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
 </div>
 
 {% endblock %}

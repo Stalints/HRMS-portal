@@ -1,12 +1,13 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>HR Portal</title>
-   
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %}HR Portal{% endblock %}</title>
+
     <link rel="stylesheet" href="{% static 'employee/css/style.css' %}">
-</head>
 </head>
 
 <body>
@@ -14,14 +15,14 @@
 <div class="sidebar">
     <h2>HR Portal</h2>
 
-    <a href="{% url 'employee_dashboard' %}">Dashboard</a>
-    <a href="{% url 'employee_profile' %}">My Profile</a>
-    <a href="{% url 'employee_tasks' %}">Tasks</a>
-    <a href="{% url 'attendance_history' %}">Attendance</a>
-    <a href="{% url 'employee_leaves' %}">Leaves</a>
-    <a href="{% url 'employee_announcements' %}">Annoucements</a>
-    <a href="{% url 'employee_events' %}">Events</a>
-    <a href="{% url 'employee_login' %}" class="logout">Logout</a>
+    <a href="{% url 'employee:employee_dashboard' %}" class="nav-link">Dashboard</a>
+    <a href="{% url 'employee:employee_profile' %}" class="nav-link">My Profile</a>
+    <a href="{% url 'employee:employee_tasks' %}" class="nav-link">Tasks</a>
+    <a href="{% url 'employee:attendance_history' %}" class="nav-link">Attendance</a>
+    <a href="{% url 'employee:employee_leaves' %}" class="nav-link">Leaves</a>
+    <a href="{% url 'employee:employee_announcements' %}" class="nav-link">Announcements</a>
+    <a href="{% url 'employee:employee_events' %}" class="nav-link">Events</a>
+    <a href="{% url 'employee:employee_logout' %}" class="logout">Logout</a>
 </div>
 
 <div class="main">
@@ -44,16 +45,26 @@
 
 </div>
 
-</body>
 <script>
+    // highlight active sidebar link
+    (function () {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll(".sidebar a.nav-link").forEach(a => {
+            if (a.getAttribute("href") === currentPath) {
+                a.classList.add("active");
+            }
+        });
+    })();
+
+    // auto-hide messages
     setTimeout(function() {
-        let alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
+        document.querySelectorAll('.alert').forEach(function(alert) {
             alert.style.transition = "opacity 0.5s";
             alert.style.opacity = "0";
             setTimeout(() => alert.remove(), 500);
         });
-    }, 3000);  // disappears after 3 seconds
+    }, 3000);
 </script>
 
+</body>
 </html>
