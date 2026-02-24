@@ -7,6 +7,17 @@ from .models import (
     Project,
     Task,
     Client,
+    Team,
+    Payroll,
+    Invoice,
+    Payment,
+    Ticket,
+    TicketComment,
+    Event,
+    Note,
+    TimelinePost,
+    TimelineComment,
+    PersonalTask,
 )
 
 
@@ -83,3 +94,17 @@ class ClientAdmin(admin.ModelAdmin):
     list_filter = ("status",)
     search_fields = ("company_name", "contact_person", "email", "phone", "address")
     ordering = ("-created_at",)
+
+
+# NOTE: Keeping these "simple" avoids admin crash if field names differ.
+admin.site.register(Team)
+admin.site.register(Payroll)
+admin.site.register(Invoice)
+admin.site.register(Payment)
+admin.site.register(Ticket)
+admin.site.register(TicketComment)
+admin.site.register(Event)
+admin.site.register(Note)
+admin.site.register(TimelinePost)
+admin.site.register(TimelineComment)
+admin.site.register(PersonalTask)

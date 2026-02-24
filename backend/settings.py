@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'accounts',
-    "rest_framework",
     'core',          # Client module
     'employee',      # Employee module ✅ Added
     'hr',            # Hr Module

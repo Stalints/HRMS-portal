@@ -49,6 +49,17 @@ from .models import (
     Status,  # if you use Status.ACTIVE/INACTIVE for employees
 )
 
+from django.conf import settings
+from django.core.mail import send_mail
+from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
+
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+
+from .models import AdminProfile
+
 User = get_user_model()
 
 # ============================================================
@@ -1345,17 +1356,51 @@ def clear_all_view(request):
 # SETTINGS (HR)
 # ============================================================
 
-@_hr_required
+
+
+
+@login_required
 def settings_view(request):
-    profile = AdminProfile.objects.first()
-    if profile is None:
-        profile = AdminProfile.objects.create(
-            full_name="HR Admin",
-            email="hr.admin@company.com",
-            role="HR",
-            password=make_password("Admin@123"),
-        )
+    # ✅ FIX: never create AdminProfile with full_name/email/role/password
+    profile, _ = AdminProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        full_name = request.POST.get("full_name", "").strip()
+        email = request.POST.get("email", "").strip()
+        role = request.POST.get("role", "").strip()
+        password = request.POST.get("password", "").strip()
+
+        # ✅ Update USER fields (not AdminProfile)
+        if full_name:
+            parts = full_name.split(" ", 1)
+            request.user.first_name = parts[0]
+            request.user.last_name = parts[1] if len(parts) > 1 else ""
+
+        if email:
+            request.user.email = email
+
+        # role exists only if you added it to your custom user model
+        if role and hasattr(request.user, "role"):
+            request.user.role = role
+
+        if password:
+            request.user.set_password(password)
+            # ✅ keep user logged in after password change
+            update_session_auth_hash(request, request.user)
+
+        request.user.save()
+
+        # ✅ If you have AdminProfile extra fields, update them here ONLY
+        # Example:
+        # profile.phone = request.POST.get("phone", "").strip()
+        # profile.address = request.POST.get("address", "").strip()
+        profile.save()
+
+        messages.success(request, "Settings updated successfully.")
+        return redirect("hr:settings")
+
     return render(request, "hr/settings.html", {"profile": profile})
+
 
 @require_POST
 @_hr_required
