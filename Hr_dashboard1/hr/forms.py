@@ -3,11 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password   
 
 from .models import Attendance
-<<<<<<< HEAD
 from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask, Team
-=======
-from .models import LeaveCategory, Announcement, Project, Task, Client, Event, Note, TimelinePost, TimelineComment, HelpArticle, HelpCategory, PersonalTask
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
 
 User = get_user_model()
 

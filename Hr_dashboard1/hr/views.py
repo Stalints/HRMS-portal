@@ -34,16 +34,10 @@ def _employee_total_count():
 def dashboard(request):
     active_announcements = Announcement.objects.filter(status=AnnouncementStatus.ACTIVE).order_by("-publish_date", "-created_at")[:5]
     today = timezone.localdate()
-<<<<<<< HEAD
     upcoming = Event.objects.filter(event_date__gte=today)
     if request.user.is_authenticated and request.user.role == Role.EMPLOYEE:
         upcoming = upcoming.filter(Q(share_with__icontains="Employee") | Q(share_with__icontains="Team"))
     upcoming = upcoming.order_by("event_date", "start_time")[:5]
-=======
-    upcoming = Event.objects.filter(event_date__gte=today).order_by("event_date", "start_time")[:5]
-    if request.user.is_authenticated and request.user.role == Role.EMPLOYEE:
-        upcoming = upcoming.filter(Q(share_with__icontains="Employee") | Q(share_with__icontains="Team"))
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
     return render(request, "hr/dashboard.html", {
         "active_announcements": active_announcements,
         "active_announcements_count": active_announcements.count(),
@@ -980,9 +974,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("hr:login")
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc

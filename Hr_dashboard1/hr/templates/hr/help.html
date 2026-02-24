@@ -43,7 +43,6 @@
             </a>
           </li>
           <li class="nav-item">
-<<<<<<< HEAD
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
               <span class="me-2">👥</span> Employee Management
             </a>
@@ -54,13 +53,6 @@
             </a>
           </li>
           <li class="nav-item">
-=======
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2">👥</span> Team Management
-            </a>
-          </li>
-          <li class="nav-item">
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
               <span class="me-2">⏱️</span> Time Cards / Attendance
             </a>
@@ -252,11 +244,7 @@
                       <div class="mb-3">
                         <label for="id_content" class="form-label">Article Content <span class="text-danger">*</span></label>
                         {{ form.content }}
-<<<<<<< HEAD
                         <div class="form-text">Provide detailed information, steps, or guidelines for Employees</div>
-=======
-                        <div class="form-text">Provide detailed information, steps, or guidelines for team members</div>
->>>>>>> c7d88bd0040b7b771c21f73c169daaac5858e4bc
                       </div>
                       <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Publish{% endif %}</button>
