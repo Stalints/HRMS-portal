@@ -15,11 +15,12 @@
     />
     <!-- Shared dashboard styles -->
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
-  </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
   <body>
     <div class="d-flex">
       <!-- Sidebar -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
         <div class="mb-4">
           <div class="d-flex align-items-center mb-2">
             <div
@@ -39,71 +40,106 @@
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
-              <span class="me-2">🏠</span> Dashboard
+              <span class="me-2" aria-hidden="true">&#127968;</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
-              <span class="me-2">👥</span> Employee Management
+              <span class="me-2" aria-hidden="true">&#128101;</span> Employee Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2">&#129309;</span> Team Management
+              <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
-              <span class="me-2">⏱️</span> Time Cards / Attendance
+              <span class="me-2" aria-hidden="true">&#9201;</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
-              <span class="me-2">📝</span> Leave Management
+              <span class="me-2" aria-hidden="true">&#128221;</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
-              <span class="me-2">📢</span> Announcements
+              <span class="me-2" aria-hidden="true">&#128227;</span> Announcements
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
+              <span class="me-2" aria-hidden="true">&#128193;</span> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
+              <span class="me-2" aria-hidden="true">&#9989;</span> Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
+              <span class="me-2" aria-hidden="true">&#127970;</span> Clients
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
-              <span class="me-2">📅</span> Event Calendar
+              <span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}">
+              <span class="me-2" aria-hidden="true">&#128176;</span> Payroll
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}">
+            <span class="me-2" aria-hidden="true">&#129534;</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}">
+            <span class="me-2" aria-hidden="true">&#128179;</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2" aria-hidden="true">&#127915;</span> Support Tickets
+          </a>
+        </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
-              <span class="me-2">🗒️</span> Notes
+              <span class="me-2" aria-hidden="true">&#128221;</span> Notes
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
-              <span class="me-2">📊</span> Timeline
+              <span class="me-2" aria-hidden="true">&#128200;</span> Timeline
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
-              <span class="me-2">📚</span> Help Articles
+              <span class="me-2" aria-hidden="true">&#128218;</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
-              <span class="me-2">✅</span> Personal To-Do List
+              <span class="me-2" aria-hidden="true">&#9989;</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
-              <span class="me-2">🔔</span> Notifications
+              <span class="me-2" aria-hidden="true">&#128276;</span> Notifications
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link active d-flex align-items-center" href="{% url 'hr:settings' %}">
-              <span class="me-2">⚙️</span> Settings / Security
+              <span class="me-2" aria-hidden="true">&#9881;</span> Settings / Security
             </a>
           </li>
         </ul>
@@ -138,18 +174,14 @@
               </ul>
 
               <div class="d-flex align-items-center gap-3">
-                <button
-                  type="button"
-                  class="btn btn-light position-relative rounded-circle p-2"
-                  aria-label="Notifications"
-                >
-                  🔔
-                  <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  >
-                    4
-                  </span>
-                </button>
+                <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                <i class="fa-solid fa-bell"></i>
+                {% if navbar_unread_notifications > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ navbar_unread_notifications }}
+                </span>
+                {% endif %}
+              </a>
                 <div class="dropdown">
                   <button
                     class="btn btn-outline-secondary d-flex align-items-center gap-2"
@@ -168,7 +200,7 @@
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
                     <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a></li>
                   </ul>
                 </div>
               </div>
@@ -197,14 +229,16 @@
                   <h2 class="h6 mb-0">Account Settings</h2>
                 </div>
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="{% url 'hr:update_profile' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                       <label for="profileName" class="form-label">Full Name <span class="text-danger">*</span></label>
                       <input
                         type="text"
                         class="form-control"
                         id="profileName"
-                        value="HR Admin"
+                        name="full_name"
+                        value="{{ profile.full_name }}"
                         required
                       />
                     </div>
@@ -214,7 +248,8 @@
                         type="email"
                         class="form-control"
                         id="profileEmail"
-                        value="hr.admin@company.com"
+                        name="email"
+                        value="{{ profile.email }}"
                         required
                       />
                     </div>
@@ -224,7 +259,7 @@
                         type="text"
                         class="form-control"
                         id="profileRole"
-                        value="HR"
+                        value="{{ profile.role }}"
                         disabled
                       />
                       <div class="form-text">Role cannot be changed from this page</div>
@@ -240,13 +275,15 @@
                   <h2 class="h6 mb-0">Password & Security</h2>
                 </div>
                 <div class="card-body">
-                  <form>
+                  <form method="POST" action="{% url 'hr:change_password' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                       <label for="currentPassword" class="form-label">Current Password <span class="text-danger">*</span></label>
                       <input
                         type="password"
                         class="form-control"
                         id="currentPassword"
+                        name="current_password"
                         placeholder="Enter current password"
                         required
                       />
@@ -257,6 +294,7 @@
                         type="password"
                         class="form-control"
                         id="newPassword"
+                        name="new_password"
                         placeholder="Enter new password"
                         required
                       />
@@ -267,6 +305,7 @@
                         type="password"
                         class="form-control"
                         id="confirmPassword"
+                        name="confirm_password"
                         placeholder="Confirm new password"
                         required
                       />
@@ -295,7 +334,7 @@
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Last Login</label>
                     <div class="d-flex align-items-center">
-                      <span class="me-2">🕐</span>
+                      <i class="fa-solid fa-clock me-2"></i>
                       <div>
                         <div class="fw-semibold">Today, 09:15 AM</div>
                         <div class="text-muted small">IP Address: 192.168.1.105</div>
@@ -306,10 +345,10 @@
                   <div class="mb-3">
                     <label class="form-label small fw-semibold">Current Session</label>
                     <div class="d-flex align-items-center">
-                      <span class="me-2">💻</span>
+                      <i class="fa-solid fa-desktop me-2"></i>
                       <div>
                         <div class="fw-semibold">Active Session</div>
-                        <div class="text-muted small">Browser: Chrome on Windows • Started: Today, 09:15 AM</div>
+                        <div class="text-muted small">Browser: Chrome on Windows &bull; Started: Today, 09:15 AM</div>
                       </div>
                     </div>
                   </div>
@@ -335,7 +374,7 @@
                 <div class="card-body">
                   <div class="mb-3">
                     <h3 class="fs-6 mb-2">
-                      <span class="badge bg-primary-subtle text-primary me-2">🔒</span> Role-Based Access Control
+                      <span class="badge bg-primary-subtle text-primary me-2"><i class="fa-solid fa-lock"></i></span> Role-Based Access Control
                     </h3>
                     <p class="small text-muted mb-0">
                       Your account has HR-level access with role-based permissions. All actions are logged and monitored 
@@ -345,7 +384,7 @@
                   <hr />
                   <div class="mb-3">
                     <h3 class="fs-6 mb-2">
-                      <span class="badge bg-success-subtle text-success me-2">🛡️</span> Secure Data Handling
+                      <span class="badge bg-success-subtle text-success me-2"><i class="fa-solid fa-shield-halved"></i></span> Secure Data Handling
                     </h3>
                     <p class="small text-muted mb-0">
                       All data in the HR Portal is encrypted and securely stored. Your personal information and HR data 
@@ -355,7 +394,7 @@
                   <hr />
                   <div>
                     <h3 class="fs-6 mb-2">
-                      <span class="badge bg-info-subtle text-info me-2">🔐</span> Authentication
+                      <span class="badge bg-info-subtle text-info me-2"><i class="fa-solid fa-key"></i></span> Authentication
                     </h3>
                     <p class="small text-muted mb-0">
                       The portal uses secure authentication with reCAPTCHA protection. All login attempts are monitored 
@@ -410,8 +449,8 @@
 
         <footer class="border-top bg-white py-2 px-3 px-lg-4">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span>© <span id="year"></span> HR Portal • Settings & Security</span>
-            <span class="text-muted">Secure access · HR-only visibility</span>
+            <span>&copy; <span id="year"></span> HR Portal &bull; Settings & Security</span>
+            <span class="text-muted">Secure access &middot; HR-only visibility</span>
           </div>
         </footer>
       </div>
@@ -428,6 +467,7 @@
     </script>
   </body>
 </html>
+
 
 
 

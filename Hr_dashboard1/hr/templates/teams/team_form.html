@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
     <h1 class="h4 mb-1">
-      <i class="fa-solid fa-users me-2"></i>{% if is_edit %}Edit Team{% else %}Create Team{% endif %}
+      <span class="me-2" aria-hidden="true">&#128101;</span>{% if is_edit %}Edit Team{% else %}Create Team{% endif %}
     </h1>
     <p class="text-muted small mb-0">Add team members, assign a team lead, and manage access roles.</p>
   </div>
@@ -66,3 +66,4 @@
   </div>
 </div>
 {% endblock %}
+

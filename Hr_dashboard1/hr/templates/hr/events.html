@@ -48,11 +48,12 @@
         display: inline-block;
       }
     </style>
-  </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
   <body>
     <div class="d-flex">
       <!-- Sidebar (same as dashboard, with Event Calendar active) -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
         <div class="mb-4">
           <div class="d-flex align-items-center mb-2">
             <div
@@ -72,86 +73,106 @@
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
-              <span class="me-2">🏠</span> Dashboard
+              <span class="me-2" aria-hidden="true">&#127968;</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
-              <span class="me-2">👥</span> Employee Management
+              <span class="me-2" aria-hidden="true">&#128101;</span> Employee Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2">&#129309;</span> Team Management
+              <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
-              <span class="me-2">⏱️</span> Time Cards / Attendance
+              <span class="me-2" aria-hidden="true">&#9201;</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
-              <span class="me-2">📝</span> Leave Management
+              <span class="me-2" aria-hidden="true">&#128221;</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
-              <span class="me-2">📢</span> Announcements
+              <span class="me-2" aria-hidden="true">&#128227;</span> Announcements
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
-              <span class="me-2">📁</span> Projects
+              <span class="me-2" aria-hidden="true">&#128193;</span> Projects
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
-              <span class="me-2">✅</span> Tasks
+              <span class="me-2" aria-hidden="true">&#9989;</span> Tasks
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
-              <span class="me-2">🏢</span> Clients
+              <span class="me-2" aria-hidden="true">&#127970;</span> Clients
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link active d-flex align-items-center" href="{% url 'hr:events' %}">
-              <span class="me-2">📅</span> Event Calendar
+              <span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}">
+              <span class="me-2" aria-hidden="true">&#128176;</span> Payroll
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}">
+            <span class="me-2" aria-hidden="true">&#129534;</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}">
+            <span class="me-2" aria-hidden="true">&#128179;</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2" aria-hidden="true">&#127915;</span> Support Tickets
+          </a>
+        </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
-              <span class="me-2">🗒️</span> Notes
+              <span class="me-2" aria-hidden="true">&#128221;</span> Notes
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
-              <span class="me-2">📊</span> Timeline
+              <span class="me-2" aria-hidden="true">&#128200;</span> Timeline
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
-              <span class="me-2">📚</span> Help Articles
+              <span class="me-2" aria-hidden="true">&#128218;</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
-              <span class="me-2">✅</span> Personal To-Do List
+              <span class="me-2" aria-hidden="true">&#9989;</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
-              <span class="me-2">🔔</span> Notifications
+              <span class="me-2" aria-hidden="true">&#128276;</span> Notifications
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
-              <span class="me-2">⚙️</span> Settings / Security
+              <span class="me-2" aria-hidden="true">&#9881;</span> Settings / Security
             </a>
           </li>
         </ul>
@@ -186,18 +207,14 @@
               </ul>
 
               <div class="d-flex align-items-center gap-3">
-                <button
-                  type="button"
-                  class="btn btn-light position-relative rounded-circle p-2"
-                  aria-label="Notifications"
-                >
-                  🔔
-                  <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  >
-                    2
-                  </span>
-                </button>
+                <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                <i class="fa-solid fa-bell"></i>
+                {% if navbar_unread_notifications > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ navbar_unread_notifications }}
+                </span>
+                {% endif %}
+              </a>
                 <div class="dropdown">
                   <button
                     class="btn btn-outline-secondary d-flex align-items-center gap-2"
@@ -216,7 +233,7 @@
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
                     <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a></li>
                   </ul>
                 </div>
               </div>
@@ -386,8 +403,8 @@
                           <td><span class="badge bg-primary-subtle text-primary">{{ event.share_with }}</span></td>
                           <td class="text-end">
                             <div class="d-inline-flex gap-1">
-                              <a href="{% url 'hr:event_detail' event.pk %}" class="btn btn-outline-secondary btn-sm">View</a>
-                              <a href="{% url 'hr:event_edit' event.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                              <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#viewEventModal{{ event.pk }}">View</button>
+                              <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editEventModal{{ event.pk }}">Edit</button>
                               <form method="post" action="{% url 'hr:delete_event' event.pk %}" class="d-inline">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
@@ -405,6 +422,131 @@
                   </div>
                 </div>
               </div>
+
+              {% for event in events %}
+              <div class="modal fade" id="viewEventModal{{ event.pk }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Event Details</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body small">
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label class="form-label">Event Title</label>
+                          <input type="text" class="form-control form-control-sm" value="{{ event.title }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Event Type</label>
+                          <input type="text" class="form-control form-control-sm" value="{{ event.get_event_type_display }}" disabled>
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Event Description</label>
+                          <textarea class="form-control form-control-sm" rows="3" disabled>{{ event.description }}</textarea>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Event Date</label>
+                          <input type="date" class="form-control form-control-sm" value="{{ event.event_date|date:'Y-m-d' }}" disabled>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Start Time</label>
+                          <input type="time" class="form-control form-control-sm" value="{{ event.start_time|time:'H:i' }}" disabled>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">End Time</label>
+                          <input type="time" class="form-control form-control-sm" value="{{ event.end_time|time:'H:i' }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Share With</label>
+                          <input type="text" class="form-control form-control-sm" value="{{ event.share_with }}" disabled>
+                        </div>
+                        <div class="col-md-3">
+                          <label class="form-label">Reminder Date</label>
+                          <input type="date" class="form-control form-control-sm" value="{{ event.reminder_date|date:'Y-m-d' }}" disabled>
+                        </div>
+                        <div class="col-md-3">
+                          <label class="form-label d-block">Reminder</label>
+                          <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" {% if event.reminder_enabled %}checked{% endif %} disabled>
+                            <label class="form-check-label">Enable</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal fade" id="editEventModal{{ event.pk }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Edit Event</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" action="{% url 'hr:event_edit' event.pk %}" class="small">
+                      {% csrf_token %}
+                      <div class="modal-body">
+                        <div class="row g-3">
+                          <div class="col-md-6">
+                            <label class="form-label">Event Title</label>
+                            <input type="text" name="title" class="form-control form-control-sm" value="{{ event.title }}" required>
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label">Event Type</label>
+                            <select name="event_type" class="form-select form-select-sm">
+                              <option value="MEETING" {% if event.event_type == "MEETING" %}selected{% endif %}>Meeting</option>
+                              <option value="HOLIDAY" {% if event.event_type == "HOLIDAY" %}selected{% endif %}>Holiday</option>
+                              <option value="BIRTHDAY" {% if event.event_type == "BIRTHDAY" %}selected{% endif %}>Birthday</option>
+                              <option value="OTHER" {% if event.event_type == "OTHER" %}selected{% endif %}>Other</option>
+                            </select>
+                          </div>
+                          <div class="col-12">
+                            <label class="form-label">Event Description</label>
+                            <textarea name="description" class="form-control form-control-sm" rows="3">{{ event.description }}</textarea>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label">Event Date</label>
+                            <input type="date" name="event_date" class="form-control form-control-sm" value="{{ event.event_date|date:'Y-m-d' }}" required>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" name="start_time" class="form-control form-control-sm" value="{{ event.start_time|time:'H:i' }}" required>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label">End Time</label>
+                            <input type="time" name="end_time" class="form-control form-control-sm" value="{{ event.end_time|time:'H:i' }}">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label">Share With</label>
+                            <input type="text" name="share_with" class="form-control form-control-sm" value="{{ event.share_with }}" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label class="form-label">Reminder Date</label>
+                            <input type="date" name="reminder_date" class="form-control form-control-sm" value="{{ event.reminder_date|date:'Y-m-d' }}">
+                          </div>
+                          <div class="col-md-3">
+                            <label class="form-label d-block">Reminder</label>
+                            <div class="form-check mt-2">
+                              <input class="form-check-input" type="checkbox" name="reminder_enabled" id="reminderEnabled{{ event.pk }}" {% if event.reminder_enabled %}checked{% endif %}>
+                              <label class="form-check-label" for="reminderEnabled{{ event.pk }}">Enable</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
             </div>
 
             <div class="col-12 col-lg-4">
@@ -562,6 +704,7 @@
     </script>
   </body>
 </html>
+
 
 
 

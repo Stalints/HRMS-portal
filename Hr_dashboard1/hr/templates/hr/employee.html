@@ -12,11 +12,12 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
-  </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
   <body>
     <div class="d-flex">
       <!-- Sidebar -->
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
         <div class="mb-4">
           <div class="d-flex align-items-center mb-2">
             <div
@@ -36,86 +37,106 @@
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
-              <span class="me-2">🏠</span> Dashboard
+              <span class="me-2" aria-hidden="true">&#127968;</span> Dashboard
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link active d-flex align-items-center" href="{% url 'hr:employee_list' %}">
-              <span class="me-2">👥</span> Employee Management
+              <span class="me-2" aria-hidden="true">&#128101;</span> Employee Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2">&#129309;</span> Team Management
+              <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
-              <span class="me-2">⏱️</span> Time Cards / Attendance
+              <span class="me-2" aria-hidden="true">&#9201;</span> Time Cards / Attendance
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
-              <span class="me-2">📝</span> Leave Management
+              <span class="me-2" aria-hidden="true">&#128221;</span> Leave Management
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
-              <span class="me-2">📢</span> Announcements
+              <span class="me-2" aria-hidden="true">&#128227;</span> Announcements
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
-              <span class="me-2">📁</span> Projects
+              <span class="me-2" aria-hidden="true">&#128193;</span> Projects
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
-              <span class="me-2">✅</span> Tasks
+              <span class="me-2" aria-hidden="true">&#9989;</span> Tasks
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
-              <span class="me-2">🏢</span> Clients
+              <span class="me-2" aria-hidden="true">&#127970;</span> Clients
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
-              <span class="me-2">📅</span> Event Calendar
+              <span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}">
+              <span class="me-2" aria-hidden="true">&#128176;</span> Payroll
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}">
+            <span class="me-2" aria-hidden="true">&#129534;</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}">
+            <span class="me-2" aria-hidden="true">&#128179;</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
+            <span class="me-2" aria-hidden="true">&#127915;</span> Support Tickets
+          </a>
+        </li>
         </ul>
 
         <div class="mb-2 sidebar-heading">Personal & Tools</div>
         <ul class="nav nav-pills flex-column mb-3 gap-1">
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
-              <span class="me-2">🗒️</span> Notes
+              <span class="me-2" aria-hidden="true">&#128221;</span> Notes
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
-              <span class="me-2">📊</span> Timeline
+              <span class="me-2" aria-hidden="true">&#128200;</span> Timeline
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
-              <span class="me-2">📚</span> Help Articles
+              <span class="me-2" aria-hidden="true">&#128218;</span> Help Articles
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
-              <span class="me-2">✅</span> Personal To-Do List
+              <span class="me-2" aria-hidden="true">&#9989;</span> Personal To-Do List
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}">
-              <span class="me-2">🔔</span> Notifications
+              <span class="me-2" aria-hidden="true">&#128276;</span> Notifications
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
-              <span class="me-2">⚙️</span> Settings / Security
+              <span class="me-2" aria-hidden="true">&#9881;</span> Settings / Security
             </a>
           </li>
         </ul>
@@ -150,13 +171,14 @@
               </ul>
 
               <div class="d-flex align-items-center gap-3">
-                <button
-                  type="button"
-                  class="btn btn-light position-relative rounded-circle p-2"
-                  aria-label="Notifications"
-                >
-                  🔔
-                </button>
+                <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                <i class="fa-solid fa-bell"></i>
+                {% if navbar_unread_notifications > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ navbar_unread_notifications }}
+                </span>
+                {% endif %}
+              </a>
                 <div class="dropdown">
                   <button
                     class="btn btn-outline-secondary d-flex align-items-center gap-2"
@@ -175,7 +197,7 @@
                     <li><h6 class="dropdown-header">HR Admin</h6></li>
                     <li><a class="dropdown-item" href="{% url 'hr:settings' %}">Settings &amp; Security</a></li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a></li>
                   </ul>
                 </div>
               </div>
@@ -208,9 +230,9 @@
           <!-- Action bar -->
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div class="d-flex gap-2">
-              <a href="{% url 'hr:employee_add' %}" class="btn btn-primary btn-sm">
+              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
                 + Add Employee
-              </a>
+              </button>
             </div>
             <form class="d-flex gap-2" method="get" action="{% url 'hr:employee_list' %}" role="search">
               <input
@@ -271,7 +293,7 @@
                           </td>
                           <td class="text-end">
                             <div class="btn-group btn-group-sm" role="group">
-                              <a href="{% url 'hr:employee_edit' member.pk %}" class="btn btn-outline-secondary">Edit</a>
+                              <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editEmployeeModal{{ member.pk }}">Edit</button>
                               {% if member.status == 'ACTIVE' %}
                               <a href="{% url 'hr:employee_deactivate' member.pk %}" class="btn btn-outline-danger">Deactivate</a>
                               {% else %}
@@ -280,9 +302,60 @@
                             </div>
                           </td>
                         </tr>
+                        <div class="modal fade" id="editEmployeeModal{{ member.pk }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Edit Employee</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <form method="post" action="{% url 'hr:employee_edit' member.pk %}" class="small">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                  <div class="row g-3">
+                                    <div class="col-md-6">
+                                      <label for="first_name_{{ member.pk }}" class="form-label">First Name</label>
+                                      <input id="first_name_{{ member.pk }}" type="text" name="first_name" class="form-control form-control-sm" value="{{ member.first_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                      <label for="last_name_{{ member.pk }}" class="form-label">Last Name</label>
+                                      <input id="last_name_{{ member.pk }}" type="text" name="last_name" class="form-control form-control-sm" value="{{ member.last_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                      <label for="email_{{ member.pk }}" class="form-label">Email</label>
+                                      <input id="email_{{ member.pk }}" type="email" name="email" class="form-control form-control-sm" value="{{ member.email }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                      <label for="role_{{ member.pk }}" class="form-label">Role</label>
+                                      <select id="role_{{ member.pk }}" name="role" class="form-select form-select-sm">
+                                        <option value="HR" {% if member.role == "HR" %}selected{% endif %}>HR</option>
+                                        <option value="MANAGER" {% if member.role == "MANAGER" %}selected{% endif %}>Manager</option>
+                                        <option value="EMPLOYEE" {% if member.role == "EMPLOYEE" %}selected{% endif %}>Employee</option>
+                                      </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <label for="status_{{ member.pk }}" class="form-label">Status</label>
+                                      <select id="status_{{ member.pk }}" name="status" class="form-select form-select-sm">
+                                        <option value="ACTIVE" {% if member.status == "ACTIVE" %}selected{% endif %}>Active</option>
+                                        <option value="INACTIVE" {% if member.status == "INACTIVE" %}selected{% endif %}>Inactive</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                                  <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
                         {% empty %}
                         <tr>
-                          <td colspan="5" class="text-center text-muted py-4">No Employees yet. <a href="{% url 'hr:employee_add' %}">Add your first member</a>.</td>
+                          <td colspan="5" class="text-center text-muted py-4">
+                            No Employees yet.
+                            <button type="button" class="btn btn-link p-0 align-baseline" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add your first member</button>.
+                          </td>
                         </tr>
                         {% endfor %}
                       </tbody>
@@ -301,13 +374,13 @@
                 <div class="card-body small">
                   <ul class="list-unstyled mb-2">
                     <li class="mb-1">
-                      <strong>HR</strong> → Full access to HR modules, Employee Management, and settings.
+                      <strong>HR</strong> &rarr; Full access to HR modules, Employee Management, and settings.
                     </li>
                     <li class="mb-1">
-                      <strong>Manager</strong> → Limited access to employee information and approvals.
+                      <strong>Manager</strong> &rarr; Limited access to employee information and approvals.
                     </li>
                     <li>
-                      <strong>Employee</strong> → Basic access to their own profile, requests, and notifications.
+                      <strong>Employee</strong> &rarr; Basic access to their own profile, requests, and notifications.
                     </li>
                   </ul>
                   <hr />
@@ -326,9 +399,63 @@
                   <h2 class="h6 mb-0">Quick Add</h2>
                 </div>
                 <div class="card-body">
-                  <p class="small text-muted mb-2">Add a new Employee from the form page.</p>
-                  <a href="{% url 'hr:employee_add' %}" class="btn btn-primary btn-sm w-100">+ Add Employee</a>
+                  <p class="small text-muted mb-2">Add a new Employee from popup form.</p>
+                  <button type="button" class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">+ Add Employee</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Add Employee</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'hr:employee_add' %}" class="small">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label for="{{ add_form.username.id_for_label }}" class="form-label">{{ add_form.username.label }}</label>
+                        {{ add_form.username }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.email.id_for_label }}" class="form-label">{{ add_form.email.label }}</label>
+                        {{ add_form.email }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.first_name.id_for_label }}" class="form-label">{{ add_form.first_name.label }}</label>
+                        {{ add_form.first_name }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.last_name.id_for_label }}" class="form-label">{{ add_form.last_name.label }}</label>
+                        {{ add_form.last_name }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.role.id_for_label }}" class="form-label">{{ add_form.role.label }}</label>
+                        {{ add_form.role }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.status.id_for_label }}" class="form-label">{{ add_form.status.label }}</label>
+                        {{ add_form.status }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.password.id_for_label }}" class="form-label">{{ add_form.password.label }}</label>
+                        {{ add_form.password }}
+                      </div>
+                      <div class="col-md-6">
+                        <label for="{{ add_form.password_confirm.id_for_label }}" class="form-label">{{ add_form.password_confirm.label }}</label>
+                        {{ add_form.password_confirm }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-sm">Add Employee</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -353,6 +480,7 @@
     </script>
   </body>
 </html>
+
 
 
 

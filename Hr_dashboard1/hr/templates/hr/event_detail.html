@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -28,7 +28,7 @@
                 <strong>Date:</strong> {{ event.event_date|date:"d M Y" }}
               </div>
               <div class="mb-2">
-                <strong>Time:</strong> {{ event.start_time }}{% if event.end_time %} – {{ event.end_time }}{% endif %}
+                <strong>Time:</strong> {{ event.start_time }}{% if event.end_time %} â€“ {{ event.end_time }}{% endif %}
               </div>
               <div class="mb-2">
                 <strong>Shared With:</strong> <span class="badge bg-primary-subtle text-primary">{{ event.share_with }}</span>

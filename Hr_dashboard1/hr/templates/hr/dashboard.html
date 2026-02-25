@@ -19,7 +19,7 @@
 <body>
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation">
+    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
       <div class="mb-4">
         <div class="d-flex align-items-center mb-2">
           <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
@@ -38,61 +38,85 @@
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
             href="{% url 'hr:dashboard' %}">
-            <span class="me-2">🏠</span> Dashboard
+            <span class="me-2" aria-hidden="true">&#127968;</span> Dashboard
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %}"
             href="{% url 'hr:employee_list' %}">
-            <span class="me-2">👥</span> Employee Management
+            <span class="me-2" aria-hidden="true">&#128101;</span> Employee Management
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'team_list' or request.resolver_match.url_name == 'team_add' or request.resolver_match.url_name == 'team_detail' or request.resolver_match.url_name == 'team_edit' %}active{% endif %}"
             href="{% url 'hr:team_list' %}">
-            <span class="me-2">&#129309;</span> Team Management
+            <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'attendance_list' %}active{% endif %}"
             href="{% url 'hr:attendance_list' %}">
-            <span class="me-2">⏱️</span> Time Cards / Attendance
+            <span class="me-2" aria-hidden="true">&#9201;</span> Time Cards / Attendance
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'leave_dashboard' %}active{% endif %}"
             href="{% url 'hr:leave_dashboard' %}">
-            <span class="me-2">📝</span> Leave Management
+            <span class="me-2" aria-hidden="true">&#128221;</span> Leave Management
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}"
             href="{% url 'hr:announcement_list' %}">
-            <span class="me-2">📢</span> Announcements
+            <span class="me-2" aria-hidden="true">&#128227;</span> Announcements
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'project_list' %}active{% endif %}"
             href="{% url 'hr:project_list' %}">
-            <span class="me-2">📁</span> Projects
+            <span class="me-2" aria-hidden="true">&#128193;</span> Projects
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}"
             href="{% url 'hr:task_list' %}">
-            <span class="me-2">✅</span> Tasks
+            <span class="me-2" aria-hidden="true">&#9989;</span> Tasks
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'client_list' %}active{% endif %}"
             href="{% url 'hr:client_list' %}">
-            <span class="me-2">🏢</span> Clients
+            <span class="me-2" aria-hidden="true">&#127970;</span> Clients
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'events' %}active{% endif %}"
             href="{% url 'hr:events' %}">
-            <span class="me-2">📅</span> Event Calendar
+            <span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'payroll_list' or request.resolver_match.url_name == 'payroll_create' or request.resolver_match.url_name == 'payroll_detail' or request.resolver_match.url_name == 'payroll_update' %}active{% endif %}"
+            href="{% url 'hr:payroll_list' %}">
+            <span class="me-2" aria-hidden="true">&#128176;</span> Payroll
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'invoice_list' or request.resolver_match.url_name == 'invoice_create' or request.resolver_match.url_name == 'invoice_detail' or request.resolver_match.url_name == 'invoice_update' %}active{% endif %}"
+            href="{% url 'hr:invoice_list' %}">
+            <span class="me-2" aria-hidden="true">&#129534;</span> Invoices
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'payment_list' %}active{% endif %}"
+            href="{% url 'hr:payment_list' %}">
+            <span class="me-2" aria-hidden="true">&#128179;</span> Payments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'ticket_list' or request.resolver_match.url_name == 'ticket_detail' or request.resolver_match.url_name == 'ticket_update' or request.resolver_match.url_name == 'ticket_comment' %}active{% endif %}"
+            href="{% url 'hr:ticket_list' %}">
+            <span class="me-2" aria-hidden="true">&#127915;</span> Support Tickets
           </a>
         </li>
       </ul>
@@ -102,37 +126,37 @@
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'notes' %}active{% endif %}"
             href="{% url 'hr:notes' %}">
-            <span class="me-2">🗒️</span> Notes
+            <span class="me-2" aria-hidden="true">&#128221;</span> Notes
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'timeline' %}active{% endif %}"
             href="{% url 'hr:timeline' %}">
-            <span class="me-2">📊</span> Timeline
+            <span class="me-2" aria-hidden="true">&#128200;</span> Timeline
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'help' %}active{% endif %}"
             href="{% url 'hr:help' %}">
-            <span class="me-2">📚</span> Help Articles
+            <span class="me-2" aria-hidden="true">&#128218;</span> Help Articles
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'todo' %}active{% endif %}"
             href="{% url 'hr:todo' %}">
-            <span class="me-2">✅</span> Personal To-Do List
+            <span class="me-2" aria-hidden="true">&#9989;</span> Personal To-Do List
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}"
             href="{% url 'hr:notifications' %}">
-            <span class="me-2">🔔</span> Notifications
+            <span class="me-2" aria-hidden="true">&#128276;</span> Notifications
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"
             href="{% url 'hr:settings' %}">
-            <span class="me-2">⚙️</span> Settings / Security
+            <span class="me-2" aria-hidden="true">&#9881;</span> Settings / Security
           </a>
         </li>
       </ul>
@@ -160,13 +184,14 @@
             </ul>
 
             <div class="d-flex align-items-center gap-3">
-              <button type="button" class="btn btn-light position-relative rounded-circle p-2"
-                aria-label="Notifications">
-                🔔
+              <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+                <i class="fa-solid fa-bell"></i>
+                {% if navbar_unread_notifications > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  4
+                  {{ navbar_unread_notifications }}
                 </span>
-              </button>
+                {% endif %}
+              </a>
               <div class="dropdown">
                 <button class="btn btn-outline-secondary d-flex align-items-center gap-2" type="button"
                   data-bs-toggle="dropdown" aria-expanded="false">
@@ -183,7 +208,7 @@
                   <li>
                     <hr class="dropdown-divider" />
                   </li>
-                  <li><a class="dropdown-item disabled" href="#">Sign out </a></li>
+                  <li><a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a></li>
                 </ul>
               </div>
             </div>
@@ -211,9 +236,9 @@
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <div class="text-muted small">Total Employees</div>
-                  <div class="fs-4 fw-semibold">128</div>
+                  <div class="fs-4 fw-semibold">{{ total_employees }}</div>
                 </div>
-                <div class="summary-card-icon">👥</div>
+                <div class="summary-card-icon"><i class="fa-solid fa-users"></i></div>
               </div>
             </div>
           </div>
@@ -221,12 +246,12 @@
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
-                  <div class="text-muted small">Today’s Attendance</div>
-                  <div class="fs-4 fw-semibold">117</div>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">91%
+                  <div class="text-muted small">Today's Attendance</div>
+                  <div class="fs-4 fw-semibold">{{ present_today }}</div>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">{{ attendance_percent }}%
                     Present</span>
                 </div>
-                <div class="summary-card-icon">⏱️</div>
+                <div class="summary-card-icon"><i class="fa-solid fa-stopwatch"></i></div>
               </div>
             </div>
           </div>
@@ -235,11 +260,11 @@
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <div class="text-muted small">Pending Leave Requests</div>
-                  <div class="fs-4 fw-semibold">6</div>
+                  <div class="fs-4 fw-semibold">{{ pending_leave_requests }}</div>
                   <span class="badge bg-warning-subtle text-warning border border-warning-subtle mt-1">Action
                     needed</span>
                 </div>
-                <div class="summary-card-icon">📝</div>
+                <div class="summary-card-icon"><i class="fa-solid fa-file-pen"></i></div>
               </div>
             </div>
           </div>
@@ -248,10 +273,147 @@
               <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <div class="text-muted small">Active Announcements</div>
-                  <div class="fs-4 fw-semibold">3</div>
-                  <span class="badge bg-info-subtle text-info border border-info-subtle mt-1">2 new this week</span>
+                  <div class="fs-4 fw-semibold">{{ active_announcements_count }}</div>
+                  <span class="badge bg-info-subtle text-info border border-info-subtle mt-1">{{ announcements_this_week }} new this week</span>
                 </div>
-                <div class="summary-card-icon">📢</div>
+                <div class="summary-card-icon"><i class="fa-solid fa-bullhorn"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-muted small">Total Revenue</div>
+                  <div class="fs-4 fw-semibold">{{ invoice_total_revenue }}</div>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">Paid:
+                    {{ invoice_paid_count }}</span>
+                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle mt-1">Pending:
+                    {{ invoice_pending_count }}</span>
+                </div>
+                <div class="summary-card-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3 mb-md-4">
+          <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h6 mb-2">Support Ticket Summary</h2>
+                <p class="small mb-1 text-muted">Open Tickets</p>
+                <div class="fs-5 fw-semibold mb-2">{{ open_tickets_count }}</div>
+                <p class="small mb-1 text-muted">High Priority Tickets</p>
+                <div class="fs-6 fw-semibold mb-2 text-danger">{{ high_priority_tickets_count }}</div>
+                <div class="mt-3">
+                  <a href="{% url 'hr:ticket_list' %}" class="btn btn-sm btn-outline-primary">Open Tickets</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Latest Support Tickets</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Latest 5</span>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                  {% for ticket in recent_tickets %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <div>
+                        <div class="fw-semibold">{{ ticket.ticket_id }}</div>
+                        <div class="text-muted">{{ ticket.client.company_name }} &middot; {{ ticket.subject }}</div>
+                      </div>
+                      <span class="badge bg-primary-subtle text-primary">{{ ticket.get_status_display }}</span>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item px-0 text-muted">No support tickets available</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3 mb-md-4">
+          <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h6 mb-2">Payroll Summary</h2>
+                <p class="small mb-1 text-muted">Total Net Payroll</p>
+                <div class="fs-5 fw-semibold mb-2">{{ payroll_total_net }}</div>
+                <p class="small mb-1 text-muted">This Month Payroll</p>
+                <div class="fs-6 fw-semibold mb-2">{{ this_month_payroll_total }}</div>
+                <span class="badge bg-success-subtle text-success me-1">Paid: {{ payroll_paid_count }}</span>
+                <span class="badge bg-warning-subtle text-warning">Pending: {{ payroll_pending_count }}</span>
+                <div class="mt-3">
+                  <a href="{% url 'hr:payroll_list' %}" class="btn btn-sm btn-outline-primary">Open Payroll</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Latest Payroll Records</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Latest 5</span>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                  {% for record in latest_payroll_records %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <div>
+                        <div class="fw-semibold">{{ record.employee_name }}</div>
+                        <div class="text-muted">{{ record.month }}</div>
+                      </div>
+                      <span class="badge bg-primary-subtle text-primary">{{ record.net_salary }}</span>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item px-0 text-muted">No payroll records available</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3 mb-md-4">
+          <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h6 mb-2">Invoice Summary</h2>
+                <p class="small mb-1 text-muted">Total Revenue</p>
+                <div class="fs-5 fw-semibold mb-2">{{ invoice_total_revenue }}</div>
+                <span class="badge bg-success-subtle text-success me-1">Paid: {{ invoice_paid_count }}</span>
+                <span class="badge bg-warning-subtle text-warning">Pending: {{ invoice_pending_count }}</span>
+                <div class="mt-3">
+                  <a href="{% url 'hr:invoice_list' %}" class="btn btn-sm btn-outline-primary">Open Invoices</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Recent Invoices</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Latest 5</span>
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                  {% for invoice in recent_invoices %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                      <div>
+                        <div class="fw-semibold">{{ invoice.invoice_number }}</div>
+                        <div class="text-muted">{{ invoice.client.company_name }} &middot; {{ invoice.project.name }}</div>
+                      </div>
+                      <span class="badge bg-primary-subtle text-primary">{{ invoice.total_amount }}</span>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item px-0 text-muted">No invoice records available</li>
+                  {% endfor %}
+                </ul>
               </div>
             </div>
           </div>
@@ -272,7 +434,7 @@
                     <div>
                       <div class="fw-semibold">{{ ev.title }}</div>
                       <div class="text-muted">
-                        {{ ev.event_date|date:"d M Y" }} · {{ ev.start_time }}{% if ev.end_time %} – {{ ev.end_time }}{% endif %}
+                        {{ ev.event_date|date:"d M Y" }} &middot; {{ ev.start_time }}{% if ev.end_time %} - {{ ev.end_time }}{% endif %}
                       </div>
                     </div>
                     <span class="badge bg-primary-subtle text-primary">{{ ev.share_with }}</span>
@@ -295,22 +457,25 @@
               </div>
               <div class="card-body">
                 <p class="mb-1 small text-muted">
-                  Pending personal tasks: <strong>5</strong>
+                  Pending personal tasks: <strong>{{ pending_personal_tasks_count }}</strong>
                 </p>
                 <ul class="list-group list-group-flush small">
+                  {% for item in todo_preview_tasks %}
                   <li class="list-group-item px-0">
-                    Review <strong>3</strong> pending leave requests
+                    {{ item.description }}
+                    {% if item.due_date %}
+                    <span class="text-muted d-block">Due: {{ item.due_date|date:"d M Y" }}</span>
+                    {% endif %}
                   </li>
-                  <li class="list-group-item px-0">
-                    Publish Q1 policy update announcement draft
+                  {% empty %}
+                  <li class="list-group-item px-0 text-muted">
+                    No pending personal tasks.
                   </li>
-                  <li class="list-group-item px-0">
-                    Finalize attendance exceptions for this week
-                  </li>
+                  {% endfor %}
                 </ul>
-                <button class="btn btn-sm btn-outline-primary mt-3 w-100" type="button">
+                <a class="btn btn-sm btn-outline-primary mt-3 w-100" href="{% url 'hr:todo' %}">
                   Open full To-Do List
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -325,38 +490,18 @@
               </div>
               <div class="card-body scroll-area">
                 <ul class="list-group list-group-flush small">
+                  {% for activity in recent_activities %}
                   <li class="list-group-item px-0">
-                    <span class="badge bg-primary-subtle text-primary me-1">Leave</span>
-                    Leave request <strong>#LR-1024</strong> submitted by
-                    <strong>Aarav Patel</strong>.
-                    <div class="text-muted">2 minutes ago</div>
+                    <span class="badge bg-primary-subtle text-primary me-1">{{ activity.get_type_display }}</span>
+                    <strong>{{ activity.title }}</strong>
+                    <div>{{ activity.message }}</div>
+                    <div class="text-muted">{{ activity.created_at|timesince }} ago</div>
                   </li>
-                  <li class="list-group-item px-0">
-                    <span class="badge bg-success-subtle text-success me-1">Approval</span>
-                    Leave request <strong>#LR-1019</strong> approved for
-                    <strong>Mia Rodriguez</strong>.
-                    <div class="text-muted">30 minutes ago</div>
+                  {% empty %}
+                  <li class="list-group-item px-0 text-muted">
+                    No recent HR activities.
                   </li>
-                  <li class="list-group-item px-0">
-                    <span class="badge bg-danger-subtle text-danger me-1">Rejection</span>
-                    Leave request <strong>#LR-1018</strong> rejected (policy violation).
-                    <div class="text-muted">1 hour ago</div>
-                  </li>
-                  <li class="list-group-item px-0">
-                    <span class="badge bg-info-subtle text-info me-1">Announcement</span>
-                    New announcement <strong>“Hybrid Work Policy Refresh”</strong> published.
-                    <div class="text-muted">Today · 09:10 AM</div>
-                  </li>
-                  <li class="list-group-item px-0">
-                    <span class="badge bg-secondary-subtle text-secondary me-1">Attendance</span>
-                    Attendance marked for <strong>117</strong> employees.
-                    <div class="text-muted">Today · 09:00 AM</div>
-                  </li>
-                  <li class="list-group-item px-0">
-                    <span class="badge bg-primary-subtle text-primary me-1">Event</span>
-                    Event <strong>“Wellness Friday”</strong> created for People Ops team.
-                    <div class="text-muted">Yesterday · 04:30 PM</div>
-                  </li>
+                  {% endfor %}
                 </ul>
               </div>
             </div>
@@ -366,8 +511,7 @@
             <div class="card border-0 shadow-sm h-100" id="announcements">
               <div class="card-header card-header-small d-flex justify-content-between">
                 <h2 class="h6 mb-0">Announcements Preview</h2>
-                <span class="badge bg-primary-subtle text-primary">Active: {{ active_announcements_count|default:0
-                  }}</span>
+                <span class="badge bg-primary-subtle text-primary">Active: {{ active_announcements_count|default_if_none:0 }}</span>
               </div>
               <div class="card-body small">
                 {% if active_announcements %}
@@ -396,102 +540,37 @@
             <div class="card border-0 shadow-sm h-100" id="notifications">
               <div class="card-header card-header-small d-flex justify-content-between">
                 <h2 class="h6 mb-0">Notifications Preview</h2>
-                <span class="badge bg-danger-subtle text-danger">4 new</span>
+                <span class="badge bg-danger-subtle text-danger">{{ unread_notifications_count }} new</span>
               </div>
               <div class="card-body scroll-area small">
                 <div class="alert alert-warning py-2 mb-2">
-                  <strong>Pending approvals:</strong> 3 leave requests older than 24 hours.
+                  <strong>Pending approvals:</strong> {{ pending_leave_older_24h }} leave requests older than 24 hours.
                 </div>
                 <div class="list-group list-group-flush small">
+                  {% for n in recent_notifications %}
                   <div class="list-group-item border-0 px-0 pb-2">
-                    <div class="fw-semibold">Attendance exception flagged</div>
-                    <div class="text-muted">
-                      2 employees forgot to check-out yesterday.
-                    </div>
-                    <span class="badge bg-secondary-subtle text-secondary mt-1">Attendance</span>
+                    <div class="fw-semibold">{{ n.title }}</div>
+                    <div class="text-muted">{{ n.message }}</div>
+                    <span class="badge bg-secondary-subtle text-secondary mt-1">{{ n.get_type_display }}</span>
                   </div>
-                  <div class="list-group-item border-0 px-0 pb-2">
-                    <div class="fw-semibold">Policy acknowledgement due</div>
-                    <div class="text-muted">
-                      18 employees have not acknowledged the new policy.
-                    </div>
-                    <span class="badge bg-info-subtle text-info mt-1">Policy</span>
+                  {% empty %}
+                  <div class="list-group-item border-0 px-0 text-muted">
+                    No notifications available.
                   </div>
-                  <div class="list-group-item border-0 px-0 pb-2">
-                    <div class="fw-semibold">Event RSVP status</div>
-                    <div class="text-muted">
-                      63% of invited employees responded to Town Hall invite.
-                    </div>
-                    <span class="badge bg-primary-subtle text-primary mt-1">Events</span>
-                  </div>
-                  <div class="list-group-item border-0 px-0">
-                    <div class="fw-semibold">Security reminder</div>
-                    <div class="text-muted">
-                      HR admins to review access and permissions this week.
-                    </div>
-                    <span class="badge bg-danger-subtle text-danger mt-1">Security</span>
-                  </div>
+                  {% endfor %}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Additional anchor sections (UI only placeholders) -->
-        <section id="timecards" class="mt-4">
-          <h2 class="h6 mb-2">Time Cards / Attendance (Overview)</h2>
-          <p class="text-muted small mb-0">
-            Frontend-only summary. Detailed time card management will be available on the
-            dedicated Attendance page.
-          </p>
-        </section>
-
-        <section id="leave" class="mt-3">
-          <h2 class="h6 mb-2">Leave Management (Overview)</h2>
-          <p class="text-muted small mb-0">
-            Quick glance of pending, approved, and rejected leave requests for HR review.
-          </p>
-        </section>
-
-        <section id="notes" class="mt-3">
-          <h2 class="h6 mb-2">Notes</h2>
-          <p class="text-muted small mb-0">
-            Personal HR notes and reminders (UI placeholder; no storage in this version).
-          </p>
-        </section>
-
-        <section id="timeline" class="mt-3">
-          <h2 class="h6 mb-2">Timeline</h2>
-          <p class="text-muted small mb-0">
-            High-level HR events and actions across the organization (visual timeline to be
-            implemented later).
-          </p>
-        </section>
-
-        <section id="knowledge" class="mt-3">
-          <h2 class="h6 mb-2">Help Articles (Internal Knowledge Base)</h2>
-          <p class="text-muted small mb-0">
-            Links to internal HR SOPs, FAQs, and process documents (UI only for now).
-          </p>
-        </section>
-
-        <section id="settings" class="mt-3 mb-4">
-          <h2 class="h6 mb-2">Settings / Security</h2>
-          <p class="text-muted small mb-1">
-            Manage HR portal preferences, access controls, and security settings (frontend-only
-            representation).
-          </p>
-          <span class="badge bg-light text-muted border">
-            Secure access with reCAPTCHA (UI mention only)
-          </span>
-        </section>
         {% endblock %}
       </main>
 
       <footer class="border-top bg-white py-2 px-3 px-lg-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <span>© <span id="year"></span> HR Portal • HR Module Dashboard</span>
-          <span class="text-muted">Secure access · reCAPTCHA protected</span>
+          <span>&copy; <span id="year"></span> HR Portal &bull; HR Module Dashboard</span>
+          <span class="text-muted">Secure access &middot; reCAPTCHA protected</span>
         </div>
       </footer>
     </div>
@@ -507,6 +586,7 @@
 </body>
 
 </html>
+
 
 
 

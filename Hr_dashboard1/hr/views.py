@@ -1,30 +1,94 @@
 from datetime import date, timedelta
 from calendar import monthrange
+from collections import defaultdict
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.db.models import Q, F
+from django.contrib.auth.hashers import make_password
+from django.db.models import Q, F, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+import re
 
-from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm, TeamForm
-from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus, Team
+from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm, TeamForm, PayrollForm, InvoiceForm, TicketManagementForm, TicketCommentForm
+from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus, Team, Payroll, Invoice, Payment, Ticket, TicketComment
 from .forms import LeaveCategoryForm
 from .forms import EventForm, NoteForm, TimelinePostForm, TimelineCommentForm, HelpArticleForm, PersonalTaskForm
-from .models import Event, Role, Note, NoteVisibility, TimelinePost, TimelineLike, TimelineComment, HelpArticle, HelpCategory, PersonalTask
+from .models import (
+    Event,
+    Role,
+    Note,
+    NoteVisibility,
+    TimelinePost,
+    TimelineLike,
+    TimelineComment,
+    HelpArticle,
+    HelpCategory,
+    PersonalTask,
+    Notification,
+    NotificationType,
+    AdminProfile,
+)
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 
 
 User = get_user_model()
 
 
+def _create_notification(title: str, message: str, notification_type: str) -> None:
+    if notification_type not in dict(NotificationType.choices):
+        notification_type = NotificationType.ANNOUNCEMENT
+    Notification.objects.create(
+        title=title[:255],
+        message=message,
+        type=notification_type,
+    )
 def _employee_total_count():
     # Real-time total employee records across statuses.
     return User.objects.filter(is_superuser=False).count()
+
+
+def _payroll_summary(queryset):
+    totals = queryset.aggregate(
+        total_gross_salary=Sum("gross_salary"),
+        total_deductions=Sum("deductions"),
+        total_net_salary=Sum("net_salary"),
+    )
+    return {
+        "total_employees": _employee_total_count(),
+        "total_gross_salary": totals["total_gross_salary"] or 0,
+        "total_deductions": totals["total_deductions"] or 0,
+        "total_net_salary": totals["total_net_salary"] or 0,
+        "paid_count": queryset.filter(status="PAID").count(),
+        "pending_count": queryset.filter(status="PENDING").count(),
+    }
+
+
+def _invoice_summary(queryset):
+    total_revenue = queryset.aggregate(total=Sum("total_amount"))["total"] or 0
+    paid_total = Payment.objects.filter(invoice__in=queryset).aggregate(total=Sum("amount_paid"))["total"] or 0
+    pending_total = total_revenue - paid_total
+    return {
+        "total_invoices": queryset.count(),
+        "total_revenue": total_revenue,
+        "paid_total": paid_total,
+        "pending_total": pending_total if pending_total > 0 else 0,
+        "overdue_count": queryset.filter(due_date__lt=timezone.localdate()).exclude(status="PAID").count(),
+    }
+
+
+def _ticket_summary(queryset):
+    return {
+        "total_tickets": queryset.count(),
+        "open_tickets_count": queryset.filter(status="OPEN").count(),
+        "in_progress_tickets_count": queryset.filter(status="IN_PROGRESS").count(),
+        "closed_tickets_count": queryset.filter(status="CLOSED").count(),
+    }
+
 
 
 # =====================
@@ -32,16 +96,90 @@ def _employee_total_count():
 # =====================
 
 def dashboard(request):
-    active_announcements = Announcement.objects.filter(status=AnnouncementStatus.ACTIVE).order_by("-publish_date", "-created_at")[:5]
     today = timezone.localdate()
+    now = timezone.now()
+
+    employees_qs = User.objects.filter(is_superuser=False)
+    total_employees = employees_qs.count()
+
+    attendance_today_qs = Attendance.objects.filter(date=today)
+    present_today = attendance_today_qs.filter(status="PRESENT").count()
+    attendance_percent = round((present_today / total_employees) * 100) if total_employees else 0
+
+    leaves_qs = LeaveRequest.objects.all()
+    pending_leave_requests = leaves_qs.filter(status="Pending").count()
+    pending_leave_older_24h = leaves_qs.filter(
+        status="Pending",
+        created_at__lte=now - timedelta(hours=24),
+    ).count()
+
+    active_announcements_qs = Announcement.objects.filter(status=AnnouncementStatus.ACTIVE).order_by("-publish_date", "-created_at")
+    active_announcements = active_announcements_qs[:5]
+    active_announcements_count = active_announcements_qs.count()
+    announcements_this_week = active_announcements_qs.filter(publish_date__gte=today - timedelta(days=6)).count()
+
+    tickets_qs = Ticket.objects.select_related("client").order_by("-created_at")
+    recent_tickets = tickets_qs[:5]
+    open_tickets_count = tickets_qs.filter(status="OPEN").count()
+    high_priority_tickets_count = tickets_qs.filter(priority="HIGH").exclude(status__in=["RESOLVED", "CLOSED"]).count()
+
+    payroll_qs = Payroll.objects.all().order_by("-created_at")
+    payroll_total_net = payroll_qs.aggregate(total=Sum("net_salary"))["total"] or 0
+    this_month_payroll_total = payroll_qs.filter(
+        created_at__year=today.year,
+        created_at__month=today.month,
+    ).aggregate(total=Sum("net_salary"))["total"] or 0
+    payroll_paid_count = payroll_qs.filter(status="PAID").count()
+    payroll_pending_count = payroll_qs.filter(status="PENDING").count()
+    latest_payroll_records = payroll_qs[:5]
+
+    invoices_qs = Invoice.objects.select_related("client", "project").order_by("-created_at")
+    invoice_total_revenue = invoices_qs.aggregate(total=Sum("total_amount"))["total"] or 0
+    invoice_paid_count = invoices_qs.filter(status="PAID").count()
+    invoice_pending_count = invoices_qs.exclude(status="PAID").count()
+    recent_invoices = invoices_qs[:5]
+
+    personal_tasks_qs = PersonalTask.objects.all()
+    if request.user.is_authenticated:
+        personal_tasks_qs = personal_tasks_qs.filter(user=request.user)
+    pending_personal_tasks_count = personal_tasks_qs.filter(is_completed=False).count()
+    todo_preview_tasks = personal_tasks_qs.filter(is_completed=False).order_by("due_date", "-created_at")[:3]
+
+    recent_activities = Notification.objects.all().order_by("-created_at")[:6]
+    recent_notifications = Notification.objects.all().order_by("-created_at")[:4]
+    unread_notifications_count = Notification.objects.filter(is_read=False).count()
+
     upcoming = Event.objects.filter(event_date__gte=today)
     if request.user.is_authenticated and request.user.role == Role.EMPLOYEE:
         upcoming = upcoming.filter(Q(share_with__icontains="Employee") | Q(share_with__icontains="Team"))
     upcoming = upcoming.order_by("event_date", "start_time")[:5]
     return render(request, "hr/dashboard.html", {
+        "total_employees": total_employees,
+        "present_today": present_today,
+        "attendance_percent": attendance_percent,
+        "pending_leave_requests": pending_leave_requests,
+        "pending_leave_older_24h": pending_leave_older_24h,
         "active_announcements": active_announcements,
-        "active_announcements_count": active_announcements.count(),
+        "active_announcements_count": active_announcements_count,
+        "announcements_this_week": announcements_this_week,
+        "open_tickets_count": open_tickets_count,
+        "high_priority_tickets_count": high_priority_tickets_count,
+        "recent_tickets": recent_tickets,
+        "payroll_total_net": payroll_total_net,
+        "this_month_payroll_total": this_month_payroll_total,
+        "payroll_paid_count": payroll_paid_count,
+        "payroll_pending_count": payroll_pending_count,
+        "latest_payroll_records": latest_payroll_records,
+        "invoice_total_revenue": invoice_total_revenue,
+        "invoice_paid_count": invoice_paid_count,
+        "invoice_pending_count": invoice_pending_count,
+        "recent_invoices": recent_invoices,
         "upcoming_events": upcoming,
+        "pending_personal_tasks_count": pending_personal_tasks_count,
+        "todo_preview_tasks": todo_preview_tasks,
+        "recent_activities": recent_activities,
+        "recent_notifications": recent_notifications,
+        "unread_notifications_count": unread_notifications_count,
     })
 
 
@@ -63,10 +201,12 @@ def employee_list(request):
         )
 
     members = members.order_by("-created_at")
+    add_form = TeamMemberAddForm()
 
     return render(request, "hr/employee.html", {
         "members": members,
         "search_query": query,
+        "add_form": add_form,
     })
 
 
@@ -74,16 +214,17 @@ def employee_add(request):
     if request.method == "POST":
         form = TeamMemberAddForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Employee added successfully.")
+            member = form.save()
+            _create_notification(
+                "Team member added",
+                f"{member.get_full_name() or member.username} was added to Team Management.",
+                NotificationType.SECURITY,
+            )
+            messages.success(request, "Team member added successfully.")
             return redirect("hr:employee_list")
-    else:
-        form = TeamMemberAddForm()
-
-    return render(request, "hr/emp_form.html", {
-        "form": form,
-        "is_edit": False
-    })
+        messages.error(request, "Could not add employee. Please check the form values and try again.")
+        return redirect("hr:employee_list")
+    return redirect("hr:employee_list")
 
 
 def employee_edit(request, pk):
@@ -92,17 +233,17 @@ def employee_edit(request, pk):
     if request.method == "POST":
         form = TeamMemberEditForm(request.POST, instance=member)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Employee updated successfully.")
+            member = form.save()
+            _create_notification(
+                "Team member updated",
+                f"{member.get_full_name() or member.username} profile details were updated.",
+                NotificationType.SECURITY,
+            )
+            messages.success(request, "Team member updated successfully.")
             return redirect("hr:employee_list")
-    else:
-        form = TeamMemberEditForm(instance=member)
-
-    return render(request, "hr/emp_form.html", {
-        "form": form,
-        "member": member,
-        "is_edit": True
-    })
+        messages.error(request, "Could not update employee. Please check the form values and try again.")
+        return redirect("hr:employee_list")
+    return redirect("hr:employee_list")
 
 
 def employee_activate(request, pk):
@@ -110,6 +251,11 @@ def employee_activate(request, pk):
     member.status = Status.ACTIVE
     member.is_active = True
     member.save()
+    _create_notification(
+        "Team member activated",
+        f"{member.get_full_name() or member.username} was activated.",
+        NotificationType.SECURITY,
+    )
 
     messages.success(request, f"{member.get_full_name()} activated.")
     return redirect("hr:employee_list")
@@ -120,6 +266,11 @@ def employee_deactivate(request, pk):
     member.status = Status.INACTIVE
     member.is_active = False
     member.save()
+    _create_notification(
+        "Team member deactivated",
+        f"{member.get_full_name() or member.username} was deactivated.",
+        NotificationType.SECURITY,
+    )
 
     messages.success(request, f"{member.get_full_name()} deactivated.")
     return redirect("hr:employee_list")
@@ -131,7 +282,16 @@ def employee_deactivate(request, pk):
 
 def team_list(request):
     teams = Team.objects.select_related("team_lead").prefetch_related("members").order_by("name")
-    return render(request, "teams/teams.html", {"teams": teams})
+    employees = User.objects.order_by("first_name", "last_name", "username")
+    return render(
+        request,
+        "teams/teams.html",
+        {
+            "teams": teams,
+            "team_form": TeamForm(),
+            "employees": employees,
+        },
+    )
 
 
 def team_create(request):
@@ -141,9 +301,9 @@ def team_create(request):
             form.save()
             messages.success(request, "Team created successfully.")
             return redirect("hr:team_list")
-    else:
-        form = TeamForm()
-    return render(request, "teams/team_form.html", {"form": form, "is_edit": False})
+        messages.error(request, "Could not create team. Please check the form values and try again.")
+        return redirect("hr:team_list")
+    return redirect("hr:team_list")
 
 
 def team_detail(request, pk):
@@ -158,10 +318,10 @@ def team_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Team updated successfully.")
-            return redirect("hr:team_detail", pk=team.pk)
-    else:
-        form = TeamForm(instance=team)
-    return render(request, "teams/team_form.html", {"form": form, "team": team, "is_edit": True})
+            return redirect("hr:team_list")
+        messages.error(request, "Could not update team. Please check the form values and try again.")
+        return redirect("hr:team_list")
+    return redirect("hr:team_list")
 
 
 def team_delete(request, pk):
@@ -203,6 +363,11 @@ def attendance_list(request):
             )
 
             attendance.save()
+            _create_notification(
+                "Attendance updated",
+                f"Attendance for {attendance.user.get_full_name() or attendance.user.username} on {attendance.date} was saved.",
+                NotificationType.ATTENDANCE,
+            )
             messages.success(request, "Attendance saved.")
 
             return redirect(
@@ -247,6 +412,24 @@ def attendance_list(request):
 def leave_dashboard(request):
     leaves = LeaveRequest.objects.select_related("user", "category")
     categories = LeaveCategory.objects.all()
+    today = timezone.localdate()
+    month_start = today.replace(day=1)
+    month_end = today.replace(day=monthrange(today.year, today.month)[1])
+
+    monthly_usage_map = defaultdict(int)
+    approved_leaves = leaves.filter(status="Approved").select_related("category")
+    for leave in approved_leaves:
+        overlap_start = max(leave.start_date, month_start)
+        overlap_end = min(leave.end_date, month_end)
+        if overlap_start <= overlap_end:
+            monthly_usage_map[leave.category.name] += (overlap_end - overlap_start).days + 1
+
+    monthly_leave_usage = [
+        {"category_name": cat.name, "days_taken": monthly_usage_map.get(cat.name, 0)}
+        for cat in categories
+    ]
+    monthly_leave_usage.sort(key=lambda x: x["days_taken"], reverse=True)
+    monthly_total_days_taken = sum(item["days_taken"] for item in monthly_leave_usage)
 
     context = {
         "leaves": leaves,
@@ -256,6 +439,9 @@ def leave_dashboard(request):
         "approved_count": leaves.filter(status="Approved").count(),
         "pending_count": leaves.filter(status="Pending").count(),
         "rejected_count": leaves.filter(status="Rejected").count(),
+        "current_month_label": today.strftime("%B %Y"),
+        "monthly_leave_usage": monthly_leave_usage,
+        "monthly_total_days_taken": monthly_total_days_taken,
         "cat_form": LeaveCategoryForm(),
     }
 
@@ -271,6 +457,11 @@ def approve_leave(request, pk):
         leave.approved_by = request.user
 
     leave.save()
+    _create_notification(
+        "Leave approved",
+        f"Leave request #{leave.pk} for {leave.user.get_full_name() or leave.user.username} was approved.",
+        NotificationType.LEAVE,
+    )
     messages.success(request, "Leave approved.")
 
     return redirect("hr:leave_dashboard")
@@ -288,6 +479,11 @@ def announcement_list(request):
             if request.user.is_authenticated:
                 ann.created_by = request.user
             ann.save()
+            _create_notification(
+                "Announcement created",
+                f"Announcement '{ann.title}' was published.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Announcement created.")
             return redirect("hr:announcement_list")
     else:
@@ -310,6 +506,11 @@ def announcement_edit(request, pk):
             if status_value in dict(AnnouncementStatus.choices):
                 obj.status = status_value
             obj.save()
+            _create_notification(
+                "Announcement updated",
+                f"Announcement '{obj.title}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Announcement updated.")
             return redirect("hr:announcement_list")
     else:
@@ -325,7 +526,13 @@ def announcement_edit(request, pk):
 def announcement_delete(request, pk):
     ann = get_object_or_404(Announcement, pk=pk)
     if request.method == "POST":
+        ann_title = ann.title
         ann.delete()
+        _create_notification(
+            "Announcement deleted",
+            f"Announcement '{ann_title}' was removed.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Announcement deleted.")
         return redirect("hr:announcement_list")
     return render(request, "hr/announcement_delete_confirm.html", {"announcement": ann})
@@ -337,24 +544,28 @@ def announcement_delete(request, pk):
 
 def project_list(request):
     projects = Project.objects.all()
-    return render(request, "hr/projects.html", {"projects": projects})
+    return render(request, "hr/projects.html", {"projects": projects, "project_form": ProjectForm()})
 
 
 def project_create(request):
     if request.method == "POST":
         form = ProjectForm(request.POST)
         if form.is_valid():
-            form.save()
+            project = form.save()
+            _create_notification(
+                "Project created",
+                f"Project '{project.name}' was created.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Project created successfully.")
             return redirect("hr:project_list")
-    else:
-        form = ProjectForm()
-    return render(request, "hr/project_form.html", {"form": form, "is_edit": False})
+        messages.error(request, "Could not create project. Please check the form values and try again.")
+        return redirect("hr:project_list")
+    return redirect("hr:project_list")
 
 
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk)
-    return render(request, "hr/project_detail.html", {"project": project})
+    return redirect("hr:project_list")
 
 
 def project_update(request, pk):
@@ -362,21 +573,234 @@ def project_update(request, pk):
     if request.method == "POST":
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
-            form.save()
+            project = form.save()
+            _create_notification(
+                "Project updated",
+                f"Project '{project.name}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Project updated successfully.")
-            return redirect("hr:project_detail", pk=project.pk)
-    else:
-        form = ProjectForm(instance=project)
-    return render(request, "hr/project_form.html", {"form": form, "is_edit": True, "project": project})
+            return redirect("hr:project_list")
+        messages.error(request, "Could not update project. Please check the form values and try again.")
+        return redirect("hr:project_list")
+    return redirect("hr:project_list")
 
 
 def project_delete(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == "POST":
+        project_name = project.name
         project.delete()
+        _create_notification(
+            "Project deleted",
+            f"Project '{project_name}' was deleted.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Project deleted.")
         return redirect("hr:project_list")
-    return render(request, "hr/project_delete_confirm.html", {"project": project})
+    return redirect("hr:project_list")
+
+
+# =====================
+# PAYROLL
+# =====================
+
+def payroll_list_view(request):
+    payroll_records = Payroll.objects.all().order_by("-created_at")
+    context = {
+        "payroll_records": payroll_records,
+        "form": PayrollForm(),
+        "editing": False,
+        **_payroll_summary(payroll_records),
+    }
+    return render(request, "hr/payroll.html", context)
+
+
+def payroll_create_view(request):
+    if request.method == "POST":
+        form = PayrollForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Payroll record created.")
+    return redirect("hr:payroll_list")
+
+
+def payroll_update_view(request, pk):
+    payroll = get_object_or_404(Payroll, pk=pk)
+    if request.method == "POST":
+        form = PayrollForm(request.POST, instance=payroll)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Payroll record updated.")
+            return redirect("hr:payroll_list")
+    else:
+        form = PayrollForm(instance=payroll)
+
+    payroll_records = Payroll.objects.all().order_by("-created_at")
+    context = {
+        "payroll_records": payroll_records,
+        "form": form,
+        "editing": True,
+        "edit_payroll": payroll,
+        **_payroll_summary(payroll_records),
+    }
+    return render(request, "hr/payroll.html", context)
+
+
+def payroll_delete_view(request, pk):
+    payroll = get_object_or_404(Payroll, pk=pk)
+    if request.method == "POST":
+        payroll.delete()
+        messages.success(request, "Payroll record deleted.")
+    return redirect("hr:payroll_list")
+
+
+def payroll_detail_view(request, pk):
+    payroll = get_object_or_404(Payroll, pk=pk)
+    return render(request, "hr/payroll_detail.html", {"payroll": payroll})
+
+
+# =====================
+# INVOICES
+# =====================
+
+def invoice_list_view(request):
+    invoices = Invoice.objects.all().order_by("-created_at")
+    context = {
+        "invoices": invoices,
+        "form": InvoiceForm(),
+        "editing": False,
+        **_invoice_summary(invoices),
+    }
+    return render(request, "hr/invoice.html", context)
+
+
+def invoice_create_view(request):
+    if request.method == "POST":
+        form = InvoiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Invoice created.")
+            return redirect("hr:invoice_list")
+    return redirect("hr:invoice_list")
+
+
+def invoice_update_view(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    if request.method == "POST":
+        form = InvoiceForm(request.POST, instance=invoice)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Invoice updated.")
+            return redirect("hr:invoice_list")
+    else:
+        form = InvoiceForm(instance=invoice)
+
+    invoices = Invoice.objects.all().order_by("-created_at")
+    context = {
+        "invoices": invoices,
+        "form": form,
+        "editing": True,
+        "edit_invoice": invoice,
+        **_invoice_summary(invoices),
+    }
+    return render(request, "hr/invoice.html", context)
+
+
+def invoice_delete_view(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    if request.method == "POST":
+        invoice.delete()
+        messages.success(request, "Invoice deleted.")
+    return redirect("hr:invoice_list")
+
+
+def invoice_detail_view(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    payments = invoice.payments.all().order_by("-payment_date", "-created_at")
+    paid_total = payments.aggregate(total=Sum("amount_paid"))["total"] or 0
+    balance_due = invoice.total_amount - paid_total
+    return render(
+        request,
+        "hr/invoice_detail.html",
+        {
+            "invoice": invoice,
+            "payments": payments,
+            "paid_total": paid_total,
+            "balance_due": balance_due if balance_due > 0 else 0,
+        },
+    )
+
+
+def payment_list_view(request):
+    payments = Payment.objects.all().order_by("-created_at")
+    total_payments = payments.aggregate(total=Sum("amount_paid"))["total"] or 0
+    return render(
+        request,
+        "hr/payments.html",
+        {
+            "payments": payments,
+            "payment_count": payments.count(),
+            "total_payments": total_payments,
+        },
+    )
+
+
+# =====================
+# TICKETS
+# =====================
+
+def ticket_list_view(request):
+    tickets = Ticket.objects.all().order_by("-created_at")
+    context = {"tickets": tickets, **_ticket_summary(tickets)}
+    return render(request, "hr/ticket_list.html", context)
+
+
+def ticket_detail_view(request, pk):
+    ticket = get_object_or_404(Ticket, pk=pk)
+    comments = ticket.comments.all().order_by("created_at")
+    comment_form = TicketCommentForm()
+    return render(
+        request,
+        "hr/ticket_detail.html",
+        {"ticket": ticket, "comments": comments, "comment_form": comment_form},
+    )
+
+
+def ticket_update_view(request, pk):
+    ticket = get_object_or_404(Ticket, pk=pk)
+    if request.method == "POST":
+        form = TicketManagementForm(request.POST, instance=ticket)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Ticket {ticket.ticket_id} updated.")
+            return redirect("hr:ticket_detail", pk=ticket.pk)
+        messages.error(request, "Please correct the errors in the form.")
+    else:
+        form = TicketManagementForm(instance=ticket)
+    return render(request, "hr/ticket_edit.html", {"ticket": ticket, "form": form})
+
+
+def ticket_delete_view(request, pk):
+    ticket = get_object_or_404(Ticket, pk=pk)
+    if request.method == "POST":
+        ticket.delete()
+        messages.success(request, "Ticket deleted.")
+    return redirect("hr:ticket_list")
+
+
+def ticket_comment_create_view(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    if request.method == "POST":
+        form = TicketCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.ticket = ticket
+            comment.save()
+            messages.success(request, "Comment added.")
+        else:
+            messages.error(request, "Comment could not be added.")
+    return redirect("hr:ticket_detail", pk=ticket.pk)
 
 
 # =====================
@@ -396,7 +820,12 @@ def task_create(request):
     if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            task = form.save()
+            _create_notification(
+                "Task created",
+                f"Task '{task.title}' was created in project '{task.project.name}'.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Task created.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -408,7 +837,12 @@ def task_update(request, pk):
     if request.method == "POST":
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
-            form.save()
+            task = form.save()
+            _create_notification(
+                "Task updated",
+                f"Task '{task.title}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Task updated.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -418,7 +852,13 @@ def task_update(request, pk):
 def task_delete(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == "POST":
+        task_title = task.title
         task.delete()
+        _create_notification(
+            "Task deleted",
+            f"Task '{task_title}' was deleted.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Task deleted.")
     return redirect("hr:task_list")
 
@@ -433,7 +873,12 @@ def client_create(request):
     if request.method == "POST":
         form = ClientForm(request.POST)
         if form.is_valid():
-            form.save()
+            client = form.save()
+            _create_notification(
+                "Client added",
+                f"Client '{client.company_name}' was added.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Client added.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -445,7 +890,12 @@ def client_update(request, pk):
     if request.method == "POST":
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
-            form.save()
+            client = form.save()
+            _create_notification(
+                "Client updated",
+                f"Client '{client.company_name}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Client updated.")
         else:
             messages.error(request, "Please correct the errors in the form.")
@@ -455,7 +905,13 @@ def client_update(request, pk):
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == "POST":
+        company_name = client.company_name
         client.delete()
+        _create_notification(
+            "Client deleted",
+            f"Client '{company_name}' was deleted.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Client deleted.")
     return redirect("hr:client_list")
 
@@ -468,6 +924,11 @@ def reject_leave(request, pk):
         leave.approved_by = request.user
 
     leave.save()
+    _create_notification(
+        "Leave rejected",
+        f"Leave request #{leave.pk} for {leave.user.get_full_name() or leave.user.username} was rejected.",
+        NotificationType.LEAVE,
+    )
     messages.success(request, "Leave rejected.")
 
     return redirect("hr:leave_dashboard")
@@ -483,7 +944,12 @@ def add_leave_category(request):
     if request.method == "POST":
         form = LeaveCategoryForm(request.POST)
         if form.is_valid():
-            form.save()
+            category = form.save()
+            _create_notification(
+                "Leave category added",
+                f"Leave category '{category.name}' was added.",
+                NotificationType.LEAVE,
+            )
             messages.success(request, "Leave category added.")
             return redirect("hr:leave_dashboard")
     else:
@@ -499,7 +965,11 @@ def add_leave_category(request):
 
 def events_view(request):
     today = timezone.localdate()
-    _send_event_reminders_if_due()
+    try:
+        _send_event_reminders_if_due()
+    except Exception:
+        # Reminders should never block opening the calendar page.
+        pass
     month_str = request.GET.get("month", "")
     try:
         current_month = date.fromisoformat(f"{month_str}-01") if month_str else today.replace(day=1)
@@ -556,6 +1026,11 @@ def events_view(request):
             obj = form.save(commit=False)
             obj.created_by = request.user if request.user.is_authenticated else None
             obj.save()
+            _create_notification(
+                "Event created",
+                f"Event '{obj.title}' was scheduled for {obj.event_date}.",
+                NotificationType.EVENT,
+            )
             messages.success(request, "Event created successfully.")
             return redirect("hr:events")
         else:
@@ -573,7 +1048,13 @@ def events_view(request):
 def delete_event(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.method == "POST":
+        event_title = event.title
         event.delete()
+        _create_notification(
+            "Event deleted",
+            f"Event '{event_title}' was deleted.",
+            NotificationType.EVENT,
+        )
         messages.success(request, "Event deleted.")
     return redirect("hr:events")
 
@@ -586,7 +1067,12 @@ def event_edit(request, pk):
     if request.method == "POST":
         form = EventForm(request.POST, instance=ev)
         if form.is_valid():
-            form.save()
+            ev = form.save()
+            _create_notification(
+                "Event updated",
+                f"Event '{ev.title}' was updated.",
+                NotificationType.EVENT,
+            )
             messages.success(request, "Event updated.")
             return redirect("hr:events")
         else:
@@ -604,7 +1090,16 @@ def event_ics(request, pk):
     return resp
 
 def send_event_reminders(request):
-    _send_event_reminders_if_due()
+    try:
+        _send_event_reminders_if_due()
+    except Exception:
+        messages.error(request, "Could not process reminders right now.")
+        return redirect("hr:events")
+    _create_notification(
+        "Event reminders processed",
+        "Event reminder dispatch was executed.",
+        NotificationType.EVENT,
+    )
     return redirect("hr:events")
 
 def _build_ics(ev: Event) -> str:
@@ -710,6 +1205,11 @@ def create_post_view(request):
         obj = form.save(commit=False)
         obj.created_by = request.user if request.user.is_authenticated else None
         obj.save()
+        _create_notification(
+            "New timeline post",
+            f"A new timeline post '{obj.title or obj.message[:40]}' was shared.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Post shared.")
     else:
         messages.error(request, "Please correct the errors in the post form.")
@@ -732,6 +1232,11 @@ def comment_post_view(request, pk):
             c.post = post
             c.user = request.user if request.user.is_authenticated else None
             c.save()
+            _create_notification(
+                "New timeline comment",
+                f"A comment was added on timeline post '{post.title or post.message[:40]}'.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Comment added.")
         else:
             messages.error(request, "Please enter a valid comment.")
@@ -744,7 +1249,13 @@ def view_post_view(request, pk):
 def delete_post_view(request, pk):
     post = get_object_or_404(TimelinePost, pk=pk)
     if request.method == "POST":
+        post_title = post.title or post.message[:40]
         post.delete()
+        _create_notification(
+            "Timeline post deleted",
+            f"Timeline post '{post_title}' was deleted.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Post deleted.")
     return redirect("hr:timeline")
 
@@ -769,6 +1280,11 @@ def help_create_view(request):
         obj = form.save(commit=False)
         obj.created_by = request.user if request.user.is_authenticated else None
         obj.save()
+        _create_notification(
+            "Help article created",
+            f"Help article '{obj.title}' was created.",
+            NotificationType.ANNOUNCEMENT,
+        )
         messages.success(request, "Help article created.")
     else:
         messages.error(request, "Please correct the errors in the article form.")
@@ -783,7 +1299,12 @@ def help_update_view(request, pk):
     if request.method == "POST":
         form = HelpArticleForm(request.POST, instance=article)
         if form.is_valid():
-            form.save()
+            article = form.save()
+            _create_notification(
+                "Help article updated",
+                f"Help article '{article.title}' was updated.",
+                NotificationType.ANNOUNCEMENT,
+            )
             messages.success(request, "Article updated successfully.")
             return redirect("hr:help")
     else:
@@ -804,7 +1325,13 @@ from django.views.decorators.http import require_POST
 @require_POST
 def help_delete_view(request, pk):
     article = get_object_or_404(HelpArticle, pk=pk)
+    article_title = article.title
     article.delete()
+    _create_notification(
+        "Help article deleted",
+        f"Help article '{article_title}' was deleted.",
+        NotificationType.ANNOUNCEMENT,
+    )
     messages.success(request, "Article deleted successfully.")
     return redirect("hr:help")
 
@@ -854,6 +1381,11 @@ def add_task_view(request):
         obj = form.save(commit=False)
         obj.user = User.objects.first()
         obj.save()
+        _create_notification(
+            "Personal task added",
+            f"Personal to-do item '{obj.description}' was added.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Task added.")
     else:
         messages.error(request, "Please correct the errors in the form.")
@@ -864,7 +1396,12 @@ def edit_task_view(request, pk):
     if request.method == "POST":
         form = PersonalTaskForm(request.POST, instance=task)
         if form.is_valid():
-            form.save()
+            task = form.save()
+            _create_notification(
+                "Personal task updated",
+                f"Personal to-do item '{task.description}' was updated.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Task updated.")
             return redirect("hr:todo")
         else:
@@ -898,7 +1435,13 @@ def edit_task_view(request, pk):
 @require_POST
 def delete_task_view(request, pk):
     task = get_object_or_404(PersonalTask, pk=pk)
+    task_description = task.description
     task.delete()
+    _create_notification(
+        "Personal task deleted",
+        f"Personal to-do item '{task_description}' was deleted.",
+        NotificationType.TIMELINE,
+    )
     messages.success(request, "Task deleted.")
     return redirect("hr:todo")
 
@@ -907,13 +1450,144 @@ def toggle_task_status_view(request, pk):
     task = get_object_or_404(PersonalTask, pk=pk)
     task.is_completed = not task.is_completed
     task.save(update_fields=["is_completed"])
+    _create_notification(
+        "Personal task status changed",
+        f"Personal to-do item '{task.description}' marked as {'completed' if task.is_completed else 'pending'}.",
+        NotificationType.TIMELINE,
+    )
     return redirect("hr:todo")
 
-def notifications(request):
-    return render(request, "hr/notifications.html")
+def notifications_view(request):
+    all_notifications = Notification.objects.all().order_by("-created_at")
+    selected_type = request.GET.get("type", "").strip().upper()
+    valid_types = set(dict(NotificationType.choices).keys())
+    notifications = all_notifications
+    if selected_type in valid_types:
+        notifications = notifications.filter(type=selected_type)
+    else:
+        selected_type = ""
 
-def settings_page(request):
-    return render(request, "hr/settings.html")
+    total_count = all_notifications.count()
+    unread_count = all_notifications.filter(is_read=False).count()
+    read_count = all_notifications.filter(is_read=True).count()
+    type_counts = {
+        "LEAVE": all_notifications.filter(type=NotificationType.LEAVE).count(),
+        "ATTENDANCE": all_notifications.filter(type=NotificationType.ATTENDANCE).count(),
+        "EVENT": all_notifications.filter(type=NotificationType.EVENT).count(),
+        "ANNOUNCEMENT": all_notifications.filter(type=NotificationType.ANNOUNCEMENT).count(),
+        "TIMELINE": all_notifications.filter(type=NotificationType.TIMELINE).count(),
+        "SECURITY": all_notifications.filter(type=NotificationType.SECURITY).count(),
+    }
+    detail_urls = {
+        "LEAVE": reverse("hr:leave_dashboard"),
+        "ATTENDANCE": reverse("hr:attendance_list"),
+        "EVENT": reverse("hr:events"),
+        "ANNOUNCEMENT": reverse("hr:announcement_list"),
+        "TIMELINE": reverse("hr:timeline"),
+        "SECURITY": reverse("hr:settings"),
+    }
+    return render(
+        request,
+        "hr/notifications.html",
+        {
+            "notifications": notifications,
+            "total_count": total_count,
+            "unread_count": unread_count,
+            "read_count": read_count,
+            "type_counts": type_counts,
+            "selected_type": selected_type,
+            "detail_urls": detail_urls,
+        },
+    )
+
+
+@require_POST
+def mark_as_read_view(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    notification.is_read = True
+    notification.save(update_fields=["is_read"])
+    return redirect("hr:notifications")
+
+
+@require_POST
+def clear_notification_view(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    notification.delete()
+    return redirect("hr:notifications")
+
+
+@require_POST
+def mark_all_read_view(request):
+    Notification.objects.filter(is_read=False).update(is_read=True)
+    return redirect("hr:notifications")
+
+
+@require_POST
+def clear_all_view(request):
+    Notification.objects.all().delete()
+    return redirect("hr:notifications")
+
+def settings_view(request):
+    profile = AdminProfile.objects.first()
+    if profile is None:
+        profile = AdminProfile.objects.create(
+            full_name="HR Admin",
+            email="hr.admin@company.com",
+            role="HR",
+            password=make_password("Admin@123"),
+        )
+    return render(request, "hr/settings.html", {"profile": profile})
+
+
+@require_POST
+def update_profile_view(request):
+    profile = AdminProfile.objects.first()
+    if profile is None:
+        profile = AdminProfile.objects.create(
+            full_name="HR Admin",
+            email="hr.admin@company.com",
+            role="HR",
+            password=make_password("Admin@123"),
+        )
+    profile.full_name = request.POST.get("full_name", profile.full_name).strip() or profile.full_name
+    profile.email = request.POST.get("email", profile.email).strip() or profile.email
+    profile.save(update_fields=["full_name", "email"])
+    return redirect("hr:settings")
+
+
+@require_POST
+def change_password_view(request):
+    profile = AdminProfile.objects.first()
+    if profile is None:
+        profile = AdminProfile.objects.create(
+            full_name="HR Admin",
+            email="hr.admin@company.com",
+            role="HR",
+            password=make_password("Admin@123"),
+        )
+
+    new_password = request.POST.get("new_password", "")
+    confirm_password = request.POST.get("confirm_password", "")
+
+    is_valid = True
+    if new_password != confirm_password:
+        is_valid = False
+    if len(new_password) < 8:
+        is_valid = False
+    if not re.search(r"[A-Z]", new_password):
+        is_valid = False
+    if not re.search(r"[a-z]", new_password):
+        is_valid = False
+    if not re.search(r"[0-9]", new_password):
+        is_valid = False
+    if not re.search(r"[^A-Za-z0-9]", new_password):
+        is_valid = False
+
+    if is_valid:
+        profile.password = make_password(new_password)
+        profile.save(update_fields=["password"])
+
+    return redirect("hr:settings")
 
 def note_create_view(request):
     if request.method == "POST":
@@ -922,6 +1596,11 @@ def note_create_view(request):
             obj = form.save(commit=False)
             obj.created_by = request.user if request.user.is_authenticated else None
             obj.save()
+            _create_notification(
+                "Note created",
+                f"Note '{obj.title}' was created.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Note created.")
             return redirect("hr:notes")
         else:
@@ -935,7 +1614,12 @@ def note_update_view(request, pk):
     if request.method == "POST":
         form = NoteForm(request.POST, request.FILES, instance=note)
         if form.is_valid():
-            form.save()
+            note = form.save()
+            _create_notification(
+                "Note updated",
+                f"Note '{note.title}' was updated.",
+                NotificationType.TIMELINE,
+            )
             messages.success(request, "Note updated.")
             return redirect("hr:notes")
         else:
@@ -947,7 +1631,13 @@ def note_update_view(request, pk):
 def note_delete_view(request, pk):
     note = get_object_or_404(Note, pk=pk)
     if request.method == "POST":
+        note_title = note.title
         note.delete()
+        _create_notification(
+            "Note deleted",
+            f"Note '{note_title}' was deleted.",
+            NotificationType.TIMELINE,
+        )
         messages.success(request, "Note deleted.")
         return redirect("hr:notes")
     return render(request, "hr/note_delete_confirm.html", {"note": note})
@@ -956,21 +1646,6 @@ def note_detail_view(request, pk):
     note = get_object_or_404(Note, pk=pk)
     return render(request, "hr/note_detail.html", {"note": note})
 
-# =====================
-# AUTH
-# =====================
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "").strip()
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            next_url = request.GET.get("next")
-            return redirect(next_url or "hr:dashboard")
-        messages.error(request, "Invalid username or password.")
-    return render(request, "hr/login.html")
-
 def logout_view(request):
     logout(request)
-    return redirect("hr:login")
+    return redirect("hr:dashboard")

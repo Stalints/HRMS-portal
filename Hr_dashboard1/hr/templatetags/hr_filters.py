@@ -12,3 +12,11 @@ def basename(value):
         return os.path.basename(name)
     except Exception:
         return ""
+
+
+@register.filter
+def get_item(mapping, key):
+    try:
+        return mapping.get(key, "")
+    except Exception:
+        return ""

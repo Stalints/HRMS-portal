@@ -5,9 +5,9 @@
     <h1 class="h4 mb-1"><i class="fa-solid fa-people-group me-2"></i>Team Management</h1>
     <p class="text-muted small mb-0">Add your team members and set different roles</p>
   </div>
-  <a href="{% url 'hr:team_add' %}" class="btn btn-primary btn-sm">
+  <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTeamModal">
     <i class="fa-solid fa-plus me-1"></i>+ Add Team
-  </a>
+  </button>
 </div>
 
 {% if messages %}
@@ -59,8 +59,8 @@
             </td>
             <td class="text-end">
               <div class="btn-group btn-group-sm" role="group" aria-label="Team actions">
-                <a href="{% url 'hr:team_detail' team.pk %}" class="btn btn-outline-primary">View</a>
-                <a href="{% url 'hr:team_edit' team.pk %}" class="btn btn-outline-secondary">Edit</a>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewTeamModal{{ team.pk }}">View</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editTeamModal{{ team.pk }}">Edit</button>
                 <form method="post" action="{% url 'hr:team_delete' team.pk %}" class="d-inline">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-outline-danger"
@@ -69,13 +69,186 @@
               </div>
             </td>
           </tr>
+
+          <div class="modal fade" id="viewTeamModal{{ team.pk }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Team Details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body small">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="text-muted mb-1">Team Name</div>
+                      <div class="fw-semibold">{{ team.name }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted mb-1">Status</div>
+                      <div>
+                        {% if team.status == "Active" %}
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted mb-1">Team Lead</div>
+                      <div>
+                        {% if team.team_lead %}
+                        {{ team.team_lead.get_full_name|default:team.team_lead.username }}
+                        {% else %}
+                        <span class="text-muted">Not assigned</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-muted mb-1">Members Count</div>
+                      <div class="fw-semibold">{{ team.members.count }}</div>
+                    </div>
+                    <div class="col-12">
+                      <div class="text-muted mb-1">Description</div>
+                      <div>{{ team.description|default:"No description" }}</div>
+                    </div>
+                    <div class="col-12">
+                      <div class="text-muted mb-1">Members</div>
+                      {% if team.members.all %}
+                      <div class="d-flex flex-wrap gap-1">
+                        {% for member in team.members.all %}
+                        <span class="badge bg-secondary-subtle text-secondary">
+                          {{ member.get_full_name|default:member.username }}
+                        </span>
+                        {% endfor %}
+                      </div>
+                      {% else %}
+                      <span class="text-muted">No members assigned</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="editTeamModal{{ team.pk }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Edit Team</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'hr:team_edit' team.pk %}" novalidate>
+                  {% csrf_token %}
+                  <div class="modal-body small">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Team Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" value="{{ team.name }}" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Status <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                          <option value="Active" {% if team.status == "Active" %}selected{% endif %}>Active</option>
+                          <option value="Inactive" {% if team.status == "Inactive" %}selected{% endif %}>Inactive</option>
+                        </select>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="4">{{ team.description }}</textarea>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Team Lead</label>
+                        <select name="team_lead" class="form-select">
+                          <option value="">---------</option>
+                          {% for emp in employees %}
+                          <option value="{{ emp.pk }}" {% if team.team_lead and emp.pk == team.team_lead.pk %}selected{% endif %}>
+                            {{ emp.get_full_name|default:emp.username }}
+                          </option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Members</label>
+                        <select name="members" class="form-select" multiple size="8">
+                          {% for emp in employees %}
+                          <option value="{{ emp.pk }}" {% if emp in team.members.all %}selected{% endif %}>
+                            {{ emp.get_full_name|default:emp.username }}
+                          </option>
+                          {% endfor %}
+                        </select>
+                        <div class="form-text">Hold Ctrl (Windows) or Command (Mac) to select multiple members.</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
           {% empty %}
           <tr>
-            <td colspan="5" class="text-center text-muted py-4">No teams created yet.</td>
+            <td colspan="5" class="text-center text-muted py-4">
+              No teams created yet.
+              <button type="button" class="btn btn-link p-0 align-baseline" data-bs-toggle="modal" data-bs-target="#addTeamModal">Add your first team</button>.
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addTeamModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Team</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'hr:team_add' %}" novalidate>
+        {% csrf_token %}
+        <div class="modal-body small">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="{{ team_form.name.id_for_label }}" class="form-label">{{ team_form.name.label }} <span class="text-danger">*</span></label>
+              {{ team_form.name }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ team_form.status.id_for_label }}" class="form-label">{{ team_form.status.label }} <span class="text-danger">*</span></label>
+              {{ team_form.status }}
+            </div>
+            <div class="col-12">
+              <label for="{{ team_form.description.id_for_label }}" class="form-label">{{ team_form.description.label }}</label>
+              {{ team_form.description }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ team_form.team_lead.id_for_label }}" class="form-label">{{ team_form.team_lead.label }}</label>
+              {{ team_form.team_lead }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ team_form.members.id_for_label }}" class="form-label">{{ team_form.members.label }}</label>
+              {{ team_form.members }}
+              <div class="form-text">Hold Ctrl (Windows) or Command (Mac) to select multiple members.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-floppy-disk me-1"></i>Save
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
