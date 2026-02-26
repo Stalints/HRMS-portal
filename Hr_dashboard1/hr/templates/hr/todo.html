@@ -1,0 +1,282 @@
+﻿{% extends "hr/dashboard.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-1">Personal To-Do List</h1>
+    <p class="text-muted small mb-0">Manage your daily tasks and reminders</p>
+  </div>
+</div>
+{% if messages %}  
+<div class="mb-3">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show small" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="row g-3">
+
+  <!-- Left column: form + task list -->
+  <div class="col-12 col-lg-8">
+
+    <!-- Add / Edit Task Form -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header">
+        <h2 class="h6 mb-0">
+          {% if editing %}
+          Edit Task
+          {% else %}
+          Add New Task
+          {% endif %}
+        </h2>
+      </div>
+      <div class="card-body">
+
+        {% if editing %}
+        <form method="post" action="{% url 'hr:edit_task' edit_task.pk %}">
+          {% else %}
+          <form method="post" action="{% url 'hr:add_task' %}">
+            {% endif %}
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="taskDescription" class="form-label">
+                Task Description <span class="text-danger">*</span>
+              </label>
+              {% if editing %}
+              <input type="text" class="form-control" id="taskDescription" name="description"
+                placeholder="Enter your task..." required value="{{ edit_task.description }}" />
+              {% else %}
+              <input type="text" class="form-control" id="taskDescription" name="description"
+                placeholder="Enter your task..." required />
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="taskDueDate" class="form-label">Due Date (Optional)</label>
+              {% if editing %}
+              {% if edit_task.due_date %}
+              <input type="date" class="form-control" id="taskDueDate" name="due_date"
+                value="{{ edit_task.due_date|date:'Y-m-d' }}" />
+              {% else %}
+              <input type="date" class="form-control" id="taskDueDate" name="due_date" />
+              {% endif %}
+              {% else %}
+              <input type="date" class="form-control" id="taskDueDate" name="due_date" />
+              {% endif %}
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-sm">
+                {% if editing %}Save Changes{% else %}Add Task{% endif %}
+              </button>
+              {% if editing %}
+              <a href="{% url 'hr:todo' %}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+              {% endif %}
+            </div>
+
+          </form>
+      </div>
+    </div>
+
+    <!-- Task filter buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h6 mb-0">My Tasks</h2>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Filter tasks">
+        <input type="radio" class="btn-check" name="filterTasks" id="filterAll" checked />
+        <label class="btn btn-outline-secondary" for="filterAll">All</label>
+        <input type="radio" class="btn-check" name="filterTasks" id="filterPending" />
+        <label class="btn btn-outline-secondary" for="filterPending">Pending</label>
+        <input type="radio" class="btn-check" name="filterTasks" id="filterCompleted" />
+        <label class="btn btn-outline-secondary" for="filterCompleted">Completed</label>
+      </div>
+    </div>
+
+    <!-- Task list -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+
+          {% for task in tasks %}
+
+          {% if task.is_completed %}
+          <li class="list-group-item bg-light">
+            {% else %}
+          <li class="list-group-item">
+            {% endif %}
+
+            <div class="d-flex align-items-start">
+
+              <!-- Checkbox to toggle status -->
+              <div class="form-check me-3 mt-1">
+                <form method="post" action="{% url 'hr:toggle_task_status' task.pk %}">
+                  {% csrf_token %}
+                  {% if task.is_completed %}
+                  <input class="form-check-input" type="checkbox" id="task{{ task.pk }}" checked
+                    onchange="this.form.submit()" />
+                  {% else %}
+                  <input class="form-check-input" type="checkbox" id="task{{ task.pk }}"
+                    onchange="this.form.submit()" />
+                  {% endif %}
+                  <label class="form-check-label" for="task{{ task.pk }}"></label>
+                </form>
+              </div>
+
+              <!-- Task content -->
+              <div class="flex-grow-1">
+
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  {% if task.is_completed %}
+                  <h3 class="h6 mb-0 text-decoration-line-through text-muted">{{ task.description }}</h3>
+                  <span class="badge bg-success-subtle text-success">Completed</span>
+                  {% else %}
+                  <h3 class="h6 mb-0">{{ task.description }}</h3>
+                  <span class="badge bg-warning-subtle text-warning">Pending</span>
+                  {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                  <small class="text-muted">
+                    <i class="fa-solid fa-calendar-days me-1"></i>
+                    {% if task.is_completed %}
+                    {% if task.due_date %}
+                    Due was: {{ task.due_date|date:"d M Y" }}
+                    {% else %}
+                    Completed
+                    {% endif %}
+                    {% else %}
+                    {% if task.due_date %}
+                    Due: {{ task.due_date|date:"d M Y" }}
+                    {% else %}
+                    No due date
+                    {% endif %}
+                    {% endif %}
+                  </small>
+
+                  <div class="d-flex gap-2">
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'hr:edit_task' task.pk %}">Edit</a>
+                    <form method="post" action="{% url 'hr:delete_task' task.pk %}">
+                      {% csrf_token %}
+                      <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </li>
+
+          {% empty %}
+          <li class="list-group-item">
+            <div class="text-muted small py-2">No tasks yet. Add your first task above.</div>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  <!-- /col-lg-8 -->
+
+  <!-- Right column: stats -->
+  <div class="col-12 col-lg-4">
+
+    <!-- Task Status Overview -->
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-header">
+        <h2 class="h6 mb-0">Task Status Overview</h2>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small">Total Tasks</span>
+            <span class="badge bg-primary-subtle text-primary fs-6">{{ total_tasks }}</span>
+          </div>
+          <div class="progress" style="height: 8px">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small">Completed</span>
+            <span class="badge bg-success-subtle text-success fs-6">{{ completed_tasks }}</span>
+          </div>
+          <div class="progress" style="height: 8px">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ completion_rate }}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small">Pending</span>
+            <span class="badge bg-warning-subtle text-warning fs-6">{{ pending_tasks }}</span>
+          </div>
+          <div class="progress" style="height: 8px">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ pending_rate }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-header">
+        <h2 class="h6 mb-0">Quick Stats</h2>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="text-muted small">Tasks Due Today</div>
+            <div class="fs-5 fw-semibold">{{ tasks_due_today }}</div>
+          </div>
+          <div class="text-primary fs-3"><i class="fa-solid fa-calendar-days"></i></div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="text-muted small">Tasks Due This Week</div>
+            <div class="fs-5 fw-semibold">{{ tasks_due_this_week }}</div>
+          </div>
+          <div class="text-warning fs-3"><i class="fa-solid fa-clock"></i></div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small">Completion Rate</div>
+            <div class="fs-5 fw-semibold">{{ completion_rate }}%</div>
+          </div>
+          <div class="text-success fs-3"><i class="fa-solid fa-circle-check"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy note -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header">
+        <h2 class="h6 mb-0">Privacy &amp; Security</h2>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info py-2 mb-0 small">
+          <strong>Personal Tasks:</strong> All tasks in your to-do list are personal
+          and visible only to you. Your task data is private and not accessible to
+          other Employees or administrators.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- /col-lg-4 -->
+
+</div>
+<!-- /row -->
+
+{% endblock %}
+
+
+

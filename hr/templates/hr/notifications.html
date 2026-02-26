@@ -12,6 +12,7 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
   <!-- Shared dashboard styles -->
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -35,54 +36,52 @@
       <ul class="nav nav-pills flex-column mb-3 gap-1">
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}">
-            <span class="me-2">🏠</span> Dashboard
+            <span class="me-2" aria-hidden="true">&#127968;</span> Dashboard
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}">
-            <span class="me-2">👥</span> Employee Management
+            <span class="me-2" aria-hidden="true">&#128101;</span> Employee Management
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-            <span class="me-2">&#129309;</span> Team Management
-          <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-            <span class="me-2">👥</span> Team Management
+            <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}">
-            <span class="me-2">⏱️</span> Time Cards / Attendance
+            <span class="me-2" aria-hidden="true">&#9201;</span> Time Cards / Attendance
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}">
-            <span class="me-2">📝</span> Leave Management
+            <span class="me-2" aria-hidden="true">&#128221;</span> Leave Management
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}">
-            <span class="me-2">📢</span> Announcements
+            <span class="me-2" aria-hidden="true">&#128227;</span> Announcements
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:project_list' %}">
-            <span class="me-2">📁</span> Projects
+            <span class="me-2" aria-hidden="true">&#128193;</span> Projects
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}">
-            <span class="me-2">✅</span> Tasks
+            <span class="me-2" aria-hidden="true">&#9989;</span> Tasks
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}">
-            <span class="me-2">🏢</span> Clients
+            <span class="me-2" aria-hidden="true">&#127970;</span> Clients
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}">
-            <span class="me-2">📅</span> Event Calendar
+            <span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar
           </a>
         </li>
       </ul>
@@ -91,32 +90,32 @@
       <ul class="nav nav-pills flex-column mb-3 gap-1">
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}">
-            <span class="me-2">🗒️</span> Notes
+            <span class="me-2" aria-hidden="true">&#128221;</span> Notes
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}">
-            <span class="me-2">📊</span> Timeline
+            <span class="me-2" aria-hidden="true">&#128200;</span> Timeline
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}">
-            <span class="me-2">📚</span> Help Articles
+            <span class="me-2" aria-hidden="true">&#128218;</span> Help Articles
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}">
-            <span class="me-2">✅</span> Personal To-Do List
+            <span class="me-2" aria-hidden="true">&#9989;</span> Personal To-Do List
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link active d-flex align-items-center" href="{% url 'hr:notifications' %}">
-            <span class="me-2">🔔</span> Notifications
+            <span class="me-2" aria-hidden="true">&#128276;</span> Notifications
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}">
-            <span class="me-2">⚙️</span> Settings / Security
+            <span class="me-2" aria-hidden="true">&#9881;</span> Settings / Security
           </a>
         </li>
       </ul>
@@ -146,7 +145,7 @@
             <div class="d-flex align-items-center gap-3">
               <button type="button" class="btn btn-light position-relative rounded-circle p-2"
                 aria-label="Notifications">
-                🔔
+                <i class="fa-solid fa-bell"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {{ unread_count }}
                 </span>
@@ -167,7 +166,7 @@
                   <li>
                     <hr class="dropdown-divider" />
                   </li>
-                  <li><a class="dropdown-item disabled" href="#">Sign out</a></li>
+                  <li><a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a></li>
                 </ul>
               </div>
             </div>
@@ -367,20 +366,6 @@
     </div>
   </div>
 
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-</body>
-
-
-</html>
-</html>
-
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -391,4 +376,7 @@
 </body>
 
 </html>
+
+
+
 
