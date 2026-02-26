@@ -3,247 +3,229 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile | HR Portal</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
   <style>
     :root {
-      --brand: #1e3a8a;
-      --bg: #f6f8ff;
-      --text: #0f172a;
-      --muted: #64748b;
-
+      --bg: #f6f7fb;
+      --card: rgba(255, 255, 255, .92);
+      --card2: rgba(255, 255, 255, .82);
+      --text: #0b1220;
+      --muted: #667085;
       --border: rgba(15, 23, 42, .10);
-      --shadow: 0 22px 60px rgba(2, 6, 23, .10);
-      --shadow-soft: 0 12px 30px rgba(2, 6, 23, .07);
 
-      --radius: 22px;
-      --radius-lg: 28px;
+      --primary: hsl(243 75% 59%);
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
 
-      --glass: rgba(255, 255, 255, .78);
-      --glass-strong: rgba(255, 255, 255, .88);
+      --shadow: 0 18px 50px rgba(2, 6, 23, .08);
+      --shadow-soft: 0 10px 26px rgba(2, 6, 23, .06);
+
+      --r: 18px;
+      --r2: 22px;
     }
 
     body {
-      background:
-        radial-gradient(900px 540px at 10% -10%, rgba(30, 58, 138, .18), transparent 60%),
-        radial-gradient(900px 540px at 90% 0%, rgba(14, 165, 233, .14), transparent 55%),
-        radial-gradient(900px 540px at 50% 110%, rgba(34, 197, 94, .10), transparent 60%),
-        var(--bg);
-      color: var(--text);
       min-height: 100vh;
+      background:
+        radial-gradient(1000px 600px at 10% -10%, rgba(99, 102, 241, .12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236, 72, 153, .10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ===== Topbar (dashboard premium style) ===== */
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    @media (min-width: 576px) {
+      .wrap {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+
     .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
       background: rgba(255, 255, 255, .70);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, .45);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15, 23, 42, .08);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: .6rem;
+      gap: 10px;
       text-decoration: none;
       color: var(--text);
-      padding: .55rem .8rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      box-shadow: 0 10px 25px rgba(2, 6, 23, .05);
-      transition: transform .15s ease, box-shadow .15s ease;
       font-weight: 900;
-      letter-spacing: -.01em;
+      letter-spacing: -.02em;
     }
 
-    .brand:hover {
-      color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(2, 6, 23, .07);
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(99, 102, 241, .20);
     }
 
     .pill {
       display: flex;
       align-items: center;
-      gap: .55rem;
-      padding: .48rem .85rem;
+      gap: 10px;
+      padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      color: rgba(15, 23, 42, .85);
-      box-shadow: 0 10px 25px rgba(2, 6, 23, .05);
-      font-size: .92rem;
-      font-weight: 800;
+      background: rgba(255, 255, 255, .80);
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: 0 10px 18px rgba(2, 6, 23, .06);
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
     }
 
-    .page {
-      width: 100%;
-      max-width: 1200px;
+    .pill .avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color: #fff;
     }
 
-    /* ===== Hero header ===== */
+    .card-base {
+      background: var(--card);
+      border: 1px solid rgba(15, 23, 42, .10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
     .hero {
-      margin-top: 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255, 255, 255, .55);
-      background:
-        linear-gradient(135deg, rgba(30, 58, 138, .97), rgba(30, 58, 138, .75)),
-        radial-gradient(700px 260px at 20% 0%, rgba(255, 255, 255, .18), transparent 60%);
-      box-shadow: var(--shadow);
-      overflow: hidden;
       position: relative;
+      overflow: hidden;
+    }
+
+    .hero-accent {
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
     }
 
     .hero::after {
       content: "";
       position: absolute;
-      right: -120px;
-      top: -120px;
-      width: 340px;
-      height: 340px;
+      top: -90px;
+      right: -90px;
+      width: 260px;
+      height: 260px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, .10);
+      background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, .12), transparent 65%);
       pointer-events: none;
-      z-index: 0;
     }
 
-    .hero-inner {
-      padding: 22px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      color: #fff;
-      position: relative;
-      z-index: 1;
-      flex-wrap: wrap;
-    }
-
-    .hero h1 {
-      margin: 0;
-      font-size: 1.55rem;
-      font-weight: 950;
-      letter-spacing: -.02em;
-    }
-
-    .hero p {
-      margin: 6px 0 0;
-      color: rgba(255, 255, 255, .86);
-      font-size: 1rem;
-      line-height: 1.35;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-left: auto;
-      justify-content: flex-end;
-    }
-
-    .hero-btn {
+    .btn-grad {
       display: inline-flex;
       align-items: center;
-      gap: .55rem;
-      padding: .6rem .95rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 900;
-      border: 1px solid rgba(255, 255, 255, .25);
-      background: rgba(255, 255, 255, .14);
-      color: #fff;
-      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 12px 26px rgba(2, 6, 23, .10);
-    }
-
-    .hero-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, .18);
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(2, 6, 23, .14);
-    }
-
-    .hero-btn.secondary {
-      background: rgba(255, 255, 255, .94);
-      color: rgba(2, 6, 23, .90);
-      border-color: rgba(255, 255, 255, .70);
-    }
-
-    .hero-btn.secondary:hover {
-      color: rgba(2, 6, 23, .95);
-    }
-
-    /* ===== Glass cards ===== */
-    .card-pro {
-      background: var(--glass-strong);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    .card-header-pro {
-      border-bottom: 1px solid var(--border);
-      padding: 16px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 10px;
-      flex-wrap: wrap;
-      background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 255, 255, .82));
+      padding: 10px 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 850;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99, 102, 241, .22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border: 0;
     }
 
-    .card-body-pro {
-      padding: 16px;
+    .btn-grad:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99, 102, 241, .28);
+      filter: brightness(1.03);
+      color: #fff;
+    }
+
+    /* ✅ same square back button as Projects */
+    .btn-soft {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, .04);
+      border: 1px solid rgba(15, 23, 42, .10);
+      color: rgba(15, 23, 42, .65);
+      text-decoration: none;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .btn-soft:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 102, 241, .25);
+      background: rgba(99, 102, 241, .06);
+      color: rgba(15, 23, 42, .90);
     }
 
     .muted {
       color: var(--muted);
+      font-weight: 750;
+      font-size: 13px;
     }
 
-    .badge-soft {
-      border-radius: 999px;
-      padding: .35rem .7rem;
-      font-weight: 900;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, .75);
-      color: rgba(15, 23, 42, .72);
+    /* msg box */
+    .alert {
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: 0 12px 26px rgba(2, 6, 23, .06);
     }
 
-    /* ===== Avatar ===== */
-    .profile-avatar {
+    /* Profile left card */
+    .avatar-wrap {
       width: 118px;
       height: 118px;
-      border-radius: 50%;
-      background:
-        radial-gradient(120px 120px at 30% 20%, rgba(255, 255, 255, .22), transparent 55%),
-        linear-gradient(135deg, rgba(30, 58, 138, 1), rgba(37, 99, 235, 1));
-      color: #fff;
+      border-radius: 999px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid rgba(255, 255, 255, .95);
+      box-shadow: 0 18px 45px rgba(2, 6, 23, .15);
+      background: radial-gradient(120px 120px at 30% 20%, rgba(255, 255, 255, .22), transparent 55%),
+        linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(236, 72, 153, 1));
       display: grid;
       place-items: center;
+      color: #fff;
       font-size: 42px;
-      margin: 0 auto;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 18px 45px rgba(2, 6, 23, .15);
-      border: 4px solid rgba(255, 255, 255, .95);
     }
 
-    .profile-avatar img {
+    .avatar-wrap img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: none;
     }
 
+    /* ✅ FIX: camera perfectly centered + consistent in all browsers */
     .avatar-action {
       position: absolute;
       right: 8px;
@@ -252,11 +234,14 @@
       height: 36px;
       border-radius: 999px;
       background: rgba(2, 6, 23, .55);
-      display: grid;
-      place-items: center;
       border: 1px solid rgba(255, 255, 255, .25);
       cursor: pointer;
       transition: transform .12s ease, background .12s ease;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .avatar-action:hover {
@@ -266,9 +251,56 @@
 
     .avatar-action i {
       font-size: 16px;
+      line-height: 1;
+      display: block;
+      transform: translateY(0.5px);
     }
 
-    /* ===== Mini stats ===== */
+    /* badge */
+    .badge-soft {
+      border-radius: 999px;
+      padding: .35rem .7rem;
+      font-weight: 900;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: rgba(255, 255, 255, .75);
+      color: rgba(15, 23, 42, .72);
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+    }
+
+    /* Active = green pill + green dot */
+    .badge-soft.active {
+      border-color: rgba(34, 197, 94, .35);
+      background: rgba(34, 197, 94, .14);
+      color: #15803d;
+    }
+
+    .badge-soft.active::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, .18);
+    }
+
+    /* Inactive = gray pill */
+    .badge-soft.inactive {
+      border-color: rgba(148, 163, 184, .55);
+      background: rgba(148, 163, 184, .12);
+      color: rgba(15, 23, 42, .62);
+    }
+
+    .badge-soft.inactive::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, .95);
+      box-shadow: 0 0 0 4px rgba(148, 163, 184, .18);
+    }
+
     .meta-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -276,8 +308,14 @@
       margin-top: 14px;
     }
 
+    @media (max-width: 576px) {
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .meta-box {
-      border: 1px solid var(--border);
+      border: 1px solid rgba(15, 23, 42, .10);
       border-radius: 18px;
       padding: 12px;
       background: rgba(255, 255, 255, .78);
@@ -288,7 +326,7 @@
       font-size: 12px;
       color: var(--muted);
       margin-bottom: 4px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: .02em;
       text-transform: uppercase;
     }
@@ -299,7 +337,6 @@
       letter-spacing: -0.01em;
     }
 
-    /* ===== Upload card ===== */
     .dropzone {
       border: 1px dashed rgba(148, 163, 184, .85);
       border-radius: 18px;
@@ -310,22 +347,16 @@
     }
 
     .dropzone:hover {
-      border-color: rgba(30, 58, 138, .45);
+      border-color: rgba(99, 102, 241, .45);
       background: rgba(255, 255, 255, .92);
     }
 
     .dropzone.active {
-      border-color: rgba(30, 58, 138, .75);
-      box-shadow: 0 0 0 .25rem rgba(30, 58, 138, .12);
+      border-color: rgba(99, 102, 241, .75);
+      box-shadow: 0 0 0 .25rem rgba(99, 102, 241, .12);
     }
 
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 14px 0;
-    }
-
-    /* ===== Form polish ===== */
+    /* forms */
     .form-label {
       font-weight: 900;
       color: #0f172a;
@@ -337,115 +368,90 @@
       border: 1px solid rgba(148, 163, 184, .55);
       padding: 11px 12px;
       background: rgba(255, 255, 255, .85);
+      font-weight: 750;
     }
 
     .form-control:focus {
-      border-color: rgba(30, 58, 138, .45);
-      box-shadow: 0 0 0 .24rem rgba(30, 58, 138, .12);
+      border-color: rgba(99, 102, 241, .45);
+      box-shadow: 0 0 0 .24rem rgba(99, 102, 241, .12);
     }
 
-    /* Buttons */
     .btn {
       border-radius: 16px;
       padding: 10px 14px;
       font-weight: 900;
-    }
-
-    .btn-primary {
-      background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
-      border: 0;
-      box-shadow: 0 12px 26px rgba(30, 58, 138, .20);
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(30, 58, 138, .24);
-    }
-
-    .btn-outline-secondary {
-      border-color: rgba(148, 163, 184, .85);
-      background: rgba(255, 255, 255, .65);
-    }
-
-    .alert {
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, .88);
-      box-shadow: 0 12px 26px rgba(2, 6, 23, .06);
-    }
-
-    /* Responsive */
-    @media (max-width: 576px) {
-      .hero-actions {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .meta-grid {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Topbar -->
-  <nav class="navbar topbar py-3">
-    <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
-      <a class="brand" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building"></i>
-        <span>HR Portal</span>
-      </a>
+  <!-- NAV (dashboard style) -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
+        <a class="brand" href="{% url 'core:client_dashboard' %}">
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
+          <span>HR Portal</span>
+        </a>
 
-      <div class="pill">
-        <i class="bi bi-person-circle"></i>
-        <span>Client</span>
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="container page my-4">
+  <main class="wrap py-4 py-sm-5">
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-inner">
-        <div>
-          <h1>My Profile</h1>
-          <p>Keep your details up to date and manage your profile photo.</p>
-        </div>
+    <!-- HERO (dashboard/projects style) -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
 
-        <div class="hero-actions">
-          <a class="hero-btn secondary" href="{% url 'core:client_dashboard' %}">
-            <i class="bi bi-arrow-left"></i> Dashboard
+      <div
+        class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4 position-relative">
+        <div class="d-flex align-items-center gap-3">
+          <a class="btn-soft" href="{% url 'core:client_dashboard' %}" title="Back">
+            <i class="bi bi-arrow-left"></i>
           </a>
-          <button class="hero-btn" type="button" onclick="document.getElementById('full_name').focus()">
-            <i class="bi bi-pencil-square"></i> Edit Details
-          </button>
+
+          <div>
+            <h1 class="mb-1" style="font-weight:950; letter-spacing:-.02em;">
+              My Profile <span style="font-size:1.05em;">👤</span>
+            </h1>
+            <div class="muted">
+              Keep your details up to date and manage your profile photo.
+            </div>
+          </div>
         </div>
+
+        <button class="btn-grad" type="button" onclick="document.getElementById('full_name').focus()">
+          <i class="bi bi-pencil-square"></i> Edit Details
+        </button>
       </div>
-    </div>
+    </section>
 
     <!-- Inline messages -->
     <div id="msgBox" class="mt-3" style="display:none;"></div>
 
     <div class="row g-4 mt-1">
 
-      <!-- Left Summary -->
+      <!-- LEFT: Overview -->
       <div class="col-lg-4">
-        <div class="card-pro">
-          <div class="card-header-pro">
-            <div class="fw-black d-flex align-items-center gap-2" style="font-weight:950;">
-              <i class="bi bi-person-badge"></i>
-              <span>Profile Overview</span>
+        <section class="card-base">
+          <div class="p-4 border-bottom" style="border-color:rgba(15,23,42,.08) !important;">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              <div class="d-flex align-items-center gap-2" style="font-weight:950;">
+                <i class="bi bi-person-badge"></i>
+                <span>Profile Overview</span>
+              </div>
+              <span class="badge-soft" id="summaryStatus">Active</span>
             </div>
-            <span class="badge-soft" id="summaryStatus">Active</span>
           </div>
 
-          <div class="card-body-pro text-center">
-
-            <div class="profile-avatar mb-3" id="avatarBox" title="Change photo">
+          <div class="p-4 text-center">
+            <div class="avatar-wrap mb-3" id="avatarBox" title="Change photo">
               <img id="avatarImg" alt="Profile Photo">
               <i id="avatarIcon" class="bi bi-person"></i>
 
@@ -455,15 +461,14 @@
             </div>
 
             <h5 class="mb-0" id="summaryName" style="font-weight:950;">—</h5>
-            <div class="muted mb-3" style="font-weight:800;">Client Account</div>
+            <div class="muted mb-3">Client Account</div>
 
             <div class="dropzone text-start" id="dropZone">
               <div class="d-flex align-items-start gap-2">
-                <i class="bi bi-cloud-arrow-up fs-5" style="color: var(--brand);"></i>
+                <i class="bi bi-cloud-arrow-up fs-5" style="color: rgba(67,56,202,1);"></i>
                 <div>
                   <div style="font-weight:950;">Upload profile photo</div>
-                  <div class="muted" style="font-size: 13px; font-weight:800;">Drag & drop or click to select (JPG/PNG)
-                  </div>
+                  <div class="muted">Drag & drop or click to select (JPG/PNG)</div>
                 </div>
               </div>
 
@@ -479,7 +484,7 @@
               </div>
             </div>
 
-            <div class="divider"></div>
+            <div class="mt-3" style="height:1px;background:rgba(15,23,42,.10);"></div>
 
             <div class="meta-grid text-start">
               <div class="meta-box">
@@ -493,22 +498,23 @@
             </div>
 
           </div>
-        </div>
+        </section>
       </div>
 
-      <!-- Right Form -->
+      <!-- RIGHT: Form -->
       <div class="col-lg-8">
-        <div class="card-pro">
-          <div class="card-header-pro">
-            <div class="d-flex align-items-center gap-2" style="font-weight:950;">
-              <i class="bi bi-sliders"></i>
-              <span>Account Details</span>
+        <section class="card-base">
+          <div class="p-4 border-bottom" style="border-color:rgba(15,23,42,.08) !important;">
+            <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+              <div class="d-flex align-items-center gap-2" style="font-weight:950;">
+                <i class="bi bi-sliders"></i>
+                <span>Account Details</span>
+              </div>
+              <div class="muted" id="saveState">Up to date</div>
             </div>
-
-            <div class="muted" id="saveState" style="font-weight:800;">Up to date</div>
           </div>
 
-          <div class="card-body-pro">
+          <div class="p-4">
             <form id="profileForm">
               {% csrf_token %}
               <div class="row g-3">
@@ -552,19 +558,21 @@
               </div>
             </form>
           </div>
-        </div>
+        </section>
 
-        <div class="small mt-3 muted" style="font-weight:800;">
+        <div class="small mt-3 muted">
           <i class="bi bi-shield-check me-1"></i>
           Your information is stored securely. If you face issues, raise a ticket from Support.
         </div>
       </div>
 
     </div>
-  </div>
+
+    <div class="pb-4"></div>
+  </main>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const apiGet = "{% url 'core:api_profile_get' %}";
@@ -596,11 +604,11 @@
     function showMessage(type, text) {
       msgBox.style.display = "block";
       msgBox.innerHTML = `
-      <div class="alert alert-${type} d-flex align-items-start gap-2 mb-0">
-        <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} fs-5"></i>
-        <div style="font-weight:800;">${text}</div>
-      </div>
-    `;
+        <div class="alert alert-${type} d-flex align-items-start gap-2 mb-0">
+          <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} fs-5"></i>
+          <div style="font-weight:800;">${text}</div>
+        </div>
+      `;
       setTimeout(() => { msgBox.style.display = "none"; }, 2500);
     }
 
@@ -643,12 +651,17 @@
       document.getElementById("summaryClientId").textContent = data.client_id || "—";
       document.getElementById("summaryMemberSince").textContent = formatDate(data.member_since);
 
+      // ✅ Active green + same pill style
       const statusEl = document.getElementById("summaryStatus");
+
+      // reset to base (removes old active/inactive)
+      statusEl.className = "badge-soft";
+
       if (data.is_active) {
-        statusEl.className = "badge bg-success";
+        statusEl.classList.add("active");
         statusEl.textContent = "Active";
       } else {
-        statusEl.className = "badge bg-secondary";
+        statusEl.classList.add("inactive");
         statusEl.textContent = "Inactive";
       }
 
@@ -690,7 +703,6 @@
         const out = await res.json();
 
         if (out.ok) {
-          // ✅ clear local selection after successful save
           selectedFile = null;
           photoInput.value = "";
           btnUpload.disabled = true;

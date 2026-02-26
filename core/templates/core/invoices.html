@@ -1,6 +1,7 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,381 +11,719 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
   <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
   <style>
-    :root{
-      --brand:#1e3a8a;
-      --bg:#f6f8ff;
-      --text:#0f172a;
-      --muted:#6b7280;
+    :root {
+      --bg: #f6f7fb;
+      --card: rgba(255, 255, 255, .92);
+      --card2: rgba(255, 255, 255, .82);
+      --text: #0b1220;
+      --muted: #667085;
+      --border: rgba(15, 23, 42, .10);
 
-      --border: rgba(15,23,42,.10);
-      --shadow: 0 22px 60px rgba(2,6,23,.10);
-      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
+      --primary: hsl(243 75% 59%);
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
 
-      --radius: 22px;
-      --radius-lg: 28px;
+      --shadow: 0 18px 50px rgba(2, 6, 23, .08);
+      --shadow-soft: 0 10px 26px rgba(2, 6, 23, .06);
 
-      --glass: rgba(255,255,255,.78);
-      --glass-strong: rgba(255,255,255,.88);
+      --r: 18px;
+      --r2: 22px;
     }
 
-    body{
-      background:
-        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
-        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
-        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
-        var(--bg);
-      color: var(--text);
+    body {
       min-height: 100vh;
-    }
-
-    .page{ width:100%; max-width:none; }
-
-    /* Topbar (dashboard style) */
-    .topbar{
-      background: rgba(255,255,255,.70);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,.45);
-    }
-    .brand{
-      display:flex; align-items:center; gap:.6rem;
-      text-decoration:none; color: var(--text);
-      padding: .55rem .8rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
-      font-weight: 800;
-      letter-spacing: -.01em;
-    }
-    .brand:hover{
-      color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(2,6,23,.07);
-    }
-    .pill{
-      display:flex; align-items:center; gap:.55rem;
-      padding:.48rem .85rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      color: rgba(15,23,42,.85);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      font-size: .92rem;
-      font-weight: 700;
-    }
-
-    /* Hero */
-    .hero{
-      margin-top: 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255,255,255,.55);
       background:
-        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
-        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
+        radial-gradient(1000px 600px at 10% -10%, rgba(99, 102, 241, .12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236, 72, 153, .10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .hero::after{
-      content:"";
-      position:absolute;
-      right:-120px; top:-120px;
-      width: 340px; height: 340px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.10);
-      pointer-events:none;
-      z-index:0;
-    }
-    .hero-inner{
-      padding: 22px 22px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 14px;
-      color:#fff;
-      position:relative;
-      z-index:1;
-      flex-wrap: wrap;
-    }
-    .hero h1{
-      margin:0;
-      font-size: 1.5rem;
-      font-weight: 950;
-      letter-spacing: -.02em;
-    }
-    .hero p{
-      margin: 6px 0 0;
-      color: rgba(255,255,255,.86);
-      font-size: 1rem;
-      line-height: 1.35;
-    }
-    .hero-actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      margin-left:auto;
-    }
-    .hero-btn{
-      display:inline-flex;
-      align-items:center;
-      gap:.55rem;
-      padding: .6rem .95rem;
-      border-radius: 999px;
-      text-decoration:none;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,.25);
-      background: rgba(255,255,255,.14);
-      color:#fff;
-      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 12px 26px rgba(2,6,23,.10);
-    }
-    .hero-btn:hover{
-      color:#fff;
-      background: rgba(255,255,255,.18);
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(2,6,23,.14);
-    }
-    .hero-btn.secondary{
-      background: rgba(255,255,255,.94);
-      color: rgba(2,6,23,.90);
-      border-color: rgba(255,255,255,.70);
-    }
-    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
 
-    /* Glass card */
-    .glass-card{
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--glass-strong);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
     }
-    .card-head{
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
-      display:flex;
-      justify-content: space-between;
+
+    @media (min-width: 576px) {
+      .wrap {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, .70);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15, 23, 42, .08);
+    }
+
+    .brand {
+      display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
-    }
-    .card-title{
-      margin:0;
-      font-weight: 950;
-      letter-spacing: -.01em;
-      color: rgba(2,6,23,.92);
-    }
-    .card-sub{
-      color: var(--muted);
-      font-weight: 800;
-      font-size: .92rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 900;
+      letter-spacing: -.02em;
     }
 
-    /* Search + filters */
-    .search-input{
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(99, 102, 241, .20);
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.92);
-      padding: 10px 12px;
+      background: rgba(255, 255, 255, .80);
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: 0 10px 18px rgba(2, 6, 23, .06);
       font-weight: 700;
-    }
-    .search-input:focus{
-      border-color: rgba(30,58,138,.35);
-      box-shadow: 0 0 0 .22rem rgba(30,58,138,.12);
-    }
-    .filter-pill{
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.92);
-      font-weight: 800;
-      padding: 10px 12px;
+      color: var(--text);
+      user-select: none;
     }
 
-    /* Table polish */
-    .table-wrap{ overflow:auto; }
-    table{ margin:0; }
-    .table thead th{
+    .pill .avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color: #fff;
+    }
+
+    .card-base {
+      background: var(--card);
+      border: 1px solid rgba(15, 23, 42, .10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-accent {
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -90px;
+      right: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, .12), transparent 65%);
+      pointer-events: none;
+    }
+
+    .btn-soft {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, .04);
+      border: 1px solid rgba(15, 23, 42, .10);
+      color: rgba(15, 23, 42, .65);
+      text-decoration: none;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .btn-soft:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 102, 241, .25);
+      background: rgba(99, 102, 241, .06);
+      color: rgba(15, 23, 42, .90);
+    }
+
+    .btn-grad {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 850;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99, 102, 241, .22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border: 0;
+    }
+
+    .btn-grad:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99, 102, 241, .28);
+      filter: brightness(1.03);
+      color: #fff;
+    }
+
+    .btn-mini {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, .04);
+      border: 1px solid rgba(15, 23, 42, .10);
+      color: rgba(15, 23, 42, .80);
+      font-weight: 850;
+      font-size: 12px;
+      text-decoration: none;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+      white-space: nowrap;
+    }
+
+    .btn-mini:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 102, 241, .22);
+      box-shadow: 0 12px 22px rgba(2, 6, 23, .08);
+      color: rgba(15, 23, 42, .92);
+    }
+
+    .btn-pay {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, .12);
+      border: 1px solid rgba(16, 185, 129, .22);
+      color: rgba(5, 150, 105, 1);
+      font-weight: 900;
+      font-size: 12px;
+      text-decoration: none;
+      transition: transform .16s ease, background .16s ease;
+      white-space: nowrap;
+    }
+
+    .btn-pay:hover {
+      transform: translateY(-1px);
+      background: rgba(16, 185, 129, .16);
+    }
+
+    /* X / Archive button (same vibe as payments page) */
+    .hide-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .90);
+      border: 1px solid rgba(15, 23, 42, .12);
+      color: rgba(2, 6, 23, .88);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      text-decoration: none;
+    }
+
+    .hide-btn:hover {
+      transform: scale(1.04);
+      background: rgba(248, 250, 252, 1);
+      border-color: rgba(99, 102, 241, .22);
+    }
+
+    .search-input,
+    .filter-pill {
+      border-radius: 14px !important;
+      border-color: rgba(15, 23, 42, .12) !important;
+      background: rgba(15, 23, 42, .03) !important;
+      font-weight: 800 !important;
+    }
+
+    .search-input:focus,
+    .filter-pill:focus {
+      box-shadow: 0 0 0 .25rem rgba(99, 102, 241, .15) !important;
+      border-color: rgba(99, 102, 241, .32) !important;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    .table {
+      margin: 0;
+    }
+
+    .table thead th {
       position: sticky;
       top: 0;
       z-index: 1;
-      background: rgba(15,23,42,.94) !important;
-      color:#fff;
-      border-color: rgba(255,255,255,.08) !important;
+      background: rgba(15, 23, 42, .94) !important;
+      color: #fff;
+      border-color: rgba(255, 255, 255, .08) !important;
       font-weight: 900;
       letter-spacing: .02em;
       text-transform: uppercase;
       font-size: .78rem;
       padding: .85rem .85rem;
+      white-space: nowrap;
     }
-    .table tbody td{
+
+    .table tbody td {
       padding: .85rem .85rem;
       vertical-align: middle;
-      color: rgba(2,6,23,.88);
-      font-weight: 700;
-      border-color: rgba(15,23,42,.08);
+      color: rgba(2, 6, 23, .88);
+      font-weight: 750;
+      border-color: rgba(15, 23, 42, .08);
       background: transparent;
       white-space: nowrap;
     }
-    .table-hover tbody tr:hover td{
-      background: rgba(30,58,138,.06);
+
+    .table-hover tbody tr:hover td {
+      background: rgba(99, 102, 241, .06);
     }
 
-    .badge-soft{
+    .badge-soft {
       border-radius: 999px;
       padding: .35rem .6rem;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: rgba(255, 255, 255, .78);
       font-weight: 900;
-    }
-    .b-paid{ background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.22); color: rgba(5,150,105,1); }
-    .b-over{ background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.22); color: rgba(225,29,72,1); }
-    .b-pend{ background: rgba(245,158,11,.16); border-color: rgba(245,158,11,.26); color: rgba(180,83,9,1); }
-
-    .btn-soft{
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.85);
-      font-weight: 900;
-      box-shadow: 0 10px 22px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .btn-soft:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(2,6,23,.08); }
-
-    .btn-icon{
-      border-radius: 999px;
-      font-weight: 900;
-      padding: .42rem .75rem;
-      box-shadow: 0 10px 18px rgba(2,6,23,.05);
+      font-size: 12px;
     }
 
-    /* Modal */
-    .modal-content{
+    .b-paid {
+      background: rgba(16, 185, 129, .14);
+      border-color: rgba(16, 185, 129, .22);
+      color: rgba(5, 150, 105, 1);
+    }
+
+    .b-over {
+      background: rgba(244, 63, 94, .14);
+      border-color: rgba(244, 63, 94, .22);
+      color: rgba(225, 29, 72, 1);
+    }
+
+    .b-pend {
+      background: rgba(245, 158, 11, .16);
+      border-color: rgba(245, 158, 11, .26);
+      color: rgba(180, 83, 9, 1);
+    }
+
+    /* modals */
+    .modal-content {
       border-radius: 18px;
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: 0 22px 60px rgba(2,6,23,.20);
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: 0 22px 60px rgba(2, 6, 23, .20);
       overflow: hidden;
     }
-    .modal-header{
-      background: linear-gradient(135deg, rgba(30,58,138,1), rgba(30,58,138,.88));
-      color:#fff;
+
+    .modal-header {
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      color: #fff;
       border: 0;
     }
-    .modal-title{ font-weight: 950; letter-spacing: -.01em; }
-    .modal-footer{
-      background: rgba(248,250,252,.85);
-      border-top: 1px solid rgba(15,23,42,.10);
+
+    .modal-title {
+      font-weight: 950;
+      letter-spacing: -.01em;
     }
-    .form-control, .form-select{ border-radius: 14px; font-weight: 700; }
+
+    .form-control,
+    .form-select {
+      border-radius: 14px !important;
+      border-color: rgba(15, 23, 42, .12) !important;
+      background: rgba(15, 23, 42, .03) !important;
+      font-weight: 750 !important;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      box-shadow: 0 0 0 .25rem rgba(99, 102, 241, .15) !important;
+      border-color: rgba(99, 102, 241, .32) !important;
+    }
 
     /* Processing overlay */
-    .processing{
-      position:absolute; inset:0;
-      background: rgba(255,255,255,.88);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      gap:10px;
+    .processing {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, .88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
       border-radius: 18px;
       z-index: 10;
       backdrop-filter: blur(6px);
     }
-    .processing.show{ display:flex; }
 
-    .toast-container{ z-index:2000; }
+    .processing.show {
+      display: flex;
+    }
 
-    @media (max-width: 768px){
-      .hero-actions{ width:100%; justify-content:flex-start; }
+    .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      color: rgba(100, 116, 139, .95);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .toast-container {
+      z-index: 2000;
+    }
+
+    /* ===== Skeleton shimmer ===== */
+    .skeleton-wrap {
+      padding: 16px 16px 22px;
+      display: none;
+    }
+
+    .skeleton {
+      height: 16px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, .06), rgba(15, 23, 42, .10), rgba(15, 23, 42, .06));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite linear;
+    }
+
+    .skeleton-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 110px 110px 120px 110px 220px;
+      gap: 10px;
+      padding: 12px 6px;
+      border-bottom: 1px solid rgba(15, 23, 42, .06);
+    }
+
+    .skeleton-row .skeleton:nth-child(2) { height: 18px; }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ===== Pagination ===== */
+    .pager {
+      padding: 14px 16px;
+      border-top: 1px solid rgba(15, 23, 42, .08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pager .meta {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .pager .btn-mini {
+      padding: 8px 10px;
+    }
+
+    /* ===== Swipe-to-archive on mobile ===== */
+    tr.invoice-row {
+      position: relative;
+      transition: transform .18s ease;
+      will-change: transform;
+    }
+
+    tr.invoice-row[data-swiped="true"] {
+      transform: translateX(-78px);
+    }
+
+    tr.invoice-row::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 78px;
+      background: rgba(244, 63, 94, .12);
+      border-left: 1px solid rgba(244, 63, 94, .22);
+      opacity: 0;
+      transition: opacity .18s ease;
+      pointer-events: none;
+    }
+
+    tr.invoice-row[data-swiped="true"]::after {
+      opacity: 1;
+    }
+
+    .swipe-action {
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      display: none;
+      z-index: 3;
+    }
+
+    tr.invoice-row[data-swiped="true"] .swipe-action {
+      display: inline-flex;
+    }
+
+    @media (max-width: 768px) {
+      .actions-row {
+        width: 100%;
+        justify-content: flex-start !important;
+      }
+      .skeleton-row {
+        grid-template-columns: 120px 1fr 90px 90px 110px 90px 180px;
+      }
+    }
+
+    /* ===== Razorpay-ish pay modal polish ===== */
+    #invoicePayModal .modal-content {
+      border-radius: 22px;
+      box-shadow: 0 40px 110px rgba(2, 6, 23, .30);
+    }
+
+    #invoicePayModal .pay-top {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(236, 72, 153, .85));
+      color: #fff;
+      padding: 16px 18px 14px;
+    }
+
+    #invoicePayModal .amt {
+      font-size: 28px;
+      font-weight: 950;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+    }
+
+    #invoicePayModal .meta {
+      opacity: .9;
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    #invoicePayModal .method-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 14px 0;
+    }
+
+    .m-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, .12);
+      background: rgba(255, 255, 255, .85);
+      font-weight: 900;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .14s ease, border-color .14s ease, background .14s ease;
+    }
+
+    .m-pill.active {
+      border-color: rgba(99, 102, 241, .35);
+      background: rgba(99, 102, 241, .08);
+      transform: translateY(-1px);
+    }
+
+    #invoicePayModal .pay-body {
+      padding: 12px 16px 16px;
+    }
+
+    #invoicePayModal #payBtn {
+      border-radius: 16px;
+      width: 100%;
+      border: 0;
+      padding: 13px 14px;
+      font-weight: 950;
+      color: #fff;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 18px 40px rgba(99, 102, 241, .30);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    #invoicePayModal #payBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 26px 60px rgba(99, 102, 241, .34);
+    }
+
+    #invoicePayModal .powered {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: rgba(100, 116, 139, .95);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    #invoicePayModal .powered .dot {
+      width: 6px; height: 6px; border-radius: 99px;
+      background: rgba(99, 102, 241, .9);
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Topbar -->
-  <nav class="navbar topbar py-3">
-    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
-      <a class="brand" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building"></i>
-        <span>HR Portal</span>
-      </a>
+  <!-- NAV -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
+        <a class="brand" href="{% url 'core:client_dashboard' %}">
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
+          <span>HR Portal</span>
+        </a>
 
-      <div class="pill">
-        <i class="bi bi-person-circle"></i>
-        <span>Client</span>
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
+        </div>
       </div>
     </div>
   </nav>
 
-  <!-- Toasts -->
+  <!-- Toasts (success / error) -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="payToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="payToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
       <div class="d-flex">
         <div class="toast-body" id="payToastMsg">Payment successful.</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
 
-    <div id="payToastErr" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="payToastErr" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
       <div class="d-flex">
         <div class="toast-body" id="payToastErrMsg">Payment failed.</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
+
+    <!-- Undo Toast (archive) -->
+    <div id="undoToast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <span id="undoMsg">Invoice archived.</span>
+          <button class="btn btn-light btn-sm ms-2" id="undoBtn" style="font-weight:900; border-radius:12px;">
+            Undo
+          </button>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
   </div>
 
-  <div class="container-fluid page px-4 px-lg-5">
+  <main class="wrap py-4 py-sm-5">
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-inner">
-        <div>
-          <h1>Invoices</h1>
-          <p>View invoice details, track payment status, and pay pending invoices.</p>
+    <!-- HEADER -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
+
+      <div
+        class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4 position-relative">
+        <div class="d-flex align-items-center gap-3">
+          <a class="btn-soft" href="{% url 'core:client_dashboard' %}" title="Back">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+
+          <div>
+            <h1 class="mb-1" style="font-weight:950; letter-spacing:-.02em;">
+              Invoices <span style="font-size:1.05em;">🧾</span>
+            </h1>
+            <div style="color:var(--muted); font-weight:700; font-size:13px;">
+              View invoice details, track status, and pay pending invoices.
+            </div>
+          </div>
         </div>
 
-        <div class="hero-actions">
-          <a class="hero-btn secondary" href="{% url 'core:client_dashboard' %}">
-            <i class="bi bi-arrow-left"></i> Dashboard
-          </a>
-          <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#newInvoiceModal" type="button">
-            <i class="bi bi-plus-circle"></i> New Invoice
+        <div class="d-flex gap-2 flex-wrap actions-row justify-content-end">
+          <button class="btn-grad" data-bs-toggle="modal" data-bs-target="#newInvoiceModal" type="button">
+            <i class="bi bi-plus-lg"></i> New Invoice
           </button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Table card -->
-    <div class="glass-card mt-3">
+    <!-- TABLE CARD -->
+    <section class="card-base mt-4">
+      <div class="p-4 p-sm-4 border-bottom" style="border-color:rgba(15,23,42,.08) !important;">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
+          <div>
+            <div style="font-weight:950; letter-spacing:-.01em; font-size:1rem;">All Invoices</div>
+            <div style="color:var(--muted); font-weight:750; font-size:13px;">
+              Search, filter, swipe-to-archive (mobile), and paginate like SaaS.
+            </div>
+          </div>
 
-      <div class="card-head">
-        <div>
-          <div class="card-title">All Invoices</div>
-          <div class="card-sub">Search and filter your invoices quickly</div>
-        </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <input id="invSearch" class="form-control search-input" style="min-width:260px;"
+              placeholder="Search: INV-12, project, status…">
 
-        <div class="d-flex gap-2 flex-wrap">
-          <input id="invSearch" class="form-control search-input" style="min-width:260px;"
-                 placeholder="Search: INV-12, project, status…">
+            <select id="invStatus" class="form-select filter-pill" style="min-width:190px;">
+              <option value="ALL" selected>All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="PAID">Paid</option>
+              <option value="OVERDUE">Overdue</option>
+            </select>
 
-          <select id="invStatus" class="form-select filter-pill" style="min-width:190px;">
-            <option value="ALL" selected>All Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="PAID">Paid</option>
-            <option value="OVERDUE">Overdue</option>
-          </select>
+            <select id="pageSize" class="form-select filter-pill" style="min-width:160px;">
+              <option value="5">5 / page</option>
+              <option value="10" selected>10 / page</option>
+              <option value="20">20 / page</option>
+              <option value="50">50 / page</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <div class="table-wrap">
+      <!-- Skeleton (loading shimmer) -->
+      <div class="skeleton-wrap" id="skeletonWrap">
+        <div class="skeleton-row">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
         <table class="table table-hover align-middle mb-0" id="invoiceTable">
           <thead>
             <tr>
@@ -394,16 +733,24 @@
               <th>Due</th>
               <th>Amount</th>
               <th>Status</th>
-              <th style="width:260px;">Action</th>
+              <th style="width:300px;">Action</th>
             </tr>
           </thead>
 
           <tbody>
             {% for inv in invoices %}
-            <tr
+            <tr class="invoice-row"
+              data-invoice-id="{{ inv.id }}"
               data-status="{{ inv.status }}"
-              data-text="INV-{{ inv.id }} {{ inv.project.name }} {{ inv.issued_date }} {{ inv.due_date|default:'' }} {{ inv.amount }} {{ inv.status }}"
-            >
+              data-text="INV-{{ inv.id }} {{ inv.project.name }} {{ inv.issued_date }} {{ inv.due_date|default:'' }} {{ inv.amount }} {{ inv.status }}">
+
+              <!-- Swipe action button (mobile) -->
+              <td colspan="0" class="swipe-action">
+                <button class="hide-btn" type="button" title="Archive" data-archive="{{ inv.id }}">
+                  <i class="bi bi-archive"></i>
+                </button>
+              </td>
+
               <td class="fw-bold">INV-{{ inv.id }}</td>
               <td>{{ inv.project.name }}</td>
               <td>{{ inv.issued_date }}</td>
@@ -412,64 +759,66 @@
 
               <td>
                 {% if inv.status == "PAID" %}
-                  <span class="badge-soft b-paid">Paid</span>
+                <span class="badge-soft b-paid" data-badge="{{ inv.id }}">Paid</span>
                 {% elif inv.status == "OVERDUE" %}
-                  <span class="badge-soft b-over">Overdue</span>
+                <span class="badge-soft b-over" data-badge="{{ inv.id }}">Overdue</span>
                 {% else %}
-                  <span class="badge-soft b-pend">Pending</span>
+                <span class="badge-soft b-pend" data-badge="{{ inv.id }}">Pending</span>
                 {% endif %}
               </td>
 
-              <td class="d-flex gap-2 flex-wrap">
+              <td class="d-flex gap-2 flex-wrap align-items-center">
                 <!-- View -->
-                <button
-                  type="button"
-                  class="btn btn-soft btn-sm btn-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#invoiceViewModal"
-                  data-inv-id="{{ inv.id }}"
-                  data-project="{{ inv.project.name }}"
-                  data-issue="{{ inv.issued_date }}"
-                  data-due="{{ inv.due_date|default:'' }}"
-                  data-amount="{{ inv.amount }}"
-                  data-status="{{ inv.status }}"
-                >
-                  <i class="bi bi-eye me-1"></i> View
+                <button type="button" class="btn-mini" data-bs-toggle="modal" data-bs-target="#invoiceViewModal"
+                  data-inv-id="{{ inv.id }}" data-project="{{ inv.project.name }}" data-issue="{{ inv.issued_date }}"
+                  data-due="{{ inv.due_date|default:'' }}" data-amount="{{ inv.amount }}"
+                  data-status="{{ inv.status }}">
+                  <i class="bi bi-eye"></i> View
                 </button>
 
                 <!-- Pay -->
                 {% if inv.status != "PAID" %}
-                <button
-                  type="button"
-                  class="btn btn-success btn-sm btn-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#invoicePayModal"
-                  data-inv-id="{{ inv.id }}"
-                  data-project="{{ inv.project.name }}"
-                  data-amount="{{ inv.amount }}"
-                >
-                  <i class="bi bi-credit-card me-1"></i> Pay
+                <button type="button" class="btn-pay" data-bs-toggle="modal" data-bs-target="#invoicePayModal"
+                  data-inv-id="{{ inv.id }}" data-project="{{ inv.project.name }}" data-amount="{{ inv.amount }}">
+                  <i class="bi bi-credit-card"></i> Pay
                 </button>
                 {% else %}
-                <button class="btn btn-outline-success btn-sm btn-icon" disabled>
-                  <i class="bi bi-check2-circle me-1"></i> Paid
+                <button class="btn-pay" disabled style="opacity:.55; cursor:not-allowed;">
+                  <i class="bi bi-check2-circle"></i> Paid
                 </button>
                 {% endif %}
+
+                <!-- Archive (X / archive) -->
+                <button class="hide-btn" type="button" title="Archive from client view" data-archive="{{ inv.id }}">
+                  <i class="bi bi-x-lg"></i>
+                </button>
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="7" class="text-center py-4 text-muted fw-bold">No invoices found.</td>
+              <td colspan="7" class="text-center py-4" style="color:var(--muted); font-weight:850;">
+                No invoices found.
+              </td>
             </tr>
             {% endfor %}
           </tbody>
 
         </table>
       </div>
-    </div>
+
+      <!-- Pagination -->
+      <div class="pager">
+        <div class="meta" id="pagerMeta">—</div>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <button class="btn-mini" id="prevPage"><i class="bi bi-chevron-left"></i> Prev</button>
+          <span class="meta" id="pageNow">Page 1</span>
+          <button class="btn-mini" id="nextPage">Next <i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
 
     <div class="pb-4"></div>
-  </div>
+  </main>
 
   <!-- Invoice View Modal -->
   <div class="modal fade" id="invoiceViewModal" tabindex="-1">
@@ -513,7 +862,8 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn btn-outline-secondary" style="border-radius:999px; font-weight:900;" data-bs-dismiss="modal">Close</button>
+          <button class="btn btn-outline-secondary" style="border-radius:14px; font-weight:900;"
+            data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -522,7 +872,7 @@
   <!-- Invoice Pay Modal -->
   <div class="modal fade" id="invoicePayModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content p-3 position-relative">
+      <div class="modal-content position-relative">
 
         <div class="processing" id="processingOverlay">
           <div class="spinner-border" role="status"></div>
@@ -530,27 +880,31 @@
           <div class="text-muted small fw-bold">Dummy flow (no real money).</div>
         </div>
 
-        <div class="modal-header border-0" style="padding-bottom:.25rem;">
-          <div>
-            <h5 class="modal-title mb-0">Pay Invoice</h5>
-            <small class="text-muted fw-bold" id="payInvMeta">—</small>
+        <!-- Razorpay-ish top -->
+        <div class="pay-top">
+          <div class="d-flex align-items-start justify-content-between gap-3">
+            <div style="min-width:0;">
+              <div style="font-weight:950; letter-spacing:-.01em;">Pay Invoice</div>
+              <div class="meta" id="payInvMeta">—</div>
+            </div>
+            <button class="btn-close btn-close-white" id="payModalCloseBtn" data-bs-dismiss="modal"></button>
           </div>
-          <button class="btn-close" id="payModalCloseBtn" data-bs-dismiss="modal"></button>
+          <div class="amt mt-2" id="payAmtBig">₹0</div>
+          <div class="meta">Secure checkout • Dummy flow</div>
         </div>
 
-        <div class="modal-body pt-0">
+        <!-- Method pills -->
+        <div class="method-tabs">
+          <div class="m-pill active" data-method-pill="CARD"><i class="bi bi-credit-card"></i> Card</div>
+          <div class="m-pill" data-method-pill="UPI"><i class="bi bi-phone"></i> UPI</div>
+          <div class="m-pill" data-method-pill="BANK"><i class="bi bi-bank"></i> Bank</div>
+        </div>
+
+        <div class="pay-body">
           <form id="invoicePayForm">
             {% csrf_token %}
             <input type="hidden" name="invoice_id" id="payInvoiceId" value="">
-
-            <div class="mb-3">
-              <label class="form-label fw-bold">Payment Method</label>
-              <select class="form-select" id="payMethod" name="method" required>
-                <option value="CARD">Credit Card</option>
-                <option value="UPI">UPI</option>
-                <option value="BANK">Bank Transfer</option>
-              </select>
-            </div>
+            <input type="hidden" name="method" id="payMethodHidden" value="CARD">
 
             <div id="cardFields">
               <div class="mb-3">
@@ -578,6 +932,10 @@
                 <label class="form-label fw-bold">UPI PIN</label>
                 <input type="password" class="form-control" name="upi_pin" placeholder="****">
               </div>
+              <div class="secure-note">
+                <i class="bi bi-qr-code"></i>
+                <span>Tip: add a QR later if needed</span>
+              </div>
             </div>
 
             <div id="bankFields" class="d-none">
@@ -587,9 +945,14 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-success w-100" style="border-radius:999px; font-weight:950;" id="payBtn">
-              <i class="bi bi-credit-card me-1"></i> Pay (Dummy)
+            <button class="mt-3" type="submit" id="payBtn">
+              <i class="bi bi-credit-card"></i> Pay (Dummy)
             </button>
+
+            <div class="powered">
+              <span class="dot"></span>
+              <span>Powered by HR Portal (dummy)</span>
+            </div>
           </form>
         </div>
 
@@ -616,7 +979,7 @@
                 <select class="form-select" name="project_id" required>
                   <option value="" selected disabled>Select project</option>
                   {% for p in projects %}
-                    <option value="{{ p.id }}">{{ p.name }}</option>
+                  <option value="{{ p.id }}">{{ p.name }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -647,8 +1010,8 @@
 
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-4" style="border-radius:999px; font-weight:950;">
-              <i class="bi bi-plus-circle me-1"></i> Add Invoice
+            <button type="submit" class="btn-grad w-100 mt-4">
+              <i class="bi bi-plus-lg"></i> Add Invoice
             </button>
           </form>
         </div>
@@ -661,21 +1024,41 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // ✅ CSRF helper
+    // =========================
+    // Helpers
+    // =========================
     function getCSRFToken() {
       const el = document.querySelector('#invoicePayForm input[name="csrfmiddlewaretoken"]');
       return el ? el.value : "";
     }
 
     // Toasts
-    const toastOk = new bootstrap.Toast(document.getElementById("payToast"), { delay: 3000 });
+    const toastOk = new bootstrap.Toast(document.getElementById("payToast"), { delay: 2500 });
     const toastErr = new bootstrap.Toast(document.getElementById("payToastErr"), { delay: 3500 });
+    const undoToast = new bootstrap.Toast(document.getElementById("undoToast"), { delay: 6000 });
 
-    // VIEW modal fill
+    // =========================
+    // Skeleton shimmer (fake load)
+    // =========================
+    const skeletonWrap = document.getElementById("skeletonWrap");
+    const tableWrap = document.getElementById("tableWrap");
+
+    // show skeleton briefly for nicer UX
+    skeletonWrap.style.display = "block";
+    tableWrap.style.display = "none";
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        skeletonWrap.style.display = "none";
+        tableWrap.style.display = "block";
+      }, 380);
+    });
+
+    // =========================
+    // View modal fill
+    // =========================
     const viewModal = document.getElementById("invoiceViewModal");
     viewModal.addEventListener("show.bs.modal", function (event) {
       const btn = event.relatedTarget;
-
       const id = btn.getAttribute("data-inv-id");
       const project = btn.getAttribute("data-project");
       const issue = btn.getAttribute("data-issue");
@@ -692,27 +1075,36 @@
       document.getElementById("vStatus").textContent = status || "—";
     });
 
-    // PAY modal fields
+    // =========================
+    // Pay modal 
+    // =========================
     const payModalEl = document.getElementById("invoicePayModal");
     const payForm = document.getElementById("invoicePayForm");
-    const payMethod = document.getElementById("payMethod");
-    const cardFields = document.getElementById("cardFields");
-    const upiFields = document.getElementById("upiFields");
-    const bankFields = document.getElementById("bankFields");
     const payBtn = document.getElementById("payBtn");
     const processingOverlay = document.getElementById("processingOverlay");
     const payModalCloseBtn = document.getElementById("payModalCloseBtn");
+    const payMethodHidden = document.getElementById("payMethodHidden");
 
-    function toggleFields() {
-      const m = payMethod.value;
-      cardFields.classList.toggle("d-none", m !== "CARD");
-      upiFields.classList.toggle("d-none", m !== "UPI");
-      bankFields.classList.toggle("d-none", m !== "BANK");
+    const cardFields = document.getElementById("cardFields");
+    const upiFields = document.getElementById("upiFields");
+    const bankFields = document.getElementById("bankFields");
+
+    const methodPills = Array.from(document.querySelectorAll("[data-method-pill]"));
+
+    function setMethod(method) {
+      payMethodHidden.value = method;
+      methodPills.forEach(p => p.classList.toggle("active", p.getAttribute("data-method-pill") === method));
+      cardFields.classList.toggle("d-none", method !== "CARD");
+      upiFields.classList.toggle("d-none", method !== "UPI");
+      bankFields.classList.toggle("d-none", method !== "BANK");
     }
-    toggleFields();
-    payMethod.addEventListener("change", toggleFields);
+
+    methodPills.forEach(p => {
+      p.addEventListener("click", () => setMethod(p.getAttribute("data-method-pill")));
+    });
 
     let currentInvoiceId = null;
+    let currentInvoiceAmount = null;
 
     payModalEl.addEventListener("show.bs.modal", function (event) {
       const btn = event.relatedTarget;
@@ -722,19 +1114,59 @@
       const amount = btn.getAttribute("data-amount");
 
       currentInvoiceId = invId;
-      document.getElementById("payInvoiceId").value = invId;
-      document.getElementById("payInvMeta").textContent = `INV-${invId} • ${project} • ₹${amount}`;
+      currentInvoiceAmount = amount;
 
+      document.getElementById("payInvoiceId").value = invId;
+      document.getElementById("payInvMeta").textContent = `INV-${invId} • ${project}`;
+      document.getElementById("payAmtBig").textContent = `₹${amount}`;
+
+      // preserve CSRF
+      const token = getCSRFToken();
       payForm.reset();
-      payMethod.value = "CARD";
-      toggleFields();
+      const csrfEl = document.querySelector('#invoicePayForm input[name="csrfmiddlewaretoken"]');
+      if (csrfEl) csrfEl.value = token;
+
+      setMethod("CARD");
 
       processingOverlay.classList.remove("show");
       payBtn.disabled = false;
       payModalCloseBtn.disabled = false;
     });
 
-    // Submit pay (unchanged logic)
+    // card formatting
+    payForm.addEventListener("input", (e) => {
+      if (e.target && e.target.name === "card_number") {
+        let v = e.target.value.replace(/\D/g, "").slice(0, 16);
+        e.target.value = v.replace(/(.{4})/g, "$1 ").trim();
+      }
+    });
+
+    function markRowPaid(invoiceId) {
+      const row = document.querySelector(`tr.invoice-row[data-invoice-id="${invoiceId}"]`);
+      if (!row) return;
+
+      // update status dataset + badge
+      row.setAttribute("data-status", "PAID");
+      const badge = document.querySelector(`[data-badge="${invoiceId}"]`);
+      if (badge) {
+        badge.classList.remove("b-pend", "b-over");
+        badge.classList.add("b-paid");
+        badge.textContent = "Paid";
+      }
+
+      // disable pay button in actions
+      const payBtnInRow = row.querySelector(".btn-pay");
+      if (payBtnInRow) {
+        payBtnInRow.setAttribute("disabled", "disabled");
+        payBtnInRow.style.opacity = ".55";
+        payBtnInRow.style.cursor = "not-allowed";
+        payBtnInRow.innerHTML = `<i class="bi bi-check2-circle"></i> Paid`;
+      }
+
+      // refresh filters/pagination view
+      applyInvoiceFilter(true);
+    }
+
     payForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!currentInvoiceId) return;
@@ -761,7 +1193,7 @@
         if (ct.includes("application/json")) data = await resp.json();
         else throw new Error("Backend returned non-JSON. Status=" + resp.status);
 
-        await new Promise(r => setTimeout(r, 900));
+        await new Promise(r => setTimeout(r, 650));
         processingOverlay.classList.remove("show");
 
         if (!resp.ok || !data.ok) {
@@ -775,8 +1207,10 @@
         document.getElementById("payToastMsg").textContent = data.message || "Payment successful.";
         toastOk.show();
 
+        // ✅ Auto mark paid on UI (no full reload needed)
+        markRowPaid(currentInvoiceId);
+
         bootstrap.Modal.getInstance(payModalEl).hide();
-        setTimeout(() => window.location.reload(), 800);
 
       } catch (err) {
         console.log("PAY ERROR:", err);
@@ -789,33 +1223,237 @@
       }
     });
 
-    // Client-side search + status filter
-    const invSearch = document.getElementById("invSearch");
-    const invStatus = document.getElementById("invStatus");
-    const rows = Array.from(document.querySelectorAll("#invoiceTable tbody tr"));
+    // =========================
+    // Archive (instead of hide) + Undo toast
+    // =========================
+    const ARCH_KEY = "archivedInvoicesClient";
+    function getArchived() {
+      try { return JSON.parse(localStorage.getItem(ARCH_KEY)) || []; }
+      catch { return []; }
+    }
+    function setArchived(arr) {
+      localStorage.setItem(ARCH_KEY, JSON.stringify(arr));
+    }
 
-    function applyInvoiceFilter(){
-      const q = (invSearch.value || "").toLowerCase().trim();
-      const s = invStatus.value;
+    let lastArchived = null; // {id, html, status, text}
 
-      rows.forEach(tr => {
-        const status = tr.getAttribute("data-status") || "";
-        const text = (tr.getAttribute("data-text") || tr.innerText || "").toLowerCase();
+    function archiveRowById(id) {
+      const row = document.querySelector(`tr.invoice-row[data-invoice-id="${id}"]`);
+      if (!row) return;
 
-        const statusOk = (s === "ALL") || (status === s);
-        const searchOk = !q || text.includes(q);
+      // store for undo
+      lastArchived = {
+        id,
+        html: row.outerHTML
+      };
 
-        // don't hide "No invoices found" row (it has no data-status)
-        if (!tr.getAttribute("data-status")) return;
+      // persist (client-only archive)
+      const s = new Set(getArchived());
+      s.add(String(id));
+      setArchived([...s]);
 
-        tr.style.display = (statusOk && searchOk) ? "" : "none";
+      // remove with animation
+      row.style.transition = "opacity .22s ease, transform .22s ease";
+      row.style.opacity = "0";
+      row.style.transform = "scale(.985)";
+      setTimeout(() => {
+        row.remove();
+        applyInvoiceFilter(true);
+      }, 220);
+
+      document.getElementById("undoMsg").textContent = `INV-${id} archived.`;
+      undoToast.show();
+    }
+
+    function undoArchive() {
+      if (!lastArchived) return;
+
+      // remove from local archive list
+      const s = new Set(getArchived());
+      s.delete(String(lastArchived.id));
+      setArchived([...s]);
+
+      // restore row (append back)
+      const tbody = document.querySelector("#invoiceTable tbody");
+      const tmp = document.createElement("tbody");
+      tmp.innerHTML = lastArchived.html.trim();
+      const restored = tmp.firstElementChild;
+      if (restored) {
+        tbody.prepend(restored);
+        wireRow(restored); // re-wire swipe + buttons
+      }
+
+      lastArchived = null;
+      applyInvoiceFilter(true);
+    }
+
+    document.getElementById("undoBtn").addEventListener("click", undoArchive);
+
+    // Click archive buttons
+    function wireArchiveButtons(root = document) {
+      root.querySelectorAll("[data-archive]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute("data-archive");
+          archiveRowById(id);
+        });
       });
     }
 
-    invSearch.addEventListener("input", applyInvoiceFilter);
-    invStatus.addEventListener("change", applyInvoiceFilter);
-    applyInvoiceFilter();
-  </script>
+    // On load: remove archived invoices (client side)
+    function removeArchivedOnLoad() {
+      const archived = new Set(getArchived());
+      document.querySelectorAll("tr.invoice-row").forEach(row => {
+        const id = row.getAttribute("data-invoice-id");
+        if (archived.has(String(id))) row.remove();
+      });
+    }
 
+    // =========================
+    // Swipe to archive (mobile)
+    // =========================
+    function wireSwipe(row) {
+      let startX = 0;
+      let dx = 0;
+      let tracking = false;
+
+      row.addEventListener("touchstart", (e) => {
+        if (!e.touches || e.touches.length !== 1) return;
+        tracking = true;
+        startX = e.touches[0].clientX;
+        dx = 0;
+      }, { passive: true });
+
+      row.addEventListener("touchmove", (e) => {
+        if (!tracking || !e.touches || e.touches.length !== 1) return;
+        dx = e.touches[0].clientX - startX;
+
+        // swipe left only
+        if (dx < -12) {
+          row.setAttribute("data-swiped", "true");
+        }
+        // swipe back right
+        if (dx > 12) {
+          row.setAttribute("data-swiped", "false");
+        }
+      }, { passive: true });
+
+      row.addEventListener("touchend", () => {
+        tracking = false;
+        // if swiped and user taps outside later, close swipe
+        // (handled by document click below)
+      });
+
+      // close swipe when tapping elsewhere
+      document.addEventListener("click", (e) => {
+        if (!row.contains(e.target)) row.setAttribute("data-swiped", "false");
+      });
+    }
+
+    function wireRow(row) {
+      // archive buttons within this row
+      row.querySelectorAll("[data-archive]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute("data-archive");
+          archiveRowById(id);
+        });
+      });
+      wireSwipe(row);
+    }
+
+    // =========================
+    // Search + Status filter + Pagination
+    // =========================
+    const invSearch = document.getElementById("invSearch");
+    const invStatus = document.getElementById("invStatus");
+    const pageSizeEl = document.getElementById("pageSize");
+
+    const prevPageBtn = document.getElementById("prevPage");
+    const nextPageBtn = document.getElementById("nextPage");
+    const pagerMeta = document.getElementById("pagerMeta");
+    const pageNow = document.getElementById("pageNow");
+
+    let allRows = [];
+    let filteredRows = [];
+    let currentPage = 1;
+
+    function readAllRows() {
+      allRows = Array.from(document.querySelectorAll("#invoiceTable tbody tr.invoice-row"));
+    }
+
+    function applyInvoiceFilter(resetPage = false) {
+      if (resetPage) currentPage = 1;
+
+      const q = (invSearch.value || "").toLowerCase().trim();
+      const s = invStatus.value;
+
+      readAllRows(); // rows can change due to archive/undo
+      filteredRows = allRows.filter(tr => {
+        const status = tr.getAttribute("data-status") || "";
+        const text = (tr.getAttribute("data-text") || tr.innerText || "").toLowerCase();
+        const statusOk = (s === "ALL") || (status === s);
+        const searchOk = !q || text.includes(q);
+        return statusOk && searchOk;
+      });
+
+      renderPage();
+    }
+
+    function renderPage() {
+      const pageSize = parseInt(pageSizeEl.value || "10", 10);
+      const total = filteredRows.length;
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      currentPage = Math.min(currentPage, totalPages);
+
+      // hide all first
+      allRows.forEach(r => r.style.display = "none");
+
+      // show page slice
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const slice = filteredRows.slice(start, end);
+      slice.forEach(r => r.style.display = "");
+
+      // pager
+      pagerMeta.textContent = total
+        ? `Showing ${start + 1}–${Math.min(end, total)} of ${total} invoices`
+        : "No invoices to show";
+
+      pageNow.textContent = `Page ${currentPage} / ${totalPages}`;
+
+      prevPageBtn.disabled = currentPage <= 1;
+      nextPageBtn.disabled = currentPage >= totalPages;
+    }
+
+    prevPageBtn.addEventListener("click", () => {
+      currentPage = Math.max(1, currentPage - 1);
+      renderPage();
+    });
+
+    nextPageBtn.addEventListener("click", () => {
+      currentPage = currentPage + 1;
+      renderPage();
+    });
+
+    invSearch.addEventListener("input", () => applyInvoiceFilter(true));
+    invStatus.addEventListener("change", () => applyInvoiceFilter(true));
+    pageSizeEl.addEventListener("change", () => applyInvoiceFilter(true));
+
+    // =========================
+    // Init
+    // =========================
+    document.addEventListener("DOMContentLoaded", () => {
+      // remove archived (client-only)
+      removeArchivedOnLoad();
+
+      // wire existing rows (swipe + archive)
+      document.querySelectorAll("tr.invoice-row").forEach(wireRow);
+
+      // filters + pagination
+      applyInvoiceFilter(true);
+    });
+  </script>
 </body>
+
 </html>

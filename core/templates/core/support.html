@@ -15,166 +15,198 @@
 
   <style>
     :root{
-      --brand:#1e3a8a;
-      --bg:#f6f8ff;
-      --text:#0f172a;
-      --muted:#6b7280;
-
+      /* match your dashboard/projects palette */
+      --bg: #f6f7fb;
+      --card: rgba(255,255,255,.78);
+      --card-strong: rgba(255,255,255,.92);
+      --text: #0b1220;
+      --muted: #667085;
       --border: rgba(15,23,42,.10);
-      --shadow: 0 22px 60px rgba(2,6,23,.10);
-      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
 
-      --radius: 22px;
-      --radius-lg: 28px;
+      --primary: hsl(243 75% 59%);
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
+      --teal: hsl(172 56% 42%);
+      --blue: hsl(200 70% 50%);
+      --green: hsl(152 55% 42%);
 
-      --glass: rgba(255,255,255,.78);
-      --glass-strong: rgba(255,255,255,.88);
+      --shadow: 0 18px 50px rgba(2,6,23,.08);
+      --shadow-soft: 0 10px 26px rgba(2,6,23,.06);
+
+      --r: 18px;
+      --r2: 22px;
     }
 
     body{
+      min-height:100vh;
       background:
-        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
-        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
-        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
-        var(--bg);
+        radial-gradient(1000px 600px at 10% -10%, rgba(99,102,241,.12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236,72,153,.10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
       color: var(--text);
-      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .page{ width:100%; max-width:none; }
+    /* ====== FULL FEEL (same as dashboard/projects) ====== */
+    .wrap{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    @media (min-width: 576px){
+      .wrap{ padding-left: 18px; padding-right: 18px; }
+    }
 
-    /* Topbar (dashboard style) */
+    /* ====== NAV (same as dashboard) ====== */
     .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
       background: rgba(255,255,255,.70);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,.45);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15,23,42,.08);
     }
     .brand{
-      display:flex; align-items:center; gap:.6rem;
-      text-decoration:none; color: var(--text);
-      padding: .55rem .8rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
-      font-weight: 800;
-      letter-spacing: -.01em;
-    }
-    .brand:hover{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      text-decoration:none;
       color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(2,6,23,.07);
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .brand-badge{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(99,102,241,.20);
     }
     .pill{
-      display:flex; align-items:center; gap:.55rem;
-      padding:.48rem .85rem;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      color: rgba(15,23,42,.85);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      font-size: .92rem;
+      background: rgba(255,255,255,.80);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 10px 18px rgba(2,6,23,.06);
       font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+    .pill .avatar{
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color:#fff;
     }
 
-    /* Hero */
+    /* ====== CARD BASE (same as dashboard/projects) ====== */
+    .card-base{
+      background: var(--card-strong);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* ====== HERO (same as dashboard/projects) ====== */
     .hero{
-      margin-top: 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255,255,255,.55);
-      background:
-        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
-        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
-      box-shadow: var(--shadow);
-      overflow: hidden;
       position: relative;
+      overflow: hidden;
+    }
+    .hero-accent{
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
     }
     .hero::after{
       content:"";
       position:absolute;
-      right:-120px; top:-120px;
-      width: 340px; height: 340px;
+      top:-90px;
+      right:-90px;
+      width: 260px;
+      height: 260px;
       border-radius: 999px;
-      background: rgba(255,255,255,.10);
+      background: radial-gradient(circle at 30% 30%, rgba(99,102,241,.12), transparent 65%);
       pointer-events:none;
-      z-index:0;
-    }
-    .hero-inner{
-      padding: 22px 22px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 14px;
-      color:#fff;
-      position:relative;
-      z-index:1;
-      flex-wrap: wrap;
     }
     .hero h1{
-      margin:0;
-      font-size: 1.5rem;
+      margin: 0;
+      font-size: clamp(22px, 2vw, 30px);
       font-weight: 950;
-      letter-spacing: -.02em;
+      letter-spacing: -.03em;
     }
     .hero p{
-      margin: 6px 0 0;
-      color: rgba(255,255,255,.86);
-      font-size: 1rem;
-      line-height: 1.35;
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 560px;
+      font-weight: 650;
     }
-    .hero-actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      margin-left:auto;
-    }
-    .hero-btn{
+
+    /* ====== BUTTONS (same as dashboard/projects) ====== */
+    .btn-grad{
       display:inline-flex;
       align-items:center;
-      gap:.55rem;
-      padding: .6rem .95rem;
-      border-radius: 999px;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 14px;
       text-decoration:none;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,.25);
-      background: rgba(255,255,255,.14);
       color:#fff;
-      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 12px 26px rgba(2,6,23,.10);
+      font-weight: 850;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99,102,241,.22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border: 0;
     }
-    .hero-btn:hover{
+    .btn-grad:hover{
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99,102,241,.28);
+      filter: brightness(1.03);
       color:#fff;
-      background: rgba(255,255,255,.18);
+    }
+    /* back button exactly like projects UI */
+    .btn-soft{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.10);
+      color: rgba(15,23,42,.65);
+      text-decoration:none;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+    }
+    .btn-soft:hover{
       transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(2,6,23,.14);
+      border-color: rgba(99,102,241,.25);
+      background: rgba(99,102,241,.06);
+      color: rgba(15,23,42,.90);
     }
-    .hero-btn.secondary{
-      background: rgba(255,255,255,.94);
-      color: rgba(2,6,23,.90);
-      border-color: rgba(255,255,255,.70);
-    }
-    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
 
-    /* Glass card shell */
-    .glass-card{
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--glass-strong);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-    .card-head{
+    /* ====== TICKETS LIST CARD (dashboard feel) ====== */
+    .list-head{
       padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
+      border-bottom: 1px solid rgba(15,23,42,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.86));
       display:flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
+      border-top-left-radius: var(--r2);
+      border-top-right-radius: var(--r2);
     }
     .title{
       margin:0;
@@ -189,16 +221,16 @@
     }
 
     .search-input{
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.92);
-      padding: 10px 12px;
-      font-weight: 700;
+      border-radius: 999px !important;
+      border: 1px solid rgba(15,23,42,.12) !important;
+      background: rgba(15,23,42,.03) !important;
+      padding: 10px 12px !important;
+      font-weight: 800 !important;
       min-width: 280px;
     }
     .search-input:focus{
-      border-color: rgba(30,58,138,.35);
-      box-shadow: 0 0 0 .22rem rgba(30,58,138,.12);
+      box-shadow: 0 0 0 .25rem rgba(99,102,241,.15) !important;
+      border-color: rgba(99,102,241,.30) !important;
     }
 
     .seg{
@@ -211,19 +243,26 @@
       border-radius: 999px;
       font-weight: 900;
       padding: .45rem .85rem;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.86);
       box-shadow: 0 10px 22px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      cursor: pointer;
+      line-height: 1;
     }
-    .seg button:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(2,6,23,.08); }
+    .seg button:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(2,6,23,.08);
+      border-color: rgba(99,102,241,.20);
+    }
     .seg button.active{
-      background: rgba(30,58,138,.10);
-      border-color: rgba(30,58,138,.25);
-      color: rgba(30,58,138,1);
+      background: rgba(99,102,241,.10);
+      border-color: rgba(99,102,241,.25);
+      color: rgba(99,102,241,1);
+      box-shadow: 0 12px 22px rgba(99,102,241,.12);
     }
 
-    /* Ticket cards (glass + status stripe) */
+    /* Ticket cards */
     .ticket-card{
       border-radius: 18px;
       border: 1px solid rgba(15,23,42,.10);
@@ -237,7 +276,7 @@
     .ticket-card:hover{
       transform: translateY(-2px);
       box-shadow: 0 18px 36px rgba(2,6,23,.10);
-      border-color: rgba(30,58,138,.20);
+      border-color: rgba(99,102,241,.22);
     }
 
     .stripe{
@@ -255,17 +294,6 @@
       font-size: .92rem;
     }
 
-    .badge-soft{
-      border-radius: 999px;
-      padding: .35rem .6rem;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.78);
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .b-open{ background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.22); color: rgba(225,29,72,1); }
-    .b-res{ background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.22); color: rgba(5,150,105,1); }
-
     .pill-mini{
       border-radius: 999px;
       padding: .28rem .55rem;
@@ -274,6 +302,47 @@
       color: rgba(2,6,23,.75);
       font-weight: 900;
       font-size: .78rem;
+      white-space: nowrap;
+    }
+
+    /* status pill badge */
+    .badge-soft{
+      border-radius: 999px;
+      padding: .35rem .7rem;
+      font-weight: 900;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.75);
+      color: rgba(15,23,42,.72);
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      white-space: nowrap;
+    }
+    .badge-soft.open{
+      border-color: rgba(244,63,94,.28);
+      background: rgba(244,63,94,.12);
+      color: rgba(190,18,60,1);
+    }
+    .badge-soft.open::before{
+      content:"";
+      width: 8px; height: 8px;
+      border-radius: 999px;
+      background: rgba(244,63,94,1);
+      box-shadow: 0 0 0 4px rgba(244,63,94,.16);
+      flex: 0 0 auto;
+    }
+    .badge-soft.resolved{
+      border-color: rgba(16,185,129,.28);
+      background: rgba(16,185,129,.12);
+      color: rgba(5,150,105,1);
+    }
+    .badge-soft.resolved::before{
+      content:"";
+      width: 8px; height: 8px;
+      border-radius: 999px;
+      background: rgba(16,185,129,1);
+      box-shadow: 0 0 0 4px rgba(16,185,129,.16);
+      flex: 0 0 auto;
     }
 
     /* Modal polish */
@@ -284,7 +353,7 @@
       overflow: hidden;
     }
     .modal-header{
-      background: linear-gradient(135deg, rgba(30,58,138,1), rgba(30,58,138,.88));
+      background: linear-gradient(135deg, rgba(99,102,241,1), rgba(99,102,241,.80));
       color:#fff;
       border: 0;
     }
@@ -293,10 +362,62 @@
       background: rgba(248,250,252,.85);
       border-top: 1px solid rgba(15,23,42,.10);
     }
-    .form-control, .form-select{ border-radius: 14px; font-weight: 700; }
+    .form-control, .form-select{
+      border-radius: 14px !important;
+      border-color: rgba(15,23,42,.12) !important;
+      background: rgba(15,23,42,.03) !important;
+      font-weight: 800 !important;
+    }
+    .form-control:focus, .form-select:focus{
+      box-shadow: 0 0 0 .25rem rgba(99,102,241,.15) !important;
+      border-color: rgba(99,102,241,.30) !important;
+    }
+
+    /* ====== FOOTER (same as dashboard) ====== */
+    .footer{
+      border-top: 1px solid rgba(15,23,42,.08);
+      margin-top: 36px;
+      padding-top: 18px;
+    }
+    .footer-note{
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .footer-note .mini{
+      width: 22px;
+      height: 22px;
+      border-radius: 10px;
+      display:grid;
+      place-items:center;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.08);
+      color: rgba(15,23,42,.60);
+    }
+    .logout{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.80);
+      color: rgba(15,23,42,.70);
+      font-weight: 900;
+      text-decoration:none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, color .18s ease;
+    }
+    .logout:hover{
+      transform: translateY(-1px);
+      border-color: rgba(99,102,241,.28);
+      box-shadow: 0 12px 24px rgba(2,6,23,.08);
+      color: rgba(15,23,42,.90);
+    }
 
     @media (max-width: 768px){
-      .hero-actions{ width:100%; justify-content:flex-start; }
       .search-input{ width:100%; min-width: unset; }
     }
   </style>
@@ -304,120 +425,140 @@
 
 <body>
 
-  <!-- Topbar -->
-  <nav class="navbar topbar py-3">
-    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
-      <a class="brand" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building"></i>
-        <span>HR Portal</span>
-      </a>
+  <!-- NAV (dashboard style) -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
+        <a class="brand" href="{% url 'core:client_dashboard' %}">
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
+          <span>HR Portal</span>
+        </a>
 
-      <div class="pill">
-        <i class="bi bi-person-circle"></i>
-        <span>Client</span>
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid page px-4 px-lg-5">
+  <main class="wrap py-4 py-sm-5">
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-inner">
-        <div>
-          <h1>Support Tickets</h1>
-          <p>Raise a ticket, track updates, and review past resolutions.</p>
+    <!-- HERO (projects style with back button) -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
+
+      <div class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4">
+        <div class="d-flex align-items-center gap-3">
+          <a class="btn-soft" href="{% url 'core:client_dashboard' %}" title="Back">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+
+          <div>
+            <h1>Support Tickets <span style="font-size:1.05em;">🛟</span></h1>
+            <p>Raise a ticket, track updates, and review past resolutions.</p>
+          </div>
         </div>
 
-        <div class="hero-actions">
-          <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#ticketModal" type="button">
+        <div class="d-flex gap-2 gap-sm-3 flex-wrap">
+          <button class="btn-grad" data-bs-toggle="modal" data-bs-target="#ticketModal" type="button">
             <i class="bi bi-life-preserver"></i> Raise Ticket
           </button>
-          <a class="hero-btn secondary" href="{% url 'core:client_dashboard' %}">
-            <i class="bi bi-arrow-left"></i> Dashboard
-          </a>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Ticket list -->
-    <div class="glass-card mt-3">
-      <div class="card-head">
-        <div>
-          <div class="title">Your Tickets</div>
-          <div class="sub">Use search or filters to find tickets quickly</div>
-        </div>
-
-        <div class="d-flex gap-2 flex-wrap align-items-center">
-          <input id="ticketSearch" class="form-control search-input" placeholder="Search by title, id, category…" />
-          <div class="seg" role="group" aria-label="Filter tickets">
-            <button type="button" class="active" data-filter="all" onclick="setFilter('all')">
-              <i class="bi bi-grid-1x2 me-1"></i> All
-            </button>
-            <button type="button" data-filter="open" onclick="setFilter('open')">
-              <i class="bi bi-exclamation-circle me-1"></i> Open
-            </button>
-            <button type="button" data-filter="resolved" onclick="setFilter('resolved')">
-              <i class="bi bi-check2-circle me-1"></i> Resolved
-            </button>
+    <!-- TICKET LIST (dashboard card) -->
+    <section class="mt-4">
+      <div class="card-base overflow-hidden">
+        <div class="list-head">
+          <div>
+            <div class="title">Your Tickets</div>
+            <div class="sub">Use search or filters to find tickets quickly</div>
           </div>
-        </div>
-      </div>
 
-      <div class="p-3 p-lg-4">
-        <div id="ticketFeed" class="d-flex flex-column gap-3">
-
-          {% for t in tickets %}
-          <div class="ticket-card
-              {% if t.status == 'OPEN' %}open{% else %}resolved{% endif %}"
-            data-status="{% if t.status == 'OPEN' %}open{% else %}resolved{% endif %}"
-            data-text="{{ t.title }} {{ t.ticket_id }} {{ t.get_category_display }} {{ t.get_priority_display }} {{ t.get_status_display }}"
-            onclick="openTicket(
-              '{{ t.ticket_id }}',
-              '{{ t.get_status_display }}',
-              '{{ t.get_priority_display }}',
-              '{{ t.get_category_display }}',
-              '{{ t.description|escapejs }}'
-            )">
-
-            <div class="stripe" aria-hidden="true"></div>
-
-            <div class="p-3 p-lg-4">
-              <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                <div>
-                  <div class="fw-bold" style="font-size:1.02rem;">{{ t.title }}</div>
-                  <div class="meta mt-1">
-                    <i class="bi bi-hash me-1"></i> {{ t.ticket_id }}
-                    <span class="mx-2 opacity-50">•</span>
-                    <span class="pill-mini"><i class="bi bi-tag me-1"></i>{{ t.get_category_display }}</span>
-                    <span class="pill-mini ms-1"><i class="bi bi-flag me-1"></i>{{ t.get_priority_display }}</span>
-                  </div>
-                </div>
-
-                {% if t.status == "OPEN" %}
-                  <span class="badge-soft b-open"><i class="bi bi-exclamation-circle me-1"></i>Open</span>
-                {% else %}
-                  <span class="badge-soft b-res"><i class="bi bi-check2-circle me-1"></i>Resolved</span>
-                {% endif %}
-              </div>
-
-              <div class="mt-2 text-muted fw-semibold">
-                {{ t.description|truncatechars:140 }}
-              </div>
+          <div class="d-flex gap-2 flex-wrap align-items-center">
+            <input id="ticketSearch" class="form-control search-input" placeholder="Search by title, id, category…" />
+            <div class="seg" role="group" aria-label="Filter tickets">
+              <button type="button" class="active" data-filter="all" onclick="setFilter('all')">
+                <i class="bi bi-grid-1x2 me-1"></i> All
+              </button>
+              <button type="button" data-filter="open" onclick="setFilter('open')">
+                <i class="bi bi-exclamation-circle me-1"></i> Open
+              </button>
+              <button type="button" data-filter="resolved" onclick="setFilter('resolved')">
+                <i class="bi bi-check2-circle me-1"></i> Resolved
+              </button>
             </div>
           </div>
-          {% empty %}
-          <div class="alert alert-light border" style="border-radius:18px;">
-            No tickets yet. Click <strong>Raise Ticket</strong> to create one.
-          </div>
-          {% endfor %}
+        </div>
 
+        <div class="p-3 p-lg-4">
+          <div id="ticketFeed" class="d-flex flex-column gap-3">
+
+            {% for t in tickets %}
+            <div class="ticket-card {% if t.status == 'OPEN' %}open{% else %}resolved{% endif %}"
+              data-status="{% if t.status == 'OPEN' %}open{% else %}resolved{% endif %}"
+              data-text="{{ t.title }} {{ t.ticket_id }} {{ t.get_category_display }} {{ t.get_priority_display }} {{ t.get_status_display }}"
+              onclick="openTicket(
+                '{{ t.ticket_id }}',
+                '{{ t.get_status_display }}',
+                '{{ t.get_priority_display }}',
+                '{{ t.get_category_display }}',
+                '{{ t.description|escapejs }}'
+              )">
+
+              <div class="stripe" aria-hidden="true"></div>
+
+              <div class="p-3 p-lg-4">
+                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                  <div>
+                    <div class="fw-bold" style="font-size:1.02rem;">{{ t.title }}</div>
+                    <div class="meta mt-1">
+                      <i class="bi bi-hash me-1"></i> {{ t.ticket_id }}
+                      <span class="mx-2 opacity-50">•</span>
+                      <span class="pill-mini"><i class="bi bi-tag me-1"></i>{{ t.get_category_display }}</span>
+                      <span class="pill-mini ms-1"><i class="bi bi-flag me-1"></i>{{ t.get_priority_display }}</span>
+                    </div>
+                  </div>
+
+                  {% if t.status == "OPEN" %}
+                    <span class="badge-soft open">Open</span>
+                  {% else %}
+                    <span class="badge-soft resolved">Resolved</span>
+                  {% endif %}
+                </div>
+
+                <div class="mt-2 text-muted fw-semibold">
+                  {{ t.description|truncatechars:140 }}
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-light border" style="border-radius:18px;">
+              No tickets yet. Click <strong>Raise Ticket</strong> to create one.
+            </div>
+            {% endfor %}
+
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="pb-4"></div>
-  </div>
+    <!-- FOOTER (dashboard style) -->
+    <footer class="footer">
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+        <div class="footer-note">
+          <span class="mini"><i class="bi bi-shield-check"></i></span>
+          Your data is encrypted and securely stored.
+        </div>
+        <a class="logout" href="{% url 'logout' %}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </footer>
+
+  </main>
 
   <!-- Raise Ticket Modal -->
   <div class="modal fade" id="ticketModal" tabindex="-1">

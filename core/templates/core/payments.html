@@ -1,7 +1,7 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,474 +10,732 @@
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-
   <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
   <style>
-    :root{
-      --brand:#1e3a8a;
-      --bg:#f6f8ff;
-      --text:#0f172a;
-      --muted:#6b7280;
+    :root {
+      /* dashboard/projects theme */
+      --bg: #f6f7fb;
+      --card: rgba(255, 255, 255, .78);
+      --card-strong: rgba(255, 255, 255, .92);
+      --text: #0b1220;
+      --muted: #667085;
+      --border: rgba(15, 23, 42, .10);
 
-      --border: rgba(15,23,42,.10);
-      --shadow: 0 22px 60px rgba(2,6,23,.10);
-      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
+      --primary: hsl(243 75% 59%);
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
+      --teal: hsl(172 56% 42%);
+      --blue: hsl(200 70% 50%);
+      --green: hsl(152 55% 42%);
+      --amber: hsl(35 80% 55%);
 
-      --radius: 22px;
-      --radius-lg: 28px;
+      --shadow: 0 18px 50px rgba(2, 6, 23, .08);
+      --shadow-soft: 0 10px 26px rgba(2, 6, 23, .06);
 
-      --glass: rgba(255,255,255,.78);
-      --glass-strong: rgba(255,255,255,.88);
+      --r: 18px;
+      --r2: 22px;
     }
 
-    body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-      background:
-        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
-        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
-        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
-        var(--bg);
-      color: var(--text);
+    body {
       min-height: 100vh;
-    }
-
-    .page{ width:100%; max-width:none; }
-
-    /* Topbar (dashboard style) */
-    .topbar{
-      background: rgba(255,255,255,.70);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,.45);
-    }
-    .brand{
-      display:flex; align-items:center; gap:.6rem;
-      text-decoration:none; color: var(--text);
-      padding: .55rem .8rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
-      font-weight: 800;
-      letter-spacing: -.01em;
-    }
-    .brand:hover{
-      color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(2,6,23,.07);
-    }
-    .pill{
-      display:flex; align-items:center; gap:.55rem;
-      padding:.48rem .85rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      color: rgba(15,23,42,.85);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      font-size: .92rem;
-      font-weight: 700;
-    }
-
-    /* Hero */
-    .hero{
-      margin-top: 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255,255,255,.55);
       background:
-        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
-        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
+        radial-gradient(1000px 600px at 10% -10%, rgba(99, 102, 241, .12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236, 72, 153, .10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .hero::after{
-      content:"";
-      position:absolute;
-      right:-120px; top:-120px;
-      width: 340px; height: 340px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.10);
-      pointer-events:none;
-      z-index:0;
+
+    /* ====== FULL FEEL ====== */
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
     }
-    .hero-inner{
-      padding: 22px 22px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 14px;
-      color:#fff;
-      position:relative;
-      z-index:1;
-      flex-wrap: wrap;
+
+    @media (min-width: 576px) {
+      .wrap {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
     }
-    .hero h1{
-      margin:0;
-      font-size: 1.5rem;
-      font-weight: 950;
+
+    /* ====== NAV (dashboard) ====== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, .70);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15, 23, 42, .08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 900;
       letter-spacing: -.02em;
     }
-    .hero p{
-      margin: 6px 0 0;
-      color: rgba(255,255,255,.86);
-      font-size: 1rem;
-      line-height: 1.35;
-    }
-    .hero-actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      margin-left:auto;
-    }
-    .hero-btn{
-      display:inline-flex;
-      align-items:center;
-      gap:.55rem;
-      padding: .6rem .95rem;
-      border-radius: 999px;
-      text-decoration:none;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,.25);
-      background: rgba(255,255,255,.14);
-      color:#fff;
-      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 12px 26px rgba(2,6,23,.10);
-    }
-    .hero-btn:hover{
-      color:#fff;
-      background: rgba(255,255,255,.18);
-      transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(2,6,23,.14);
-    }
-    .hero-btn.secondary{
-      background: rgba(255,255,255,.94);
-      color: rgba(2,6,23,.90);
-      border-color: rgba(255,255,255,.70);
-    }
-    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
 
-    /* Glass cards */
-    .glass-card{
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--glass-strong);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
-      overflow:hidden;
-    }
-    .card-head{
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .title{
-      margin:0;
-      font-weight: 950;
-      letter-spacing: -.01em;
-      color: rgba(2,6,23,.92);
-    }
-    .sub{
-      color: var(--muted);
-      font-weight: 800;
-      font-size: .92rem;
-    }
-
-    /* Stats */
-    .stat{
-      border-radius: 22px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.86);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
-      overflow:hidden;
-      position: relative;
-    }
-    .stat::before{
-      content:"";
-      position:absolute; left:0; right:0; top:0;
-      height: 4px;
-      background: linear-gradient(90deg, rgba(34,197,94,1), rgba(96,165,250,1), rgba(167,139,250,1));
-    }
-    .stat .inner{ padding: 16px; }
-    .stat .label{
-      color: var(--muted);
-      font-weight: 800;
-      font-size: .92rem;
-    }
-    .stat .value{
-      font-weight: 950;
-      letter-spacing: .2px;
-      margin-top: 6px;
-      color: rgba(2,6,23,.92);
-    }
-    .stat .subline{
-      color: rgba(100,116,139,.95);
-      font-size: .86rem;
-      font-weight: 700;
-    }
-    .chip{
-      font-weight: 900;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: .75rem;
-      letter-spacing: .4px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.82);
-      color: rgba(2,6,23,.75);
-    }
-
-    /* Payment cards */
-    .p-card{
-      border-radius: 22px;
-      background: rgba(255,255,255,.86);
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148,163,184,.20);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      position: relative;
-      overflow:hidden;
-    }
-    .p-card:hover{
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      border-color: rgba(30,58,138,.18);
-    }
-    .p-id{ font-weight: 950; color: rgba(2,6,23,.92); }
-    .p-muted{ color: rgba(100,116,139,.95); font-weight: 700; }
-    .p-amount{ font-weight: 950; color: var(--brand); font-size: 1.25rem; }
-
-    .hide-btn{
+    .brand-badge {
       width: 34px;
       height: 34px;
       border-radius: 12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(255,255,255,.85);
-      border: 1px solid rgba(148,163,184,.35);
-      color: rgba(2,6,23,.88);
-      transition: transform .12s ease, background .12s ease;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(99, 102, 241, .20);
     }
-    .hide-btn:hover{ transform: scale(1.04); background: rgba(248,250,252,1); }
 
-    .btn, .form-control, .form-select{ border-radius: 14px; }
-    .btn-pill{ border-radius: 999px; font-weight: 900; }
-    .btn-soft{
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.80);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 10px 22px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
+      background: rgba(255, 255, 255, .80);
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: 0 10px 18px rgba(2, 6, 23, .06);
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .pill .avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color: #fff;
+    }
+
+    /* ====== BASE CARD ====== */
+    .card-base {
+      background: var(--card-strong);
+      border: 1px solid rgba(15, 23, 42, .10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* ====== HERO ====== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-accent {
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -90px;
+      right: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, .12), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(22px, 2vw, 30px);
+      font-weight: 950;
+      letter-spacing: -.03em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 560px;
+      font-weight: 650;
+    }
+
+    /* ====== BUTTONS ====== */
+    .btn-grad {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 850;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99, 102, 241, .22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border: 0;
+    }
+
+    .btn-grad:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99, 102, 241, .28);
+      filter: brightness(1.03);
+      color: #fff;
+    }
+
+    /* back button like projects ui */
+    .btn-soft {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, .04);
+      border: 1px solid rgba(15, 23, 42, .10);
+      color: rgba(15, 23, 42, .65);
+      text-decoration: none;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .btn-soft:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 102, 241, .25);
+      background: rgba(99, 102, 241, .06);
+      color: rgba(15, 23, 42, .90);
+    }
+
+    /* ====== STATS ====== */
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px;
+      cursor: default;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .stat:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-ic {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 20px;
+      box-shadow: 0 14px 26px rgba(2, 6, 23, .10);
+    }
+
+    .s1 {
+      background: linear-gradient(135deg, var(--green), var(--teal));
+    }
+
+    .s2 {
+      background: linear-gradient(135deg, var(--amber), var(--p3));
+    }
+
+    .s3 {
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+    }
+
+    .stat .value {
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+
+    .stat .label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    /* ====== LIST HEAD ====== */
+    .list-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(15, 23, 42, .08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 255, 255, .86));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top-left-radius: var(--r2);
+      border-top-right-radius: var(--r2);
+    }
+
+    .title {
+      margin: 0;
+      font-weight: 950;
+      letter-spacing: -.01em;
+      color: rgba(2, 6, 23, .92);
+    }
+
+    .sub {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    /* ====== PAYMENT CARD ====== */
+    .p-card {
+      border-radius: var(--r2);
+      background: rgba(255, 255, 255, .86);
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: var(--shadow-soft);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .p-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(99, 102, 241, .22);
+    }
+
+    .p-id {
+      font-weight: 950;
+      color: rgba(2, 6, 23, .92);
+    }
+
+    .p-muted {
+      color: rgba(100, 116, 139, .95);
+      font-weight: 750;
+    }
+
+    .p-amount {
+      font-weight: 950;
+      color: rgba(2, 6, 23, .92);
+      font-size: 1.25rem;
+    }
+
+    .hide-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .85);
+      border: 1px solid rgba(15, 23, 42, .12);
+      color: rgba(2, 6, 23, .88);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+
+    .hide-btn:hover {
+      transform: scale(1.04);
+      background: rgba(248, 250, 252, 1);
+      border-color: rgba(99, 102, 241, .22);
+    }
+
+    .btn,
+    .form-control,
+    .form-select {
+      border-radius: 14px;
+    }
+
+    .btn-pill {
+      border-radius: 999px;
       font-weight: 900;
     }
-    .btn-soft:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(2,6,23,.08); }
 
-    /* Modal polish */
-    .modal-content{
+    /* =======================
+       Add Payment Modal ONLY
+       ======================= */
+    #addPaymentModal .modal-content {
       border-radius: 22px;
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: 0 18px 60px rgba(2,6,23,.25);
-      overflow:hidden;
-    }
-    .modal-header{
-      background: linear-gradient(135deg, rgba(30,58,138,1), rgba(30,58,138,.88));
-      color:#fff;
-      border:0;
-    }
-    .modal-title{ font-weight: 950; }
-    .modal-footer{
-      background: rgba(248,250,252,.85);
-      border-top: 1px solid rgba(15,23,42,.10);
-    }
-    .form-control:focus, .form-select:focus{
-      box-shadow: 0 0 0 .25rem rgba(30,58,138,.14);
-      border-color: rgba(30,58,138,.30);
+      border: 1px solid rgba(15, 23, 42, .10);
+      box-shadow: 0 18px 60px rgba(2, 6, 23, .25);
+      overflow: hidden;
     }
 
-    /* Processing overlay */
-    .processing{
-      position:absolute;
-      inset:0;
-      background: rgba(255,255,255,.88);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
+    #addPaymentModal .modal-header {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 1), rgba(99, 102, 241, .80));
+      color: #fff;
+      border: 0;
+    }
+
+    #addPaymentModal .modal-title {
+      font-weight: 950;
+    }
+
+    #addPaymentModal .form-control,
+    #addPaymentModal .form-select {
+      border-radius: 14px !important;
+      border-color: rgba(15, 23, 42, .12) !important;
+      background: rgba(15, 23, 42, .03) !important;
+      font-weight: 800 !important;
+    }
+
+    #addPaymentModal .form-control:focus,
+    #addPaymentModal .form-select:focus {
+      box-shadow: 0 0 0 .25rem rgba(99, 102, 241, .15) !important;
+      border-color: rgba(99, 102, 241, .30) !important;
+    }
+
+    /* =======================
+       Pay Now Modal (FIXED)
+       ======================= */
+    #payNowModal .modal-dialog {
+      max-width: 640px;
+    }
+
+    #payNowModal .modal-content {
+      border-radius: 26px;
+      border: 1px solid rgba(15, 23, 42, .12);
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(2, 6, 23, .28);
+      background: rgba(255, 255, 255, .92);
+    }
+
+    #payNowModal .modal-header {
+      border: 0;
+      padding: 18px 20px 14px;
+      background: linear-gradient(135deg, var(--primary), var(--p2), var(--p3));
+      color: #fff;
+    }
+
+    /* IMPORTANT: make title/meta not overlap close button */
+    #payNowModal .pay-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+
+    #payNowModal .pay-head .left {
+      min-width: 0;
+    }
+
+    #payNowModal .modal-title {
+      font-weight: 950;
+      letter-spacing: -.02em;
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    #payNowModal #payNowMeta {
+      display: block;
+      margin-top: 6px;
+      font-weight: 800;
+      opacity: .88;
+      line-height: 1.2;
+      white-space: normal;
+      /* allow wrap */
+      overflow-wrap: anywhere;
+      /* never hide */
+    }
+
+    #payNowModal .btn-close {
+      filter: invert(1);
+      opacity: .9;
+      flex: 0 0 auto;
+      margin: 2px 0 0 0;
+    }
+
+    #payNowModal .modal-body {
+      padding: 16px 20px 18px;
+    }
+
+    #payNowModal .form-label {
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(2, 6, 23, .65);
+      font-weight: 950;
+    }
+
+    #payNowModal .form-control,
+    #payNowModal .form-select {
+      border-radius: 16px !important;
+      border: 1px solid rgba(15, 23, 42, .12) !important;
+      background: rgba(15, 23, 42, .03) !important;
+      font-weight: 850 !important;
+      padding: 12px 14px !important;
+    }
+
+    #payNowModal .form-control:focus,
+    #payNowModal .form-select:focus {
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, .14) !important;
+      border-color: rgba(99, 102, 241, .40) !important;
+    }
+
+    /* button */
+    #payNowModal #payBtn {
+      border: 0;
+      border-radius: 18px !important;
+      padding: 13px 14px !important;
+      font-weight: 950;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 18px 40px rgba(99, 102, 241, .30);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    #payNowModal #payBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 26px 60px rgba(99, 102, 241, .34);
+    }
+
+    /* secure note */
+    #payNowModal .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      color: rgba(100, 116, 139, .95);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    #payNowModal .secure-note i {
+      color: rgba(99, 102, 241, .85);
+    }
+
+    /* Processing overlay - match radius */
+    .processing {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, .88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
       gap: 10px;
-      border-radius: 22px;
+      border-radius: 26px;
       z-index: 10;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
-    .processing.show{ display:flex; }
+
+    .processing.show {
+      display: flex;
+    }
 
     /* Toast */
-    .toast-container{ z-index: 2000; }
-    .toast{ border-radius: 16px; box-shadow: 0 18px 40px rgba(2,6,23,.22); }
+    .toast-container {
+      z-index: 2000;
+    }
 
-    @media (max-width: 768px){
-      .hero-actions{ width:100%; justify-content:flex-start; }
+    .toast {
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(2, 6, 23, .22);
+    }
+
+    /* ====== FOOTER (dashboard) ====== */
+    .footer {
+      border-top: 1px solid rgba(15, 23, 42, .08);
+      margin-top: 36px;
+      padding-top: 18px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-note .mini {
+      width: 22px;
+      height: 22px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 23, 42, .04);
+      border: 1px solid rgba(15, 23, 42, .08);
+      color: rgba(15, 23, 42, .60);
+    }
+
+    .logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: rgba(255, 255, 255, .80);
+      color: rgba(15, 23, 42, .70);
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, color .18s ease;
+    }
+
+    .logout:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 102, 241, .28);
+      box-shadow: 0 12px 24px rgba(2, 6, 23, .08);
+      color: rgba(15, 23, 42, .90);
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Topbar -->
-  <nav class="navbar topbar py-3">
-    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
-      <a class="brand" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building"></i>
-        <span>HR Portal</span>
-      </a>
-      <div class="pill">
-        <i class="bi bi-person-circle"></i>
-        <span>Client</span>
+  <!-- NAV (dashboard style) -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
+        <a class="brand" href="{% url 'core:client_dashboard' %}">
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
+          <span>HR Portal</span>
+        </a>
+
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid page px-4 px-lg-5">
+  <main class="wrap py-4 py-sm-5">
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-inner">
-        <div>
-          <h1>Payments</h1>
-          <p>Track invoices, pay pending items (dummy), and view history.</p>
+    <!-- HERO -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
+
+      <div
+        class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4">
+        <div class="d-flex align-items-center gap-3">
+          <a class="btn-soft" href="{% url 'core:client_dashboard' %}" title="Back">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+
+          <div>
+            <h1>Payments <span style="font-size:1.05em;">💳</span></h1>
+            <p>Track invoices, pay pending items (dummy), and view history.</p>
+          </div>
         </div>
 
-        <div class="hero-actions">
-          <a href="{% url 'core:client_dashboard' %}" class="hero-btn secondary">
-            <i class="bi bi-arrow-left"></i> Dashboard
-          </a>
-          <button class="hero-btn" type="button" onclick="resetHiddenPayments()">
+        <div class="d-flex gap-2 gap-sm-3 flex-wrap">
+          <button class="btn-grad" type="button" onclick="resetHiddenPayments()">
             <i class="bi bi-arrow-counterclockwise"></i> Show Hidden
           </button>
-          <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#addPaymentModal" type="button">
+          <button class="btn-grad" data-bs-toggle="modal" data-bs-target="#addPaymentModal" type="button">
             <i class="bi bi-plus-circle"></i> Add Payment
           </button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Summary Cards -->
-    <div class="row g-3 g-md-4 mt-3">
-      <div class="col-md-4">
-        <div class="stat">
-          <div class="inner">
-            <div class="d-flex align-items-center justify-content-between">
+    <!-- STATS -->
+    <section class="mt-4">
+      <div class="row g-3 g-sm-4">
+        <div class="col-12 col-md-4">
+          <div class="card-base stat">
+            <div class="stat-ic s1"><i class="bi bi-check2-circle"></i></div>
+            <div>
+              <div class="value">₹{{ total_paid }}</div>
               <div class="label">Total Paid</div>
-              <span class="chip"><i class="bi bi-check2-circle me-1"></i>Settled</span>
             </div>
-            <div class="value fs-3 text-success">₹{{ total_paid }}</div>
-            <div class="subline">Sum of completed payments</div>
           </div>
         </div>
-      </div>
 
-      <div class="col-md-4">
-        <div class="stat">
-          <div class="inner">
-            <div class="d-flex align-items-center justify-content-between">
+        <div class="col-12 col-md-4">
+          <div class="card-base stat">
+            <div class="stat-ic s2"><i class="bi bi-hourglass-split"></i></div>
+            <div>
+              <div class="value">₹{{ pending }}</div>
               <div class="label">Pending Payments</div>
-              <span class="chip"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
             </div>
-            <div class="value fs-3 text-warning">₹{{ pending }}</div>
-            <div class="subline">Total amount waiting to be paid</div>
           </div>
         </div>
-      </div>
 
-      <div class="col-md-4">
-        <div class="stat">
-          <div class="inner">
-            <div class="d-flex align-items-center justify-content-between">
+        <div class="col-12 col-md-4">
+          <div class="card-base stat">
+            <div class="stat-ic s3"><i class="bi bi-clock"></i></div>
+            <div>
+              {% if last_payment %}
+              <div class="value">₹{{ last_payment.amount_paid }}</div>
+              <div class="label">Last Payment • {{ last_payment.payment_date|date:"d M Y" }}</div>
+              {% else %}
+              <div class="value">—</div>
               <div class="label">Last Payment</div>
-              <span class="chip"><i class="bi bi-clock me-1"></i>Latest</span>
+              {% endif %}
             </div>
-            {% if last_payment %}
-              <div class="value fs-4">₹{{ last_payment.amount_paid }}</div>
-              <div class="subline">{{ last_payment.payment_date|date:"d M Y" }}</div>
-            {% else %}
-              <div class="value fs-4">—</div>
-              <div class="subline">No completed payment yet</div>
-            {% endif %}
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Payments List -->
-    <div class="glass-card mt-3">
-      <div class="card-head">
-        <div>
-          <div class="title">Payment History</div>
-          <div class="sub">Pending payments can be paid (dummy) or deleted</div>
+    <!-- PAYMENTS LIST -->
+    <section class="mt-4">
+      <div class="card-base overflow-hidden">
+        <div class="list-head">
+          <div>
+            <div class="title">Payment History</div>
+            <div class="sub">Pending payments can be paid (dummy) or deleted</div>
+          </div>
         </div>
-      </div>
 
-      <div class="p-3 p-lg-4">
-        <div class="row g-3 g-md-4" id="paymentCards">
-          {% for p in payments %}
-          <div class="col-md-6 payment-item" data-payment-id="{{ p.id }}">
-            <div class="p-card p-3 p-lg-4">
+        <div class="p-3 p-lg-4">
+          <div class="row g-3 g-md-4" id="paymentCards">
+            {% for p in payments %}
+            <div class="col-12 col-md-6 payment-item" data-payment-id="{{ p.id }}">
+              <div class="p-card p-3 p-lg-4">
 
-              <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                <div>
-                  <div class="p-id">{{ p.payment_id }}</div>
-                  <div class="p-muted small">Invoice: <strong>INV-{{ p.invoice.id }}</strong></div>
-                </div>
+                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                  <div>
+                    <div class="p-id">{{ p.payment_id }}</div>
+                    <div class="p-muted small">Invoice: <strong>INV-{{ p.invoice.id }}</strong></div>
+                  </div>
 
-                <div class="d-flex align-items-center gap-2">
-                  {% if p.status == "COMPLETED" %}
+                  <div class="d-flex align-items-center gap-2">
+                    {% if p.status == "COMPLETED" %}
                     <span class="badge rounded-pill text-bg-success px-3 py-2 fw-semibold">
                       <i class="bi bi-check2-circle me-1"></i> Completed
                     </span>
-                  {% else %}
+                    {% else %}
                     <span class="badge rounded-pill text-bg-warning px-3 py-2 fw-semibold text-dark">
                       <i class="bi bi-hourglass-split me-1"></i> Pending
                     </span>
-                  {% endif %}
+                    {% endif %}
 
-                  <button type="button" class="hide-btn" title="Hide from list" onclick="hidePaymentPersistent(this)">
-                    <i class="bi bi-x-lg"></i>
-                  </button>
-                </div>
-              </div>
-
-              <hr class="my-3">
-
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="small">
-                  <div class="mb-1">
-                    <i class="bi bi-wallet2 me-1"></i>
-                    <span class="fw-semibold">{{ p.get_method_display }}</span>
-                  </div>
-                  <div class="text-muted fw-semibold">
-                    <i class="bi bi-calendar-event me-1"></i>
-                    {{ p.payment_date|date:"Y-m-d" }}
+                    <button type="button" class="hide-btn" title="Hide from list" onclick="hidePaymentPersistent(this)">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
                   </div>
                 </div>
 
-                <div class="text-end">
-                  <div class="p-amount">₹{{ p.amount_paid }}</div>
+                <hr class="my-3">
 
-                  <div class="d-flex gap-2 justify-content-end mt-2">
-                    {% if p.status == "PENDING" %}
-                      <button class="btn btn-primary btn-sm btn-pill"
-                        data-bs-toggle="modal" data-bs-target="#payNowModal"
-                        data-pay-url="{% url 'core:payment_pay_now' p.id %}"
-                        data-pay-id="{{ p.payment_id }}"
-                        data-pay-amount="{{ p.amount_paid }}">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="small">
+                    <div class="mb-1">
+                      <i class="bi bi-wallet2 me-1"></i>
+                      <span class="fw-semibold">{{ p.get_method_display }}</span>
+                    </div>
+                    <div class="text-muted fw-semibold">
+                      <i class="bi bi-calendar-event me-1"></i>
+                      {{ p.payment_date|date:"Y-m-d" }}
+                    </div>
+                  </div>
+
+                  <div class="text-end">
+                    <div class="p-amount">₹{{ p.amount_paid }}</div>
+
+                    <div class="d-flex gap-2 justify-content-end mt-2">
+                      {% if p.status == "PENDING" %}
+                      <button class="btn btn-primary btn-sm btn-pill" data-bs-toggle="modal"
+                        data-bs-target="#payNowModal" data-pay-url="{% url 'core:payment_pay_now' p.id %}"
+                        data-pay-id="{{ p.payment_id }}" data-pay-amount="{{ p.amount_paid }}">
                         Pay Now
                       </button>
 
@@ -488,40 +746,52 @@
                           <i class="bi bi-trash3 me-1"></i> Delete
                         </button>
                       </form>
-                    {% else %}
-                      <button class="btn btn-outline-success btn-sm btn-pill" disabled>
-                        Paid
-                      </button>
-                    {% endif %}
+                      {% else %}
+                      <button class="btn btn-outline-success btn-sm btn-pill" disabled>Paid</button>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
-              </div>
 
+              </div>
             </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="alert alert-info mb-0" style="border-radius:18px;">No payments found.</div>
+            </div>
+            {% endfor %}
           </div>
-          {% empty %}
-          <div class="col-12">
-            <div class="alert alert-info mb-0">No payments found.</div>
-          </div>
-          {% endfor %}
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="pb-4"></div>
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+        <div class="footer-note">
+          <span class="mini"><i class="bi bi-shield-check"></i></span>
+          Your data is encrypted and securely stored.
+        </div>
+        <a class="logout" href="{% url 'logout' %}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </footer>
 
-  </div>
+  </main>
 
   <!-- Toasts -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="payToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="payToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
       <div class="d-flex">
         <div class="toast-body" id="payToastMsg">Payment successful.</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
 
-    <div id="payToastErr" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="payToastErr" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
       <div class="d-flex">
         <div class="toast-body" id="payToastErrMsg">Payment failed.</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
@@ -552,9 +822,9 @@
               <select class="form-select" name="invoice_id" required>
                 <option value="">Select invoice</option>
                 {% for inv in invoices %}
-                  <option value="{{ inv.id }}">
-                    INV-{{ inv.id }} ({{ inv.project.name }}) - ₹{{ inv.amount }}
-                  </option>
+                <option value="{{ inv.id }}">
+                  INV-{{ inv.id }} ({{ inv.project.name }}) - ₹{{ inv.amount }}
+                </option>
                 {% endfor %}
               </select>
             </div>
@@ -581,7 +851,7 @@
   <!-- Pay Now Modal -->
   <div class="modal fade" id="payNowModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content p-0 position-relative">
+      <div class="modal-content position-relative">
 
         <div class="processing" id="processingOverlay">
           <div class="spinner-border" role="status"></div>
@@ -590,19 +860,21 @@
         </div>
 
         <div class="modal-header">
-          <div>
-            <h5 class="modal-title mb-0">Pay Now</h5>
-            <small class="text-white-50" id="payNowMeta">—</small>
+          <div class="pay-head">
+            <div class="left">
+              <h5 class="modal-title">Pay Now</h5>
+              <small id="payNowMeta">—</small>
+            </div>
+            <button class="btn-close" id="payModalCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <button class="btn-close btn-close-white" id="payModalCloseBtn" data-bs-dismiss="modal"></button>
         </div>
 
-        <div class="modal-body p-3 p-lg-4">
+        <div class="modal-body">
           <form id="payNowForm">
             {% csrf_token %}
 
             <div class="mb-3">
-              <label class="form-label fw-bold">Payment Method</label>
+              <label class="form-label">Payment Method</label>
               <select class="form-select" id="payMethod" name="method" required>
                 <option value="CARD">Credit Card</option>
                 <option value="UPI">UPI</option>
@@ -612,16 +884,16 @@
 
             <div id="cardFields">
               <div class="mb-3">
-                <label class="form-label fw-bold">Card Number</label>
+                <label class="form-label">Card Number</label>
                 <input type="text" class="form-control" name="card_number" placeholder="1234 5678 9012 3456">
               </div>
               <div class="row g-2">
-                <div class="col-6">
-                  <label class="form-label fw-bold">Expiry (MM/YY)</label>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label">Expiry (MM/YY)</label>
                   <input type="text" class="form-control" name="card_expiry" placeholder="08/28">
                 </div>
-                <div class="col-6">
-                  <label class="form-label fw-bold">CVV</label>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label">CVV</label>
                   <input type="password" class="form-control" name="card_cvv" placeholder="123">
                 </div>
               </div>
@@ -629,30 +901,36 @@
 
             <div id="upiFields" class="d-none">
               <div class="mb-3">
-                <label class="form-label fw-bold">UPI ID</label>
+                <label class="form-label">UPI ID</label>
                 <input type="text" class="form-control" name="upi_id" placeholder="name@bank">
               </div>
               <div class="mb-3">
-                <label class="form-label fw-bold">UPI PIN</label>
+                <label class="form-label">UPI PIN</label>
                 <input type="password" class="form-control" name="upi_pin" placeholder="****">
               </div>
             </div>
 
             <div id="bankFields" class="d-none">
               <div class="mb-3">
-                <label class="form-label fw-bold">Bank Reference No.</label>
+                <label class="form-label">Bank Reference No.</label>
                 <input type="text" class="form-control" name="bank_ref" placeholder="UTR / Ref No">
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 btn-pill" id="payBtn">
+            <button type="submit" class="btn btn-primary w-100 mt-3" id="payBtn">
               <i class="bi bi-credit-card me-1"></i> Pay (Dummy)
             </button>
+
+            <div class="secure-note">
+              <i class="bi bi-shield-lock"></i>
+              <span>Secure checkout (dummy flow)</span>
+            </div>
           </form>
         </div>
 
         <div class="modal-footer px-3 px-lg-4 py-3">
-          <button type="button" class="btn btn-outline-light btn-pill" data-bs-dismiss="modal" id="payModalCloseBtn2">
+          <button type="button" class="btn btn-outline-secondary btn-pill" data-bs-dismiss="modal"
+            id="payModalCloseBtn2">
             Close
           </button>
         </div>
@@ -665,11 +943,13 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return "";
+    function csrfInput() {
+      return document.querySelector('#payNowForm input[name="csrfmiddlewaretoken"]');
+    }
+
+    function getCSRFToken() {
+      const el = csrfInput();
+      return el ? el.value : "";
     }
 
     const payNowModalEl = document.getElementById("payNowModal");
@@ -682,6 +962,10 @@
     const payBtn = document.getElementById("payBtn");
     const processingOverlay = document.getElementById("processingOverlay");
     const payModalCloseBtn = document.getElementById("payModalCloseBtn");
+    const payModalCloseBtn2 = document.getElementById("payModalCloseBtn2");
+
+    const toastOk = new bootstrap.Toast(document.getElementById("payToast"), { delay: 3000 });
+    const toastErr = new bootstrap.Toast(document.getElementById("payToastErr"), { delay: 4500 });
 
     let currentPayUrl = null;
 
@@ -694,9 +978,7 @@
     toggleMethodFields();
     payMethod.addEventListener("change", toggleMethodFields);
 
-    const toastOk = new bootstrap.Toast(document.getElementById("payToast"), { delay: 3000 });
-    const toastErr = new bootstrap.Toast(document.getElementById("payToastErr"), { delay: 3500 });
-
+    // ✅ When modal opens
     payNowModalEl.addEventListener("show.bs.modal", function (event) {
       const button = event.relatedTarget;
       currentPayUrl = button.getAttribute("data-pay-url");
@@ -705,17 +987,22 @@
       const amt = button.getAttribute("data-pay-amount");
       payNowMeta.textContent = `${pid} • ₹${amt}`;
 
+      // ✅ IMPORTANT: preserve CSRF token before reset
+      const tokenBefore = getCSRFToken();
       payNowForm.reset();
+      const csrfEl = csrfInput();
+      if (csrfEl) csrfEl.value = tokenBefore; // restore after reset
+
       payMethod.value = "CARD";
       toggleMethodFields();
 
       processingOverlay.classList.remove("show");
       payBtn.disabled = false;
       payModalCloseBtn.disabled = false;
-      const altClose = document.getElementById("payModalCloseBtn2");
-      if (altClose) altClose.disabled = false;
+      if (payModalCloseBtn2) payModalCloseBtn2.disabled = false;
     });
 
+    // ✅ Pay submit
     payNowForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!currentPayUrl) return;
@@ -723,31 +1010,40 @@
       processingOverlay.classList.add("show");
       payBtn.disabled = true;
       payModalCloseBtn.disabled = true;
-      const altClose = document.getElementById("payModalCloseBtn2");
-      if (altClose) altClose.disabled = true;
+      if (payModalCloseBtn2) payModalCloseBtn2.disabled = true;
 
       const formData = new FormData(payNowForm);
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
 
       try {
         const resp = await fetch(currentPayUrl, {
           method: "POST",
           headers: {
             "X-Requested-With": "XMLHttpRequest",
-            "X-CSRFToken": getCookie("csrftoken")
+            "X-CSRFToken": getCSRFToken(),
           },
-          body: formData
+          credentials: "same-origin",
+          body: formData,
+          signal: controller.signal,
         });
 
-        const data = await resp.json();
-        await new Promise(r => setTimeout(r, 1800));
-        processingOverlay.classList.remove("show");
+        const ct = resp.headers.get("content-type") || "";
+        let data = {};
+
+        if (ct.includes("application/json")) {
+          data = await resp.json();
+        } else {
+          // Usually login page / CSRF / 403 / 500 HTML
+          const text = await resp.text();
+          throw new Error(`Non-JSON (HTTP ${resp.status}). ${text.slice(0, 160)}`);
+        }
 
         if (!resp.ok || !data.ok) {
-          document.getElementById("payToastErrMsg").textContent = data.message || "Payment failed.";
+          document.getElementById("payToastErrMsg").textContent =
+            data.message || `Payment failed (HTTP ${resp.status}).`;
           toastErr.show();
-          payBtn.disabled = false;
-          payModalCloseBtn.disabled = false;
-          if (altClose) altClose.disabled = false;
           return;
         }
 
@@ -755,34 +1051,46 @@
         toastOk.show();
 
         bootstrap.Modal.getInstance(payNowModalEl).hide();
-        setTimeout(() => window.location.reload(), 1100);
+        setTimeout(() => window.location.reload(), 900);
 
       } catch (err) {
-        processingOverlay.classList.remove("show");
-        document.getElementById("payToastErrMsg").textContent = "Network error. Try again.";
+        console.log("PAY ERROR:", err);
+        document.getElementById("payToastErrMsg").textContent =
+          err.name === "AbortError"
+            ? "Server not responding (timeout). Check Django terminal."
+            : (err.message || "Payment failed. Check Django terminal/console.");
         toastErr.show();
+
+      } finally {
+        clearTimeout(timer);
+        processingOverlay.classList.remove("show");
         payBtn.disabled = false;
         payModalCloseBtn.disabled = false;
-        if (altClose) altClose.disabled = false;
+        if (payModalCloseBtn2) payModalCloseBtn2.disabled = false;
       }
     });
 
-    // Frontend-only hide (persistent)
+    // card number formatting
+    payNowForm.addEventListener("input", (e) => {
+      if (e.target && e.target.name === "card_number") {
+        let v = e.target.value.replace(/\D/g, "").slice(0, 16);
+        e.target.value = v.replace(/(.{4})/g, "$1 ").trim();
+      }
+    });
+
+    // ---- keep your hide payments logic if needed ----
     const HIDDEN_PAYMENTS_KEY = "hiddenPayments";
 
     function getHiddenPayments() {
       try { return JSON.parse(localStorage.getItem(HIDDEN_PAYMENTS_KEY)) || []; }
       catch { return []; }
     }
-
     function setHiddenPayments(arr) {
       localStorage.setItem(HIDDEN_PAYMENTS_KEY, JSON.stringify(arr));
     }
-
     function hidePaymentPersistent(btn) {
       const col = btn.closest(".payment-item");
       if (!col) return;
-
       const pid = col.getAttribute("data-payment-id");
       if (!pid) return;
 
@@ -795,12 +1103,10 @@
       col.style.transform = "scale(.98)";
       setTimeout(() => col.remove(), 250);
     }
-
     function resetHiddenPayments() {
       localStorage.removeItem(HIDDEN_PAYMENTS_KEY);
       window.location.reload();
     }
-
     document.addEventListener("DOMContentLoaded", () => {
       const hidden = new Set(getHiddenPayments());
       document.querySelectorAll(".payment-item").forEach((el) => {
@@ -811,4 +1117,5 @@
   </script>
 
 </body>
+
 </html>

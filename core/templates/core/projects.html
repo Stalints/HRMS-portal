@@ -1,175 +1,562 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Projects | HR Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | HR Portal</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
-    <!-- Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card: rgba(255,255,255,.92);
+      --card2: rgba(255,255,255,.82);
+      --text:#0b1220;
+      --muted:#667085;
+      --border: rgba(15,23,42,.10);
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+      --primary: hsl(243 75% 59%);
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
+      --teal: hsl(172 56% 42%);
+      --green: hsl(152 55% 42%);
+      --amber: hsl(35 80% 55%);
+      --orange: hsl(20 70% 55%);
+      --blue: hsl(220 60% 55%);
+
+      --shadow: 0 18px 50px rgba(2,6,23,.08);
+      --shadow-soft: 0 10px 26px rgba(2,6,23,.06);
+
+      --r:18px;
+      --r2:22px;
+    }
+
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(1000px 600px at 10% -10%, rgba(99,102,241,.12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236,72,153,.10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* full feel, minimal side space */
+    .wrap{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    @media (min-width: 576px){
+      .wrap{ padding-left: 18px; padding-right: 18px; }
+    }
+
+    /* sticky nav */
+    .topbar{
+      position: sticky; top:0; z-index: 50;
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15,23,42,.08);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      text-decoration:none; color: var(--text);
+      font-weight: 900; letter-spacing: -.02em;
+    }
+    .brand-badge{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color:#fff;
+      box-shadow: 0 14px 28px rgba(99,102,241,.20);
+    }
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.80);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 10px 18px rgba(2,6,23,.06);
+      font-weight: 700;
+      color: var(--text);
+      user-select:none;
+    }
+    .pill .avatar{
+      width: 26px; height: 26px;
+      border-radius: 999px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color:#fff;
+    }
+
+    /* reusable cards */
+    .card-base{
+      background: var(--card);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* header/hero accent */
+    .hero{
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-accent{
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      top:-90px; right:-90px;
+      width: 260px; height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(99,102,241,.12), transparent 65%);
+      pointer-events:none;
+    }
+
+    /* buttons */
+    .btn-grad{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      text-decoration:none;
+      color:#fff;
+      font-weight: 850;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99,102,241,.22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border: 0;
+    }
+    .btn-grad:hover{
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99,102,241,.28);
+      filter: brightness(1.03);
+      color:#fff;
+    }
+    .btn-soft{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.10);
+      color: rgba(15,23,42,.65);
+      text-decoration:none;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+    }
+    .btn-soft:hover{
+      transform: translateY(-1px);
+      border-color: rgba(99,102,241,.25);
+      background: rgba(99,102,241,.06);
+      color: rgba(15,23,42,.90);
+    }
+
+    /* project card */
+    .p-card{
+      border-radius: var(--r2);
+      background: var(--card2);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      position: relative;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+      height: 100%;
+    }
+    .p-card::before{
+      content:"";
+      position:absolute; inset:0;
+      opacity: 0;
+      background: radial-gradient(700px 320px at 15% 0%, rgba(99,102,241,.08), transparent 60%),
+                  radial-gradient(700px 320px at 85% 10%, rgba(236,72,153,.07), transparent 60%);
+      transition: opacity .35s ease;
+      pointer-events:none;
+    }
+    .p-card:hover{
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: rgba(99,102,241,.22);
+    }
+    .p-card:hover::before{ opacity: 1; }
+
+    .status-bar{ height: 5px; }
+
+    /* status gradients */
+    .g-planned{ background: linear-gradient(90deg, var(--blue), var(--primary)); }
+    .g-progress{ background: linear-gradient(90deg, var(--primary), var(--p2)); }
+    .g-completed{ background: linear-gradient(90deg, var(--green), var(--teal)); }
+    .g-hold{ background: linear-gradient(90deg, var(--amber), var(--orange)); }
+
+    /* status badge */
+    .badge-pill{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.10);
+      font-weight: 800;
+    }
+    .b-planned{ background: rgba(15,23,42,.04); color: rgba(15,23,42,.62); }
+    .b-progress{ background: rgba(99,102,241,.10); color: var(--primary); border-color: rgba(99,102,241,.20); }
+    .b-completed{ background: rgba(46,204,113,.10); color: var(--green); border-color: rgba(46,204,113,.22); }
+    .b-hold{ background: rgba(245,158,11,.12); color: var(--amber); border-color: rgba(245,158,11,.22); }
+
+    .p-ic{
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display:grid; place-items:center;
+      color:#fff;
+      box-shadow: 0 12px 22px rgba(2,6,23,.10);
+      transition: transform .25s ease;
+    }
+    .p-card:hover .p-ic{ transform: scale(1.06); }
+
+    .ic-planned{ background: linear-gradient(135deg, var(--blue), var(--primary)); }
+    .ic-progress{ background: linear-gradient(135deg, var(--primary), var(--p2)); }
+    .ic-completed{ background: linear-gradient(135deg, var(--green), var(--teal)); }
+    .ic-hold{ background: linear-gradient(135deg, var(--amber), var(--orange)); }
+
+    .p-title{
+      margin:0;
+      font-size: 16px;
+      font-weight: 950;
+      letter-spacing: -.01em;
+    }
+    .p-desc{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .meta i{ color: rgba(15,23,42,.45); }
+
+    .p-actions{
+      border-top: 1px solid rgba(15,23,42,.08);
+      padding-top: 12px;
+      margin-top: 14px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-mini{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.10);
+      color: rgba(15,23,42,.80);
+      font-weight: 850;
+      font-size: 12px;
+      text-decoration:none;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+    .btn-mini:hover{
+      transform: translateY(-1px);
+      border-color: rgba(99,102,241,.22);
+      box-shadow: 0 12px 22px rgba(2,6,23,.08);
+      color: rgba(15,23,42,.92);
+    }
+    .btn-danger-mini{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(220,38,38,.10);
+      border: 1px solid rgba(220,38,38,.18);
+      color: rgb(185,28,28);
+      font-weight: 900;
+      font-size: 12px;
+      text-decoration:none;
+      transition: transform .16s ease, background .16s ease;
+    }
+    .btn-danger-mini:hover{
+      transform: translateY(-1px);
+      background: rgba(220,38,38,.14);
+      color: rgb(185,28,28);
+    }
+
+    /* modal inputs */
+    .form-control, .form-select{
+      border-radius: 14px !important;
+      border-color: rgba(15,23,42,.12) !important;
+      background: rgba(15,23,42,.03) !important;
+    }
+    .form-control:focus, .form-select:focus{
+      box-shadow: 0 0 0 .25rem rgba(99,102,241,.15) !important;
+      border-color: rgba(99,102,241,.30) !important;
+    }
+
+    /* footer */
+    .footer{
+      border-top: 1px solid rgba(15,23,42,.08);
+      margin-top: 36px;
+      padding-top: 18px;
+    }
+    .footer-note{
+      color: var(--muted);
+      font-weight: 750;
+      font-size: 12px;
+      display:flex; align-items:center; gap: 10px;
+    }
+    .footer-note .mini{
+      width: 22px; height: 22px;
+      border-radius: 10px;
+      display:grid; place-items:center;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.08);
+      color: rgba(15,23,42,.60);
+    }
+    .logout{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.80);
+      color: rgba(15,23,42,.70);
+      font-weight: 900;
+      text-decoration:none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, color .18s ease;
+    }
+    .logout:hover{
+      transform: translateY(-1px);
+      border-color: rgba(99,102,241,.28);
+      box-shadow: 0 12px 24px rgba(2,6,23,.08);
+      color: rgba(15,23,42,.90);
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #1e3a8a;">
-        <div class="container">
-            <a class="navbar-brand text-white fw-semibold d-flex align-items-center"
-               href="{% url 'core:client_dashboard' %}">
-                <i class="bi bi-building me-2"></i>
-                HR Portal
-            </a>
+  <!-- NAV -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
+        <a class="brand" href="{% url 'core:client_dashboard' %}">
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
+          <span>HR Portal</span>
+        </a>
 
-            <span class="text-white-50 d-flex align-items-center">
-                <i class="bi bi-person-circle me-1"></i> Client
-            </span>
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
         </div>
-    </nav>
+      </div>
+    </div>
+  </nav>
 
-    <!-- Page Header -->
-    <div class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Projects</h2>
+  <main class="wrap py-4 py-sm-5">
 
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProjectModal">
-                <i class="bi bi-plus-circle me-1"></i> New Project
-            </button>
+    <!-- HEADER -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
+
+      <div class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4 position-relative">
+        <div class="d-flex align-items-center gap-3">
+          <!-- Back -->
+          <a class="btn-soft" href="{% url 'core:client_dashboard' %}" title="Back">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+
+          <div>
+            <h1 class="mb-1" style="font-weight:950; letter-spacing:-.02em;">
+              Projects <span style="font-size:1.05em;">🚀</span>
+            </h1>
+            <div style="color:var(--muted); font-weight:700; font-size:13px;">
+              Manage and track all your active projects
+            </div>
+          </div>
         </div>
 
-        <!-- Projects Cards Container (DB DATA) -->
-        <div class="row g-4" id="projectsContainer">
+        <!-- New Project (Modal trigger) -->
+        <button class="btn-grad" type="button" data-bs-toggle="modal" data-bs-target="#newProjectModal">
+          <i class="bi bi-plus-lg"></i> New Project
+        </button>
+      </div>
+    </section>
 
-            {% for p in projects %}
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column">
+    <!-- PROJECTS GRID -->
+    <section class="mt-4">
+      <div class="row g-3 g-sm-4">
+        {% for p in projects %}
+          {% with s=p.status %}
+          <div class="col-12 col-md-6">
+            <div class="p-card">
+              <!-- status bar -->
+              <div class="status-bar
+                {% if s == 'PLANNED' %}g-planned{% elif s == 'IN_PROGRESS' %}g-progress{% elif s == 'COMPLETED' %}g-completed{% else %}g-hold{% endif %}"></div>
 
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title mb-0">{{ p.name }}</h5>
+              <div class="p-4 p-sm-4 position-relative">
 
-                            {% if p.status == "COMPLETED" %}
-                                <span class="badge bg-success">Completed</span>
-                            {% elif p.status == "IN_PROGRESS" %}
-                                <span class="badge bg-warning text-dark">In Progress</span>
-                            {% elif p.status == "ON_HOLD" %}
-                                <span class="badge bg-secondary">On Hold</span>
-                            {% else %}
-                                <span class="badge bg-primary">Planned</span>
-                            {% endif %}
-                        </div>
-
-                        <p class="card-text flex-grow-1">
-                            {{ p.description|default:"-" }}
-                        </p>
-
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <small class="text-muted">
-                                <i class="bi bi-calendar-event me-1"></i>
-                                Start: {{ p.start_date|default:"-" }}
-                            </small>
-
-                            <small class="text-muted">
-                                <i class="bi bi-flag me-1"></i>
-                                Deadline: {{ p.end_date|default:"-" }}
-                            </small>
-                        </div>
-
-                        <div class="d-flex gap-2 mt-3">
-                            <a class="btn btn-sm btn-outline-primary w-50"
-                               href="{% url 'core:project_edit' p.id %}">
-                                <i class="bi bi-pencil"></i> Edit
-                            </a>
-
-                            <form method="POST" action="{% url 'core:project_delete' p.id %}" class="w-50">
-                                {% csrf_token %}
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-danger w-100"
-                                        onclick="return confirm('Delete this project?');">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
-                            </form>
-                        </div>
-
+                <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                  <div class="d-flex align-items-start gap-3">
+                    <div class="p-ic
+                      {% if s == 'PLANNED' %}ic-planned{% elif s == 'IN_PROGRESS' %}ic-progress{% elif s == 'COMPLETED' %}ic-completed{% else %}ic-hold{% endif %}">
+                      <i class="bi bi-briefcase"></i>
                     </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="alert alert-info">No projects found.</div>
-            </div>
-            {% endfor %}
 
+                    <div>
+                      <h3 class="p-title">{{ p.name }}</h3>
+
+                      <span class="badge-pill mt-1
+                        {% if s == 'PLANNED' %}b-planned{% elif s == 'IN_PROGRESS' %}b-progress{% elif s == 'COMPLETED' %}b-completed{% else %}b-hold{% endif %}">
+                        {% if s == 'PLANNED' %}
+                          <i class="bi bi-bullseye"></i> Planned
+                        {% elif s == 'IN_PROGRESS' %}
+                          <i class="bi bi-rocket-takeoff"></i> In Progress
+                        {% elif s == 'COMPLETED' %}
+                          <i class="bi bi-check-circle"></i> Completed
+                        {% else %}
+                          <i class="bi bi-pause-circle"></i> On Hold
+                        {% endif %}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="p-desc">{{ p.description|default:"—" }}</p>
+
+                <div class="meta mt-3">
+                  <span class="d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-calendar2"></i> Start: {{ p.start_date|default:"—" }}
+                  </span>
+                  <span class="d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-clock"></i> Deadline: {{ p.end_date|default:"—" }}
+                  </span>
+                </div>
+
+                <div class="p-actions">
+                  <!-- EDIT: change URL name to your edit view -->
+                  <a class="btn-mini" href="{% url 'core:project_edit' p.id %}">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </a>
+
+                  <!-- DELETE: POST recommended -->
+                  <form method="post" action="{% url 'core:project_delete' p.id %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-mini" onclick="return confirm('Delete this project?')">
+                      <i class="bi bi-trash3"></i> Delete
+                    </button>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          {% endwith %}
+        {% empty %}
+          <div class="col-12">
+            <div class="card-base p-5 p-sm-5 text-center">
+              <div style="width:64px;height:64px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--p2));color:#fff;box-shadow:0 18px 34px rgba(99,102,241,.22);">
+                <i class="bi bi-briefcase" style="font-size:1.6rem;"></i>
+              </div>
+              <div style="color:var(--muted); font-weight:750; font-size:13px;">
+                No projects found. Create your first project to get started!
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+        <div class="footer-note">
+          <span class="mini"><i class="bi bi-shield-check"></i></span>
+          Your data is encrypted and securely stored.
         </div>
-    </div>
+        <a class="logout" href="{% url 'logout' %}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </footer>
 
-    <!-- New Project Modal -->
-    <div class="modal fade" id="newProjectModal" tabindex="-1" aria-labelledby="newProjectModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+  </main>
 
-                <div class="modal-header">
-                    <h5 class="modal-title" id="newProjectModalLabel">Add New Project</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+  <!-- NEW PROJECT MODAL -->
+  <div class="modal fade" id="newProjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="border-radius:22px; border:1px solid rgba(15,23,42,.10); overflow:hidden;">
+        <div class="hero-accent"></div>
 
-                <div class="modal-body">
-
-                    <!-- ✅ REAL DJANGO FORM -->
-                    <form method="POST" action="{% url 'core:project_create' %}">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label class="form-label">Project Name</label>
-                            <input type="text" class="form-control" name="name" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" name="description" rows="3"></textarea>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Start Date</label>
-                                <input type="date" class="form-control" name="start_date">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Deadline (End Date)</label>
-                                <input type="date" class="form-control" name="end_date">
-                            </div>
-                        </div>
-
-                        <div class="mb-3 mt-3">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" name="status" required>
-                                <option value="PLANNED" selected>Planned</option>
-                                <option value="IN_PROGRESS">In Progress</option>
-                                <option value="COMPLETED">Completed</option>
-                                <option value="ON_HOLD">On Hold</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">
-                            Add Project
-                        </button>
-
-                    </form>
-
-                </div>
+        <div class="modal-header border-0" style="padding:18px 20px;">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--p2));color:#fff;">
+              <i class="bi bi-plus-lg"></i>
             </div>
+            <h5 class="modal-title" style="font-weight:950; letter-spacing:-.01em;">Add New Project</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
+        <!-- Change action to your create view -->
+        <form method="post" action="{% url 'core:project_create' %}">
+          {% csrf_token %}
+          <div class="modal-body" style="padding: 0 20px 18px;">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label" style="font-weight:800; font-size:13px;">Project Name</label>
+                <input name="name" type="text" class="form-control" placeholder="Enter project name" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" style="font-weight:800; font-size:13px;">Description</label>
+                <textarea name="description" class="form-control" rows="3" placeholder="Brief project description"></textarea>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label" style="font-weight:800; font-size:13px;">Start Date</label>
+                <input name="start_date" type="date" class="form-control">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label" style="font-weight:800; font-size:13px;">Deadline</label>
+                <input name="end_date" type="date" class="form-control">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" style="font-weight:800; font-size:13px;">Status</label>
+                <select name="status" class="form-select">
+                  <option value="PLANNED" selected>Planned</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ON_HOLD">On Hold</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0" style="padding: 0 20px 20px;">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:14px;">Cancel</button>
+            <button type="submit" class="btn-grad">
+              <i class="bi bi-plus-lg"></i> Add Project
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+  <!-- Bootstrap JS (needed for modal) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

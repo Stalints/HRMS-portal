@@ -120,24 +120,50 @@ def api_profile_remove_photo(request):
 # CLIENT PAGES
 # -------------------------
 @login_required
+@login_required
 def index(request):
     if not is_client(request.user):
         return redirect("login")
 
     client = get_client_profile(request.user)
+    today = timezone.localdate()
 
     projects_count = Project.objects.filter(client=client).count()
-    invoices_pending = Invoice.objects.filter(project__client=client, status="PENDING").count()
-    tickets_open = SupportTicket.objects.filter(client=client, status="OPEN").count()
+
+    # Invoices Due = PENDING and due_date <= today
+    invoices_due = Invoice.objects.filter(
+        project__client=client,
+        status="PENDING",
+        due_date__isnull=False,
+        due_date__lte=today,
+    ).count()
+
+    # If you actually want ALL pending invoices (not only due):
+    # invoices_due = Invoice.objects.filter(project__client=client, status="PENDING").count()
+
+    open_tickets = SupportTicket.objects.filter(
+        client=client,
+        status="OPEN"
+    ).count()
+
+    # Events this week (only Client/All events)
+    start = today
+    end = today + timedelta(days=6)
+    events_this_week = Event.objects.filter(
+        event_date__range=(start, end)
+    ).filter(
+        Q(share_with__icontains="Client") | Q(share_with__icontains="All")
+    ).count()
+
     unread_messages = Message.objects.filter(client=client, is_read=False).count()
 
     return render(request, "core/index.html", {
         "projects_count": projects_count,
-        "invoices_pending": invoices_pending,
-        "tickets_open": tickets_open,
+        "invoices_due": invoices_due,          # ✅ matches template
+        "open_tickets": open_tickets,          # ✅ matches template
+        "events_this_week": events_this_week,  # ✅ matches template
         "unread_messages": unread_messages,
     })
-
 
 @login_required
 def projects(request):

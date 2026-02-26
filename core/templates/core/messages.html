@@ -9,172 +9,210 @@
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-
   <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
   <style>
     :root{
-      --brand:#1e3a8a;
-      --bg:#f6f8ff;
-      --text:#0f172a;
-      --muted:#6b7280;
-
+      /* dashboard/projects theme */
+      --bg: #f6f7fb;
+      --card: rgba(255,255,255,.78);
+      --card-strong: rgba(255,255,255,.92);
+      --text: #0b1220;
+      --muted: #667085;
       --border: rgba(15,23,42,.10);
-      --shadow: 0 22px 60px rgba(2,6,23,.10);
-      --shadow-soft: 0 12px 30px rgba(2,6,23,.07);
 
-      --radius: 22px;
-      --radius-lg: 28px;
+      --primary: hsl(243 75% 59%);
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
+      --teal: hsl(172 56% 42%);
+      --blue: hsl(200 70% 50%);
+      --green: hsl(152 55% 42%);
+      --amber: hsl(35 80% 55%);
 
-      --glass: rgba(255,255,255,.78);
-      --glass-strong: rgba(255,255,255,.88);
+      --shadow: 0 18px 50px rgba(2,6,23,.08);
+      --shadow-soft: 0 10px 26px rgba(2,6,23,.06);
+
+      --r: 18px;
+      --r2: 22px;
     }
 
     body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      min-height:100vh;
       background:
-        radial-gradient(900px 540px at 10% -10%, rgba(30,58,138,.18), transparent 60%),
-        radial-gradient(900px 540px at 90% 0%, rgba(14,165,233,.14), transparent 55%),
-        radial-gradient(900px 540px at 50% 110%, rgba(34,197,94,.10), transparent 60%),
-        var(--bg);
+        radial-gradient(1000px 600px at 10% -10%, rgba(99,102,241,.12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236,72,153,.10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
       color: var(--text);
-      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .page{ width:100%; max-width:none; }
+    /* FULL WIDTH FEEL */
+    .wrap{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    @media (min-width: 576px){
+      .wrap{ padding-left: 18px; padding-right: 18px; }
+    }
 
-    /* Topbar (dashboard style) */
+    /* NAV (dashboard style) */
     .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
       background: rgba(255,255,255,.70);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,.45);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15,23,42,.08);
     }
     .brand{
-      display:flex; align-items:center; gap:.6rem;
-      text-decoration:none; color: var(--text);
-      padding: .55rem .8rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      transition: transform .15s ease, box-shadow .15s ease;
-      font-weight: 800;
-      letter-spacing: -.01em;
-    }
-    .brand:hover{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      text-decoration:none;
       color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(2,6,23,.07);
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .brand-badge{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(99,102,241,.20);
     }
     .pill{
-      display:flex; align-items:center; gap:.55rem;
-      padding:.48rem .85rem;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass);
-      color: rgba(15,23,42,.85);
-      box-shadow: 0 10px 25px rgba(2,6,23,.05);
-      font-size: .92rem;
-      font-weight: 700;
+      background: rgba(255,255,255,.80);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 10px 18px rgba(2,6,23,.06);
+      font-weight: 800;
+      color: var(--text);
+      user-select: none;
+      white-space: nowrap;
+    }
+    .pill .avatar{
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color:#fff;
     }
 
-    /* Hero */
+    /* BASE CARD */
+    .card-base{
+      background: var(--card-strong);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* HERO (projects style) */
     .hero{
-      margin-top: 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255,255,255,.55);
-      background:
-        linear-gradient(135deg, rgba(30,58,138,.97), rgba(30,58,138,.75)),
-        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.18), transparent 60%);
-      box-shadow: var(--shadow);
-      overflow: hidden;
       position: relative;
+      overflow: hidden;
+    }
+    .hero-accent{
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
     }
     .hero::after{
       content:"";
       position:absolute;
-      right:-120px; top:-120px;
-      width: 340px; height: 340px;
+      top:-90px;
+      right:-90px;
+      width: 260px;
+      height: 260px;
       border-radius: 999px;
-      background: rgba(255,255,255,.10);
+      background: radial-gradient(circle at 30% 30%, rgba(99,102,241,.12), transparent 65%);
       pointer-events:none;
-      z-index:0;
-    }
-    .hero-inner{
-      padding: 22px 22px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 14px;
-      color:#fff;
-      position:relative;
-      z-index:1;
-      flex-wrap: wrap;
     }
     .hero h1{
-      margin:0;
-      font-size: 1.5rem;
+      margin: 0;
+      font-size: clamp(22px, 2vw, 30px);
       font-weight: 950;
-      letter-spacing: -.02em;
+      letter-spacing: -.03em;
+      line-height: 1.15;
     }
     .hero p{
-      margin: 6px 0 0;
-      color: rgba(255,255,255,.86);
-      font-size: 1rem;
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 620px;
+      font-weight: 700;
       line-height: 1.35;
     }
-    .hero-actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      margin-left:auto;
-    }
-    .hero-btn{
+
+    /* BUTTONS */
+    .btn-grad{
       display:inline-flex;
       align-items:center;
-      gap:.55rem;
-      padding: .6rem .95rem;
-      border-radius: 999px;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 14px;
       text-decoration:none;
+      color:#fff;
       font-weight: 900;
-      border: 1px solid rgba(255,255,255,.25);
-      background: rgba(255,255,255,.14);
-      color:#fff;
-      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 12px 26px rgba(2,6,23,.10);
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99,102,241,.22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border: 0;
+      white-space: nowrap;
     }
-    .hero-btn:hover{
+    .btn-grad:hover{
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99,102,241,.28);
+      filter: brightness(1.03);
       color:#fff;
-      background: rgba(255,255,255,.18);
+    }
+    .btn-soft{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.10);
+      color: rgba(15,23,42,.65);
+      text-decoration:none;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+      white-space: nowrap;
+    }
+    .btn-soft:hover{
       transform: translateY(-1px);
-      box-shadow: 0 16px 34px rgba(2,6,23,.14);
+      border-color: rgba(99,102,241,.25);
+      background: rgba(99,102,241,.06);
+      color: rgba(15,23,42,.90);
     }
-    .hero-btn.secondary{
-      background: rgba(255,255,255,.94);
-      color: rgba(2,6,23,.90);
-      border-color: rgba(255,255,255,.70);
-    }
-    .hero-btn.secondary:hover{ color: rgba(2,6,23,.95); }
 
-    /* Shell cards */
-    .glass-card{
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--glass-strong);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
+    /* PANELS */
+    .panel{
       overflow:hidden;
       height: 72vh;
       min-height: 520px;
+      display:flex;
+      flex-direction:column;
     }
-    .card-head{
+    .panel-head{
       padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.80));
+      border-bottom: 1px solid rgba(15,23,42,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.86));
       display:flex;
       justify-content: space-between;
-      align-items:center;
+      align-items: center;
       gap: 10px;
       flex-wrap: wrap;
     }
@@ -183,6 +221,7 @@
       font-weight: 950;
       letter-spacing: -.01em;
       color: rgba(2,6,23,.92);
+      line-height: 1.2;
     }
     .sub{
       color: var(--muted);
@@ -190,21 +229,12 @@
       font-size: .92rem;
     }
 
-    /* Search */
+    /* SEARCH */
     .search{
       position: relative;
-      min-width: 220px;
+      min-width: 240px;
       flex: 1;
       max-width: 420px;
-    }
-    .search input{
-      width:100%;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      padding: .6rem .9rem .6rem 2.35rem;
-      background: rgba(255,255,255,.92);
-      font-weight: 700;
-      outline: none;
     }
     .search i{
       position:absolute;
@@ -213,13 +243,26 @@
       transform: translateY(-50%);
       color: rgba(2,6,23,.55);
     }
+    .search input{
+      width:100%;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.12);
+      padding: .62rem .95rem .62rem 2.35rem;
+      background: rgba(15,23,42,.03);
+      font-weight: 800;
+      outline: none;
+    }
+    .search input:focus{
+      box-shadow: 0 0 0 .25rem rgba(99,102,241,.12);
+      border-color: rgba(99,102,241,.30);
+      background: rgba(255,255,255,.95);
+    }
 
-    /* Threads */
+    /* THREAD LIST */
     .threads{
+      flex: 1;
       overflow:auto;
-      height: calc(72vh - 64px);
-      min-height: 456px;
-      padding: 10px;
+      padding: 12px;
     }
     .thread-item{
       display:flex;
@@ -228,30 +271,32 @@
       padding: 12px 12px;
       border-radius: 18px;
       cursor:pointer;
-      border: 1px solid rgba(15,23,42,.08);
-      background: rgba(255,255,255,.75);
-      box-shadow: 0 10px 18px rgba(2,6,23,.04);
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      margin-bottom: 10px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow-soft);
+      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+      margin-bottom: 12px;
       user-select:none;
     }
     .thread-item:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 16px 26px rgba(2,6,23,.07);
-      border-color: rgba(30,58,138,.18);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(99,102,241,.22);
     }
     .thread-active{
-      border-color: rgba(30,58,138,.26);
-      background: rgba(30,58,138,.06);
-      box-shadow: 0 18px 32px rgba(30,58,138,.12);
+      border-color: rgba(99,102,241,.35);
+      background: rgba(99,102,241,.06);
+      box-shadow: 0 18px 40px rgba(99,102,241,.12);
     }
     .thread-avatar{
-      width: 44px; height: 44px;
+      width: 44px;
+      height: 44px;
       border-radius: 16px;
-      display:grid; place-items:center;
+      display:grid;
+      place-items:center;
       font-weight: 950;
-      color: rgba(2,6,23,.88);
-      border: 1px solid rgba(255,255,255,.65);
+      color: rgba(2,6,23,.92);
+      border: 1px solid rgba(255,255,255,.70);
       box-shadow: 0 12px 24px rgba(2,6,23,.08);
       flex: 0 0 auto;
     }
@@ -269,65 +314,66 @@
     .thread-sub{
       margin: 4px 0 0;
       color: rgba(100,116,139,.95);
-      font-weight: 700;
+      font-weight: 750;
       font-size: .92rem;
     }
     .thread-meta{
       margin-left:auto;
       text-align:right;
       color: rgba(100,116,139,.95);
-      font-weight: 800;
+      font-weight: 850;
       font-size: .85rem;
       white-space: nowrap;
     }
 
-    /* Chat */
+    /* CHAT */
     .chat{
-      height: calc(72vh - 64px);
-      min-height: 456px;
+      flex: 1;
+      min-height: 0;
       display:flex;
       flex-direction: column;
     }
     .messages{
       flex: 1;
+      min-height: 0;
       overflow-y:auto;
       padding: 14px;
       display:flex;
       flex-direction: column;
       gap: 10px;
       background:
-        radial-gradient(700px 260px at 20% 0%, rgba(30,58,138,.06), transparent 60%),
-        rgba(255,255,255,.58);
+        radial-gradient(700px 260px at 20% 0%, rgba(99,102,241,.10), transparent 60%),
+        rgba(255,255,255,.60);
     }
     .bubble{
       max-width: 78%;
       padding: 12px 14px;
       border-radius: 18px;
-      border: 1px solid rgba(15,23,42,.08);
-      box-shadow: 0 10px 18px rgba(2,6,23,.04);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow-soft);
       background: rgba(255,255,255,.92);
     }
     .bubble .meta{
       font-size: .82rem;
-      font-weight: 800;
+      font-weight: 850;
       color: rgba(100,116,139,.95);
       margin-bottom: 4px;
     }
     .sent{
       align-self:flex-end;
-      background: rgba(30,58,138,.10);
-      border-color: rgba(30,58,138,.14);
+      background: rgba(99,102,241,.10);
+      border-color: rgba(99,102,241,.18);
     }
     .received{
       align-self:flex-start;
       background: rgba(34,197,94,.10);
-      border-color: rgba(34,197,94,.16);
+      border-color: rgba(34,197,94,.18);
     }
 
     .composer{
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(15,23,42,.10);
       padding: 12px;
-      background: rgba(248,250,252,.75);
+      background: rgba(248,250,252,.78);
       display:flex;
       gap: 10px;
       align-items:flex-end;
@@ -336,183 +382,200 @@
       flex: 1;
       resize: none;
       border-radius: 18px;
-      border: 1px solid rgba(15,23,42,.10);
+      border: 1px solid rgba(15,23,42,.12);
       padding: 10px 12px;
-      font-weight: 700;
+      font-weight: 800;
       min-height: 44px;
-      max-height: 130px;
-      background: rgba(255,255,255,.92);
+      max-height: 140px;
+      background: rgba(15,23,42,.03);
+      line-height: 1.25;
+      outline: none;
     }
     .composer textarea:focus{
-      outline: none;
-      box-shadow: 0 0 0 .25rem rgba(30,58,138,.14);
-      border-color: rgba(30,58,138,.30);
+      box-shadow: 0 0 0 .25rem rgba(99,102,241,.12);
+      border-color: rgba(99,102,241,.30);
+      background: rgba(255,255,255,.95);
     }
     .btn-send{
-      border-radius: 999px;
-      padding: .6rem .95rem;
+      border-radius: 14px;
+      padding: .62rem .95rem;
       font-weight: 950;
-      border: 1px solid rgba(30,58,138,.20);
-      background: rgba(30,58,138,1);
+      border: 0;
       color:#fff;
-      box-shadow: 0 12px 22px rgba(30,58,138,.18);
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 14px 26px rgba(99,102,241,.22);
+      transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
       white-space: nowrap;
     }
     .btn-send:hover{
       transform: translateY(-1px);
-      box-shadow: 0 16px 30px rgba(30,58,138,.22);
-      background: rgba(30,58,138,.92);
+      box-shadow: 0 18px 34px rgba(99,102,241,.28);
+      filter: brightness(1.03);
       color:#fff;
     }
 
+    /* RESPONSIVE */
     @media (max-width: 992px){
-      .glass-card{ height:auto; min-height: unset; }
-      .threads, .chat{ height: auto; min-height: unset; }
+      .panel{ height:auto; min-height: unset; }
       .messages{ max-height: 420px; }
     }
     @media (max-width: 768px){
-      .hero-actions{ width:100%; justify-content:flex-start; }
-      .search{ max-width: none; }
       .thread-meta{ display:none; }
+      .search{ max-width: none; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Topbar -->
-  <nav class="navbar topbar py-3">
-    <div class="container-fluid page px-4 px-lg-5 d-flex justify-content-between align-items-center">
-      <a class="brand" href="{% url 'core:client_dashboard' %}">
-        <i class="bi bi-building"></i>
-        <span>HR Portal</span>
-      </a>
-      <div class="pill">
-        <i class="bi bi-person-circle"></i>
-        <span>Client</span>
+  <!-- NAV (dashboard style) -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
+        <a class="brand" href="{% url 'core:client_dashboard' %}">
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
+          <span>HR Portal</span>
+        </a>
+
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid page px-4 px-lg-5">
+  <main class="wrap py-4 py-sm-5">
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-inner">
-        <div>
-          <h1>Messages</h1>
-          <p>Chat with Finance, HR, and your Project team.</p>
-        </div>
-        <div class="hero-actions">
-          <a class="hero-btn secondary" href="{% url 'core:client_dashboard' %}">
-            <i class="bi bi-arrow-left"></i> Dashboard
+    <!-- HERO (projects style) -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
+
+      <div class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4">
+        <div class="d-flex align-items-center gap-3">
+          <a class="btn-soft" href="{% url 'core:client_dashboard' %}" title="Back">
+            <i class="bi bi-arrow-left"></i>
           </a>
-          <a class="hero-btn" href="{% url 'core:support' %}">
+
+          <div>
+            <h1>Messages <span style="font-size:1.05em;">💬</span></h1>
+            <p>Chat with Finance, HR, and your Project team.</p>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 gap-sm-3 flex-wrap">
+          <a class="btn-grad" href="{% url 'core:support' %}">
             <i class="bi bi-headset"></i> Raise Ticket
           </a>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="row g-3 g-lg-4 mt-3 pb-4">
+    <!-- CONTENT -->
+    <section class="mt-4">
+      <div class="row g-3 g-lg-4">
 
-      <!-- Threads -->
-      <div class="col-12 col-lg-4">
-        <div class="glass-card">
-          <div class="card-head">
-            <div>
-              <div class="title">Conversations</div>
-              <div class="sub">Select a thread to view messages</div>
-            </div>
-
-            <div class="search">
-              <i class="bi bi-search"></i>
-              <input id="threadSearch" type="text" placeholder="Search chats..." />
-            </div>
-          </div>
-
-          <div class="threads" id="threadList">
-
-            <!-- Finance -->
-            <div class="thread-item thread-active"
-              data-title="Finance Team • Invoice clarification"
-              data-messages='[
-                {"type":"received","sender":"Finance Team","time":"10:15 AM","text":"Please check the updated invoice attached."},
-                {"type":"sent","sender":"You","time":"10:30 AM","text":"Thanks, I will review and confirm shortly."},
-                {"type":"received","sender":"Finance Team","time":"10:35 AM","text":"Let us know if you need any changes."}
-              ]'>
-              <div class="thread-avatar av-finance">F</div>
+        <!-- Threads -->
+        <div class="col-12 col-lg-4">
+          <div class="card-base panel">
+            <div class="panel-head">
               <div>
-                <p class="thread-title mb-0">Finance Team</p>
-                <p class="thread-sub">Invoice clarification</p>
+                <div class="title">Conversations</div>
+                <div class="sub">Select a thread to view messages</div>
               </div>
-              <div class="thread-meta">Today</div>
+
+              <div class="search">
+                <i class="bi bi-search"></i>
+                <input id="threadSearch" type="text" placeholder="Search chats..." />
+              </div>
             </div>
 
-            <!-- Project -->
-            <div class="thread-item"
-              data-title="Project Manager • Sprint update"
-              data-messages='[
-                {"type":"received","sender":"Project Manager","time":"9:00 AM","text":"Sprint is on track."},
-                {"type":"sent","sender":"You","time":"9:10 AM","text":"Great, keep me posted."}
-              ]'>
-              <div class="thread-avatar av-project">P</div>
-              <div>
-                <p class="thread-title mb-0">Project Manager</p>
-                <p class="thread-sub">Sprint update</p>
-              </div>
-              <div class="thread-meta">Today</div>
-            </div>
+            <div class="threads" id="threadList">
 
-            <!-- HR -->
-            <div class="thread-item"
-              data-title="HR Team • Document submission"
-              data-messages='[
-                {"type":"received","sender":"HR Team","time":"11:00 AM","text":"Please submit your pending documents."}
-              ]'>
-              <div class="thread-avatar av-hr">H</div>
-              <div>
-                <p class="thread-title mb-0">HR Team</p>
-                <p class="thread-sub">Document submission</p>
+              <!-- Finance -->
+              <div class="thread-item thread-active"
+                data-title="Finance Team • Invoice clarification"
+                data-messages='[
+                  {"type":"received","sender":"Finance Team","time":"10:15 AM","text":"Please check the updated invoice attached."},
+                  {"type":"sent","sender":"You","time":"10:30 AM","text":"Thanks, I will review and confirm shortly."},
+                  {"type":"received","sender":"Finance Team","time":"10:35 AM","text":"Let us know if you need any changes."}
+                ]'>
+                <div class="thread-avatar av-finance">F</div>
+                <div>
+                  <p class="thread-title mb-0">Finance Team</p>
+                  <p class="thread-sub">Invoice clarification</p>
+                </div>
+                <div class="thread-meta">Today</div>
               </div>
-              <div class="thread-meta">Today</div>
-            </div>
 
+              <!-- Project -->
+              <div class="thread-item"
+                data-title="Project Manager • Sprint update"
+                data-messages='[
+                  {"type":"received","sender":"Project Manager","time":"9:00 AM","text":"Sprint is on track."},
+                  {"type":"sent","sender":"You","time":"9:10 AM","text":"Great, keep me posted."}
+                ]'>
+                <div class="thread-avatar av-project">P</div>
+                <div>
+                  <p class="thread-title mb-0">Project Manager</p>
+                  <p class="thread-sub">Sprint update</p>
+                </div>
+                <div class="thread-meta">Today</div>
+              </div>
+
+              <!-- HR -->
+              <div class="thread-item"
+                data-title="HR Team • Document submission"
+                data-messages='[
+                  {"type":"received","sender":"HR Team","time":"11:00 AM","text":"Please submit your pending documents."}
+                ]'>
+                <div class="thread-avatar av-hr">H</div>
+                <div>
+                  <p class="thread-title mb-0">HR Team</p>
+                  <p class="thread-sub">Document submission</p>
+                </div>
+                <div class="thread-meta">Today</div>
+              </div>
+
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Chat -->
-      <div class="col-12 col-lg-8">
-        <div class="glass-card">
-          <div class="card-head">
-            <div>
-              <div class="title" id="chatTitle">Finance Team • Invoice clarification</div>
-              <div class="sub">Your messages are visible only to your account</div>
-            </div>
+        <!-- Chat -->
+        <div class="col-12 col-lg-8">
+          <div class="card-base panel">
+            <div class="panel-head">
+              <div>
+                <div class="title" id="chatTitle">Finance Team • Invoice clarification</div>
+                <div class="sub">Your messages are visible only to your account</div>
+              </div>
 
-            <button type="button" class="btn btn-soft btn-sm" onclick="scrollToBottom()">
-              <i class="bi bi-arrow-down-circle me-1"></i> Latest
-            </button>
-          </div>
-
-          <div class="chat">
-            <div class="messages" id="chatMessages"></div>
-
-            <div class="composer">
-              <textarea id="msgBox" placeholder="Type your message..."></textarea>
-              <button type="button" class="btn-send" id="sendBtn">
-                <i class="bi bi-send-fill me-1"></i> Send
+              <button type="button" class="btn-soft" style="width:auto; padding:10px 14px;" onclick="scrollToBottom()">
+                <i class="bi bi-arrow-down-circle"></i> Latest
               </button>
             </div>
+
+            <div class="chat">
+              <div class="messages" id="chatMessages"></div>
+
+              <div class="composer">
+                <textarea id="msgBox" placeholder="Type your message..."></textarea>
+                <button type="button" class="btn-send" id="sendBtn">
+                  <i class="bi bi-send-fill me-1"></i> Send
+                </button>
+              </div>
+            </div>
+
           </div>
-
         </div>
-      </div>
 
-    </div>
-  </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const threads = document.querySelectorAll(".thread-item");

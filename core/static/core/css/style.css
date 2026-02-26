@@ -399,3 +399,209 @@ h2::after {
     border-color: #6366f1;
     box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
 }
+
+
+
+/* =========================
+   PREMIUM PAY NOW MODAL
+========================= */
+
+/* smoother backdrop */
+#payNowModal.modal{
+  --bs-modal-width: 520px;
+}
+#payNowModal .modal-dialog{
+  transform: translateY(6px);
+}
+#payNowModal.show .modal-dialog{
+  transform: translateY(0);
+  transition: transform .25s ease;
+}
+
+/* glass modal shell */
+#payNowModal .modal-content{
+  background: rgba(255,255,255,.86);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(15,23,42,.12);
+  box-shadow:
+    0 40px 90px rgba(2,6,23,.22),
+    inset 0 1px 0 rgba(255,255,255,.55);
+}
+
+/* ========= PREMIUM PAY NOW MODAL ========= */
+#payNowModal .modal-content{
+  border-radius: 24px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.86);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 40px 90px rgba(2,6,23,.22), inset 0 1px 0 rgba(255,255,255,.55);
+  overflow: hidden;
+}
+
+#payNowModal .modal-header{
+  padding: 18px 20px;
+  background: linear-gradient(135deg, hsl(243 75% 59%), hsl(262 60% 58%), hsl(330 65% 55%));
+  border: 0;
+}
+
+#payNowModal .modal-title{ font-weight: 950; }
+#payNowModal #payNowMeta{ opacity: .85; }
+
+#payNowModal .modal-body{
+  padding: 18px 20px;
+}
+
+#payNowModal .form-label{
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(2,6,23,.70);
+  font-weight: 950;
+}
+
+#payNowModal .form-control,
+#payNowModal .form-select{
+  border-radius: 16px !important;
+  border: 1px solid rgba(15,23,42,.12) !important;
+  background: rgba(255,255,255,.75) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65) !important;
+  padding: 12px 14px !important;
+}
+
+#payNowModal .form-control:focus,
+#payNowModal .form-select:focus{
+  border-color: rgba(99,102,241,.45) !important;
+  box-shadow: 0 0 0 4px rgba(99,102,241,.14) !important;
+}
+
+#payNowModal #payBtn{
+  border: 0 !important;
+  border-radius: 18px !important;
+  padding: 13px 14px !important;
+  font-weight: 950 !important;
+  letter-spacing: .02em !important;
+  background: linear-gradient(90deg, hsl(243 75% 59%), hsl(262 60% 58%), hsl(330 65% 55%)) !important;
+  box-shadow: 0 18px 40px rgba(99,102,241,.30) !important;
+}
+
+#payNowModal .modal-footer{
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(15,23,42,.10);
+}
+
+
+
+/* =========================
+   PREMIUM PAY MODAL (Invoice)
+   Only affects #invoicePayModal
+   ========================= */
+
+#invoicePayModal .modal-dialog{
+  max-width: 560px;
+}
+
+#invoicePayModal .modal-content{
+  border-radius: 26px !important;
+  border: 1px solid rgba(15,23,42,.12) !important;
+  background: rgba(255,255,255,.86) !important;
+  backdrop-filter: blur(22px);
+  box-shadow: 0 50px 120px rgba(2,6,23,.26), inset 0 1px 0 rgba(255,255,255,.55);
+  overflow: hidden;
+  position: relative;
+}
+
+/* soft gradient glow inside card */
+#invoicePayModal .modal-content::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background:
+    radial-gradient(800px 220px at 15% 0%, rgba(99,102,241,.18), transparent 55%),
+    radial-gradient(700px 220px at 85% 0%, rgba(236,72,153,.14), transparent 55%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* keep content above glow */
+#invoicePayModal .modal-header,
+#invoicePayModal .modal-body{
+  position: relative;
+  z-index: 1;
+}
+
+/* premium header */
+#invoicePayModal .modal-header{
+  padding: 18px 20px 14px !important;
+  border: 0 !important;
+  background: linear-gradient(135deg, var(--primary), var(--p2), var(--p3)) !important;
+  color: #fff;
+}
+
+#invoicePayModal .modal-title{
+  font-weight: 950;
+  letter-spacing: -.02em;
+}
+
+#invoicePayModal #payInvMeta{
+  opacity: .85;
+}
+
+/* body spacing */
+#invoicePayModal .modal-body{
+  padding: 16px 20px 20px !important;
+}
+
+/* premium labels */
+#invoicePayModal .form-label{
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(2,6,23,.68);
+  font-weight: 950;
+}
+
+/* premium inputs */
+#invoicePayModal .form-control,
+#invoicePayModal .form-select{
+  border-radius: 16px !important;
+  border: 1px solid rgba(15,23,42,.12) !important;
+  background: rgba(255,255,255,.75) !important;
+  padding: 12px 14px !important;
+  font-weight: 800 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65) !important;
+}
+
+#invoicePayModal .form-control:focus,
+#invoicePayModal .form-select:focus{
+  border-color: rgba(99,102,241,.45) !important;
+  box-shadow: 0 0 0 4px rgba(99,102,241,.14) !important;
+}
+
+/* premium pay button */
+#invoicePayModal #payBtn{
+  border: 0 !important;
+  border-radius: 18px !important;
+  padding: 13px 14px !important;
+  font-weight: 950 !important;
+  letter-spacing: .02em;
+  background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3)) !important;
+  box-shadow: 0 18px 40px rgba(99,102,241,.30) !important;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+
+#invoicePayModal #payBtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 26px 60px rgba(99,102,241,.34) !important;
+  filter: brightness(1.03);
+}
+
+/* “secure checkout” line style */
+#invoicePayModal .secure-note{
+  margin-top: 10px;
+  text-align: center;
+  color: rgba(100,116,139,.95);
+  font-size: 12px;
+  font-weight: 850;
+}
+#invoicePayModal .secure-note i{ color: rgba(99,102,241,.85); }

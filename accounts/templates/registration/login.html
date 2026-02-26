@@ -34,6 +34,7 @@
       max-width: 950px;
       width: 100%;
       transition: 0.3s ease;
+      position: relative;
     }
 
     .login-card:hover { transform: translateY(-5px); }
@@ -83,6 +84,7 @@
       color: white;
       cursor: pointer;
       font-size: 20px;
+      z-index: 10;
     }
 
     body.dark {
@@ -131,9 +133,11 @@
     <form method="POST" id="authForm" action="{% url 'login' %}">
       {% csrf_token %}
 
+      <!-- Role (LOGIN ONLY) -->
       <div class="mb-3" id="roleDiv">
         <label>Login As</label>
-        <select name="role" class="form-select" required>
+        <!-- ✅ removed required from HTML, added id -->
+        <select name="role" id="roleSelect" class="form-select">
           <option value="">Select Role</option>
           <option value="HR">HR</option>
           <option value="CLIENT">Client</option>
@@ -141,6 +145,13 @@
         </select>
       </div>
 
+      <!-- Username (SIGNUP ONLY) -->
+      <div class="mb-3 hidden" id="usernameDiv">
+        <label>Username</label>
+        <input type="text" name="username" id="usernameInput" class="form-control">
+      </div>
+
+      <!-- Email -->
       <div class="mb-3">
         <label>Email</label>
         <div class="input-group">
@@ -149,6 +160,7 @@
         </div>
       </div>
 
+      <!-- Password -->
       <div class="mb-3">
         <label>Password</label>
         <div class="input-group">
@@ -160,9 +172,10 @@
         </div>
       </div>
 
+      <!-- Confirm password (SIGNUP ONLY) -->
       <div class="mb-3 hidden" id="confirmPasswordDiv">
         <label>Confirm Password</label>
-        <input type="password" name="confirm_password" class="form-control">
+        <input type="password" name="confirm_password" id="confirmPasswordInput" class="form-control">
       </div>
 
       <button type="submit" class="btn btn-primary w-100" id="submitBtn">
@@ -184,44 +197,82 @@ let isLogin = true;
 
 function toggleForm(){
   isLogin = !isLogin;
+
   const form = document.getElementById('authForm');
+
   const confirmDiv = document.getElementById('confirmPasswordDiv');
+  const usernameDiv = document.getElementById('usernameDiv');
+  const usernameInput = document.getElementById('usernameInput');
+  const confirmInput = document.getElementById('confirmPasswordInput');
+
+  const roleDiv = document.getElementById('roleDiv');
+  const roleSelect = document.getElementById('roleSelect');
+
   const formTitle = document.getElementById('formTitle');
   const toggleText = document.getElementById('toggleText');
   const toggleLink = document.getElementById('toggleLink');
 
+  const btnText = document.getElementById('btnText');
+  const loader = document.getElementById('loader');
+
+  // reset spinner label when switching
+  loader.classList.add('hidden');
+  btnText.innerText = isLogin ? "Continue" : "Create Account";
+
   if(isLogin){
+    // ===== LOGIN MODE =====
     formTitle.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Sign In';
     toggleText.innerText = "Don't have an account?";
     toggleLink.innerText = " Sign Up";
+
+    form.action = "{% url 'login' %}";
+
+    // signup-only fields hidden + not required
+    usernameDiv.classList.add('hidden');
     confirmDiv.classList.add('hidden');
-    form.action = "{% url 'accounts:hr_signup' %}";
-    document.getElementById('roleDiv').classList.remove('hidden');
+    usernameInput.required = false;
+    confirmInput.required = false;
+
+    // role visible + required
+    roleDiv.classList.remove('hidden');
+    roleSelect.disabled = false;
+    roleSelect.required = true;
+
   } else {
+    // ===== SIGNUP MODE =====
     formTitle.innerHTML = '<i class="bi bi-person-plus-fill"></i> HR Sign Up';
     toggleText.innerText = "Already have an account?";
     toggleLink.innerText = " Sign In";
+
+    form.action = "{% url 'accounts:hr_signup' %}";
+
+    // signup-only fields visible + required
+    usernameDiv.classList.remove('hidden');
     confirmDiv.classList.remove('hidden');
-    form.action = "{% url 'accounts:hr_signup' %}"; // <-- Use namespace
-    // Only allow HR role for signup
-    const roleSelect = document.querySelector('select[name="role"]');
-    roleSelect.innerHTML = '<option value="HR">HR</option>';
-    document.getElementById('roleDiv').classList.remove('hidden');
+    usernameInput.required = true;
+    confirmInput.required = true;
+
+    // role hidden + NOT required (and disabled to avoid validation)
+    roleDiv.classList.add('hidden');
+    roleSelect.required = false;
+    roleSelect.disabled = true;
+    roleSelect.value = "";
   }
 }
 
 function togglePassword(){
   const pwd = document.getElementById('password');
-  pwd.type = pwd.type==='password'?'text':'password';
+  pwd.type = pwd.type === 'password' ? 'text' : 'password';
 }
 
-function toggleTheme(){ document.body.classList.toggle('dark'); }
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+}
 
-// Spinner
-const form = document.getElementById('authForm');
-form.addEventListener('submit',()=>{
+// Spinner on submit
+document.getElementById('authForm').addEventListener('submit', () => {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('btnText').innerText='Processing...';
+  document.getElementById('btnText').innerText = 'Processing...';
 });
 </script>
 

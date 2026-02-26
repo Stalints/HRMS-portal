@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,592 +10,594 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-
   <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
   <style>
-    :root {
-      --brand: #1e3a8a;
-      --brand2: #0ea5e9;
-      --bg: #f6f8ff;
+    :root{
+      --bg: #f6f7fb;
+      --card: rgba(255,255,255,.78);
+      --card-strong: rgba(255,255,255,.92);
       --text: #0b1220;
-      --muted: #64748b;
+      --muted: #667085;
+      --border: rgba(15,23,42,.10);
 
-      --border: rgba(15, 23, 42, .10);
-      --card: rgba(255, 255, 255, .86);
-      --card-strong: rgba(255, 255, 255, .94);
+      --primary: hsl(243 75% 59%);        /* like Tailwind primary */
+      --p2: hsl(262 60% 58%);
+      --p3: hsl(330 65% 55%);
+      --teal: hsl(172 56% 42%);
+      --blue: hsl(200 70% 50%);
 
-      --shadow: 0 18px 50px rgba(2, 6, 23, .08);
-      --shadow-soft: 0 10px 24px rgba(2, 6, 23, .06);
+      --shadow: 0 18px 50px rgba(2,6,23,.08);
+      --shadow-soft: 0 10px 26px rgba(2,6,23,.06);
 
-      --radius: 18px;
-      --radius-lg: 24px;
+      --r: 18px;
+      --r2: 22px;
     }
 
-    body {
+    body{
+      min-height:100vh;
       background:
-        radial-gradient(900px 540px at 10% -10%, rgba(30, 58, 138, .12), transparent 55%),
-        radial-gradient(900px 540px at 90% 0%, rgba(14, 165, 233, .10), transparent 55%),
-        linear-gradient(180deg, rgba(246, 248, 255, 1), rgba(245, 247, 255, 1));
+        radial-gradient(1000px 600px at 10% -10%, rgba(99,102,241,.12), transparent 55%),
+        radial-gradient(900px 520px at 90% 0%, rgba(236,72,153,.10), transparent 55%),
+        linear-gradient(180deg, #f7f8ff, #f5f6fb);
       color: var(--text);
-      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Premium centered layout */
-    .page {
-      width: 100%;
-      max-width: 1240px;
+    /* ====== FIX SIDE SPACE (FULL FEEL) ====== */
+    .wrap{
+      max-width: 1400px;
       margin: 0 auto;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    @media (min-width: 576px){
+      .wrap{ padding-left: 18px; padding-right: 18px; }
     }
 
-    /* Topbar */
-    .topbar {
-      background: rgba(255, 255, 255, .70);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(255, 255, 255, .55);
+    /* ====== NAV ====== */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(15,23,42,.08);
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      text-decoration: none;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      text-decoration:none;
       color: var(--text);
-      padding: .6rem .9rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, .82);
-      box-shadow: var(--shadow-soft);
-      transition: transform .15s ease, box-shadow .15s ease;
-      font-weight: 950;
-      letter-spacing: -.01em;
-    }
-
-    .brand:hover {
-      color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow);
-    }
-
-    .client-pill {
-      display: flex;
-      align-items: center;
-      gap: .55rem;
-      padding: .5rem .9rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, .84);
-      color: rgba(2, 6, 23, .80);
-      box-shadow: var(--shadow-soft);
-      font-size: .92rem;
       font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .brand-badge{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(99,102,241,.20);
+    }
+    .pill{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.80);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 10px 18px rgba(2,6,23,.06);
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+    .pill .avatar{
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p3));
+      color:#fff;
     }
 
-    /* Hero */
-    .hero {
-      margin-top: 18px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255, 255, 255, .55);
-      background: linear-gradient(135deg, rgba(30, 58, 138, .95), rgba(2, 132, 199, .70));
-      box-shadow: var(--shadow);
+    /* ====== CARD BASE ====== */
+    .card-base{
+      background: var(--card-strong);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* ====== HERO ====== */
+    .hero{
       position: relative;
       overflow: hidden;
     }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: -140px;
-      top: -140px;
-      width: 420px;
-      height: 420px;
+    .hero-accent{
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--p2), var(--p3));
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      top:-90px;
+      right:-90px;
+      width: 260px;
+      height: 260px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, .10);
-      filter: blur(1px);
-      opacity: .85;
-      pointer-events: none;
+      background: radial-gradient(circle at 30% 30%, rgba(99,102,241,.12), transparent 65%);
+      pointer-events:none;
+    }
+    .hero h1{
+      margin: 0;
+      font-size: clamp(22px, 2vw, 30px);
+      font-weight: 950;
+      letter-spacing: -.03em;
+    }
+    .hero p{
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 560px;
     }
 
-    .hero-inner {
-      padding: 26px 26px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    /* ====== BUTTONS ====== */
+    .btn-grad{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      text-decoration:none;
+      color:#fff;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--p2));
+      box-shadow: 0 16px 30px rgba(99,102,241,.22);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .btn-grad:hover{
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(99,102,241,.28);
+      filter: brightness(1.03);
+      color:#fff;
+    }
+    .btn-soft{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 800;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(15,23,42,.12);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .btn-soft:hover{
+      transform: translateY(-2px) scale(1.01);
+      border-color: rgba(99,102,241,.28);
+      box-shadow: 0 14px 26px rgba(2,6,23,.08);
+      color: var(--text);
+    }
+
+    /* ====== STATS ====== */
+    .stat{
+      display:flex;
+      align-items:center;
       gap: 14px;
-      color: #fff;
+      padding: 18px;
+      cursor: default;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .stat:hover{
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: var(--shadow);
+    }
+    .stat-ic{
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size: 20px;
+      box-shadow: 0 14px 26px rgba(2,6,23,.10);
+    }
+    .s1{ background: linear-gradient(135deg, var(--primary), var(--p2)); }
+    .s2{ background: linear-gradient(135deg, var(--p2), var(--p3)); }
+    .s3{ background: linear-gradient(135deg, var(--teal), var(--primary)); }
+
+    .stat .value{
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+    .stat .label{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    /* ====== SECTION TITLE ====== */
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-badge{
+      width: 26px;
+      height: 26px;
+      border-radius: 10px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--primary), var(--p2));
+      color:#fff;
+    }
+    .section-title h2{
+      margin:0;
+      font-size: 12px;
+      letter-spacing: .14em;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    /* ====== ACTION CARDS ====== */
+    .action{
+      position: relative;
+      overflow: hidden;
+      display:block;
+      height: 100%;
+      padding: 18px;
+      border-radius: var(--r2);
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow-soft);
+      text-decoration:none;
+      color: var(--text);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .action::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      opacity: 0;
+      background: radial-gradient(700px 320px at 15% 0%, rgba(99,102,241,.08), transparent 60%),
+                  radial-gradient(700px 320px at 85% 10%, rgba(236,72,153,.07), transparent 60%);
+      transition: opacity .35s ease;
+      pointer-events:none;
+    }
+    .action:hover{
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+      border-color: rgba(99,102,241,.26);
+      color: var(--text);
+    }
+    .action:hover::before{ opacity: 1; }
+
+    .action-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .action-ic{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      box-shadow: 0 12px 22px rgba(2,6,23,.10);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .action:hover .action-ic{ transform: scale(1.08); box-shadow: 0 16px 30px rgba(2,6,23,.14); }
+
+    .ic1{ background: linear-gradient(135deg, var(--primary), var(--p2)); }
+    .ic2{ background: linear-gradient(135deg, var(--p2), var(--p3)); }
+    .ic3{ background: linear-gradient(135deg, var(--p3), hsl(350 70% 60%)); }
+    .ic4{ background: linear-gradient(135deg, var(--teal), var(--primary)); }
+    .ic5{ background: linear-gradient(135deg, var(--primary), var(--blue)); }
+    .ic6{ background: linear-gradient(135deg, var(--p2), var(--blue)); }
+    .ic7{ background: linear-gradient(135deg, var(--p3), var(--p2)); }
+    .ic8{ background: linear-gradient(135deg, var(--teal), var(--blue)); }
+
+    .arrow{
+      color: rgba(15,23,42,.28);
+      transition: transform .25s ease, color .25s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .action:hover .arrow{
+      color: var(--primary);
+      transform: translate(2px, -2px);
+    }
+
+    .action h3{
+      margin: 0;
+      font-size: 14px;
+      font-weight: 950;
+      letter-spacing: -.01em;
+      position: relative;
+      z-index: 1;
+    }
+    .action p{
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      position: relative;
+      z-index: 1;
+    }
+    .tag{
+      display:inline-block;
+      margin-top: 12px;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.08);
+      color: rgba(15,23,42,.62);
       position: relative;
       z-index: 1;
     }
 
-    .hero h1 {
-      margin: 0;
-      font-size: 1.65rem;
-      font-weight: 950;
-      letter-spacing: -.03em;
+    /* ====== FOOTER ====== */
+    .footer{
+      border-top: 1px solid rgba(15,23,42,.08);
+      margin-top: 36px;
+      padding-top: 18px;
     }
-
-    .hero p {
-      margin: 6px 0 0;
-      color: rgba(255, 255, 255, .86);
-      font-size: 1.02rem;
-      line-height: 1.35;
-    }
-
-    .hero-actions {
-      display: flex;
+    .footer-note{
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      display:flex;
+      align-items:center;
       gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
     }
-
-    .hero-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .55rem;
-      padding: .65rem 1rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 950;
-      border: 1px solid rgba(255, 255, 255, .30);
-      background: rgba(255, 255, 255, .14);
-      color: #fff;
-      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-      box-shadow: 0 12px 26px rgba(2, 6, 23, .12);
+    .footer-note .mini{
+      width: 22px;
+      height: 22px;
+      border-radius: 10px;
+      display:grid;
+      place-items:center;
+      background: rgba(15,23,42,.04);
+      border: 1px solid rgba(15,23,42,.08);
+      color: rgba(15,23,42,.60);
     }
-
-    .hero-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, .18);
-      transform: translateY(-1px);
-      box-shadow: 0 16px 32px rgba(2, 6, 23, .16);
-    }
-
-    .hero-btn.secondary {
-      background: rgba(255, 255, 255, .92);
-      color: rgba(2, 6, 23, .92);
-      border-color: rgba(255, 255, 255, .70);
-    }
-
-    .hero-btn.secondary:hover {
-      color: rgba(2, 6, 23, .95);
-    }
-
-    /* Summary */
-    .summary {
-      margin-top: 14px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--card-strong);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-soft);
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .summary-left {
-      display: flex;
-      align-items: center;
+    .logout{
+      display:inline-flex;
+      align-items:center;
       gap: 10px;
-      font-weight: 950;
-      letter-spacing: -.01em;
-    }
-
-    .spark {
-      width: 42px;
-      height: 42px;
+      padding: 10px 14px;
       border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: rgba(30, 58, 138, .10);
-      border: 1px solid rgba(30, 58, 138, .16);
-      color: var(--brand);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .summary-items {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .chip {
-      display: flex;
-      align-items: center;
-      gap: .55rem;
-      padding: .65rem .9rem;
-      border-radius: 999px;
-      border: 1px solid rgba(15, 23, 42, .10);
-      background: rgba(255, 255, 255, .92);
-      box-shadow: 0 10px 20px rgba(2, 6, 23, .05);
-      font-weight: 950;
-      color: rgba(2, 6, 23, .86);
-    }
-
-    .chip small {
-      font-weight: 800;
-      color: var(--muted);
-    }
-
-    /* Section label */
-    .section-head {
-      margin-top: 18px;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-size: 1.05rem;
-      font-weight: 950;
-      letter-spacing: -.01em;
-      color: rgba(2, 6, 23, .90);
-    }
-
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      font-weight: 800;
-      font-size: .92rem;
-    }
-
-    /* Tiles (premium clean) */
-    .blob {
-      display: none !important;
-    }
-
-    .tile {
-      text-decoration: none;
-      display: block;
-      border-radius: 20px;
-      border: 1px solid rgba(15, 23, 42, .10);
-      background: var(--card);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 18px;
-      height: 100%;
-      color: inherit;
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-      position: relative;
-    }
-
-    .tile:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      border-color: rgba(30, 58, 138, .18);
-    }
-
-    .tile .badge-soft {
-      position: absolute;
-      right: 14px;
-      top: 14px;
-      font-size: .72rem;
-      padding: .22rem .55rem;
-      border-radius: 999px;
-      border: 1px solid rgba(15, 23, 42, .10);
-      background: rgba(255, 255, 255, .80);
-      color: rgba(15, 23, 42, .70);
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.80);
+      color: rgba(15,23,42,.70);
       font-weight: 900;
+      text-decoration:none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, color .18s ease;
     }
-
-    .tile-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      font-size: 1.35rem;
-      margin-bottom: 12px;
-      border: 1px solid rgba(255, 255, 255, .70);
-      box-shadow: 0 12px 22px rgba(2, 6, 23, .08);
-    }
-
-    .tile h5 {
-      margin: 0 0 6px;
-      font-weight: 950;
-      letter-spacing: -.01em;
-      color: rgba(2, 6, 23, .92);
-    }
-
-    .tile p {
-      margin: 0;
-      color: var(--muted);
-      font-size: .96rem;
-      line-height: 1.35;
-    }
-
-    /* icon backgrounds */
-    .i-projects {
-      background: linear-gradient(135deg, rgba(59, 130, 246, .22), rgba(59, 130, 246, .08));
-      color: rgba(30, 58, 138, 1);
-    }
-
-    .i-invoices {
-      background: linear-gradient(135deg, rgba(16, 185, 129, .22), rgba(16, 185, 129, .08));
-      color: rgba(5, 150, 105, 1);
-    }
-
-    .i-payments {
-      background: linear-gradient(135deg, rgba(245, 158, 11, .22), rgba(245, 158, 11, .08));
-      color: rgba(217, 119, 6, 1);
-    }
-
-    .i-support {
-      background: linear-gradient(135deg, rgba(244, 63, 94, .20), rgba(244, 63, 94, .07));
-      color: rgba(225, 29, 72, 1);
-    }
-
-    .i-messages {
-      background: linear-gradient(135deg, rgba(139, 92, 246, .22), rgba(139, 92, 246, .08));
-      color: rgba(109, 40, 217, 1);
-    }
-
-    .i-events {
-      background: linear-gradient(135deg, rgba(34, 197, 94, .20), rgba(34, 197, 94, .07));
-      color: rgba(22, 163, 74, 1);
-    }
-
-    .i-profile {
-      background: linear-gradient(135deg, rgba(14, 165, 233, .22), rgba(14, 165, 233, .08));
-      color: rgba(2, 132, 199, 1);
-    }
-
-    .i-knowledge {
-      background: linear-gradient(135deg, rgba(99, 102, 241, .22), rgba(99, 102, 241, .08));
-      color: rgba(79, 70, 229, 1);
-    }
-
-    /* Footer */
-    .footerbar {
-      margin: 18px 0 26px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      border: 1px solid rgba(15, 23, 42, .10);
-      background: rgba(255, 255, 255, .92);
-      box-shadow: var(--shadow-soft);
-      flex-wrap: wrap;
-    }
-
-    .footerbar .small-note {
-      color: var(--muted);
-      font-size: .92rem;
-      font-weight: 800;
-    }
-
-    .logout-btn {
-      border-radius: 999px;
-      padding: .65rem 1.05rem;
-      border: 1px solid rgba(220, 38, 38, .22);
-      background: rgba(220, 38, 38, .08);
-      color: rgb(185, 28, 28);
-      font-weight: 950;
-      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: .55rem;
-      box-shadow: 0 10px 20px rgba(2, 6, 23, .05);
-    }
-
-    .logout-btn:hover {
-      background: rgba(220, 38, 38, .12);
+    .logout:hover{
       transform: translateY(-1px);
-      box-shadow: 0 14px 28px rgba(2, 6, 23, .08);
-      color: rgb(185, 28, 28);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .page {
-        max-width: none;
-      }
-
-      .hero-inner {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .hero-actions {
-        justify-content: flex-start;
-      }
+      border-color: rgba(99,102,241,.28);
+      box-shadow: 0 12px 24px rgba(2,6,23,.08);
+      color: rgba(15,23,42,.90);
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Topbar -->
-  <nav class="navbar topbar py-3">
-    <div class="container-fluid px-3 px-lg-4">
-      <div class="page d-flex justify-content-between align-items-center">
+  <!-- NAV -->
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="d-flex align-items-center justify-content-between" style="height:64px;">
         <a class="brand" href="{% url 'core:client_dashboard' %}">
-          <i class="bi bi-building"></i>
+          <span class="brand-badge"><i class="bi bi-building"></i></span>
           <span>HR Portal</span>
         </a>
 
-        <div class="client-pill">
-          <i class="bi bi-person-circle"></i>
-          <span>Client</span>
+        <div class="pill">
+          <span class="avatar"><i class="bi bi-person-fill" style="font-size:.85rem;"></i></span>
+          Client
         </div>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid px-3 px-lg-4">
-    <div class="page">
+  <main class="wrap py-4 py-sm-5">
 
-      <!-- Hero -->
-      <div class="hero">
-        <div class="hero-inner">
-          <div>
-            <h1>Welcome back 👋</h1>
-            <p>Manage your work, billing, and updates with one click.</p>
-          </div>
+    <!-- HERO -->
+    <section class="card-base hero">
+      <div class="hero-accent"></div>
 
-          <div class="hero-actions">
-            <a class="hero-btn secondary" href="{% url 'core:events' %}">
-              <i class="bi bi-calendar-event"></i> Open Events
-            </a>
-            <a class="hero-btn" href="{% url 'core:profile' %}">
-              <i class="bi bi-person-circle"></i> My Profile
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary -->
-      <div class="summary">
-        <div class="summary-left">
-          <div class="spark"><i class="bi bi-stars"></i></div>
-          <div>
-            <div style="line-height:1.1;">Today’s Summary</div>
-            <div style="color:var(--muted); font-weight:800; font-size:.92rem;">Quick glance before you start</div>
-          </div>
-        </div>
-
-        <div class="summary-items">
-          <div class="chip"><i class="bi bi-receipt"></i> <span>{{ invoices_due|default:"0" }}</span>
-            <small>Invoices due</small>
-          </div>
-          <div class="chip"><i class="bi bi-calendar-event"></i> <span>{{ events_this_week|default:"0" }}</span>
-            <small>Events this week</small>
-          </div>
-          <div class="chip"><i class="bi bi-headset"></i> <span>{{ open_tickets|default:"0" }}</span>
-            <small>Open tickets</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section Head -->
-      <div class="section-head">
+      <div class="p-4 p-sm-5 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 gap-sm-4">
         <div>
-          <h2>Quick Actions</h2>
-          <p>Everything you need, in one place.</p>
+          <h1>Welcome back <span style="font-size:1.15em;">👋</span></h1>
+          <p>Here's what's happening with your account today.</p>
+        </div>
+
+        <div class="d-flex gap-2 gap-sm-3 flex-wrap">
+          <a class="btn-grad" href="{% url 'core:events' %}">
+            <i class="bi bi-calendar-event"></i> Open Events
+          </a>
+          <a class="btn-soft" href="{% url 'core:profile' %}">
+            <i class="bi bi-person"></i> My Profile
+          </a>
         </div>
       </div>
+    </section>
 
-      <!-- Tiles -->
-      <div class="row g-4 mt-2">
-
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:projects' %}" class="tile">
-            <div class="tile-icon i-projects"><i class="bi bi-kanban"></i></div>
-            <h5>Projects</h5>
-            <p>Track progress, tasks, and milestones.</p>
-            <span class="badge-soft">Work</span>
-          </a>
+    <!-- STATS -->
+    <section class="mt-4">
+      <div class="row g-3 g-sm-4">
+        <div class="col-12 col-sm-4">
+          <div class="card-base stat">
+            <div class="stat-ic s1">📄</div>
+            <div>
+              <div class="value">{{ invoices_due|default_if_none:"0" }}</div>
+              <div class="label">Invoices Due</div>
+            </div>
+          </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:invoices' %}" class="tile">
-            <div class="tile-icon i-invoices"><i class="bi bi-receipt"></i></div>
-            <h5>Invoices</h5>
-            <p>View and download your invoices.</p>
-            <span class="badge-soft">Billing</span>
-          </a>
+        <div class="col-12 col-sm-4">
+          <div class="card-base stat">
+            <div class="stat-ic s2">🗓️</div>
+            <div>
+              <div class="value">{{ events_this_week|default_if_none:"0" }}</div>
+              <div class="label">Events This Week</div>
+            </div>
+          </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:payments' %}" class="tile">
-            <div class="tile-icon i-payments"><i class="bi bi-credit-card"></i></div>
-            <h5>Payments</h5>
-            <p>See payment history and status.</p>
-            <span class="badge-soft">Billing</span>
-          </a>
+        <div class="col-12 col-sm-4">
+          <div class="card-base stat">
+            <div class="stat-ic s3">🎫</div>
+            <div>
+              <div class="value">{{ open_tickets|default_if_none:"0" }}</div>
+              <div class="label">Open Tickets</div>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:support' %}" class="tile">
-            <div class="tile-icon i-support"><i class="bi bi-headset"></i></div>
-            <h5>Support Tickets</h5>
-            <p>Raise issues and track updates.</p>
-            <span class="badge-soft">Help</span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:messages' %}" class="tile">
-            <div class="tile-icon i-messages"><i class="bi bi-chat-dots"></i></div>
-            <h5>Messages</h5>
-            <p>Talk with HR or your support team.</p>
-            <span class="badge-soft">Chat</span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:events' %}" class="tile">
-            <div class="tile-icon i-events"><i class="bi bi-calendar-event"></i></div>
-            <h5>Events</h5>
-            <p>View HR shared events calendar.</p>
-            <span class="badge-soft">Updates</span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:profile' %}" class="tile">
-            <div class="tile-icon i-profile"><i class="bi bi-person-circle"></i></div>
-            <h5>Profile</h5>
-            <p>View and update your account details.</p>
-            <span class="badge-soft">Account</span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-          <a href="{% url 'core:knowledge_base' %}" class="tile">
-            <div class="tile-icon i-knowledge"><i class="bi bi-journal-bookmark"></i></div>
-            <h5>Knowledge Base</h5>
-            <p>Guides, FAQs, and how-to articles.</p>
-            <span class="badge-soft">Help</span>
-          </a>
-        </div>
-
+    <!-- QUICK ACTIONS -->
+    <section class="mt-4 mt-sm-5">
+      <div class="section-title">
+        <span class="section-badge"><i class="bi bi-stars" style="font-size:.85rem;"></i></span>
+        <h2>Quick Actions</h2>
       </div>
 
-      <!-- Footer -->
-      <div class="footerbar">
-        <div class="small-note">
-          <i class="bi bi-shield-check me-1"></i>
-          Your data is protected. Contact support if you need help.
+      <div class="row g-3 g-sm-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:projects' %}">
+            <div class="action-top">
+              <div class="action-ic ic1"><i class="bi bi-briefcase"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Projects</h3>
+            <p>View & manage active projects</p>
+            <span class="tag">Management</span>
+          </a>
         </div>
 
-        <a href="{% url 'logout' %}" class="logout-btn">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:invoices' %}">
+            <div class="action-top">
+              <div class="action-ic ic2"><i class="bi bi-file-earmark-text"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Invoices</h3>
+            <p>Billing history & statements</p>
+            <span class="tag">Finance</span>
+          </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:payments' %}">
+            <div class="action-top">
+              <div class="action-ic ic3"><i class="bi bi-credit-card"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Payments</h3>
+            <p>Track payment activity</p>
+            <span class="tag">Finance</span>
+          </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:support' %}">
+            <div class="action-top">
+              <div class="action-ic ic4"><i class="bi bi-life-preserver"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Support</h3>
+            <p>Get help & submit tickets</p>
+            <span class="tag">Help</span>
+          </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:messages' %}">
+            <div class="action-top">
+              <div class="action-ic ic5"><i class="bi bi-envelope"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Messages</h3>
+            <p>Team communication hub</p>
+            <span class="tag">Comms</span>
+          </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:events' %}">
+            <div class="action-top">
+              <div class="action-ic ic6"><i class="bi bi-calendar-event"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Events</h3>
+            <p>Upcoming schedule & RSVP</p>
+            <span class="tag">Calendar</span>
+          </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:profile' %}">
+            <div class="action-top">
+              <div class="action-ic ic7"><i class="bi bi-person"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Profile</h3>
+            <p>Account & preferences</p>
+            <span class="tag">Account</span>
+          </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="action" href="{% url 'core:knowledge_base' %}">
+            <div class="action-top">
+              <div class="action-ic ic8"><i class="bi bi-book"></i></div>
+              <i class="bi bi-arrow-up-right arrow"></i>
+            </div>
+            <h3>Knowledge Base</h3>
+            <p>Docs, guides & resources</p>
+            <span class="tag">Learn</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+        <div class="footer-note">
+          <span class="mini"><i class="bi bi-shield-check"></i></span>
+          Your data is encrypted and securely stored.
+        </div>
+        <a class="logout" href="{% url 'logout' %}">
           <i class="bi bi-box-arrow-right"></i> Logout
         </a>
       </div>
+    </footer>
 
-    </div>
-  </div>
+  </main>
 
 </body>
-
 </html>
