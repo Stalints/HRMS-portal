@@ -640,8 +640,7 @@
               <div class="messages" id="chat-log">
                 {% for msg in messages %}
                 <div class="bubble {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
-                  <div class="meta">{{ msg.sender.get_full_name|default:msg.sender.username }} • {{
-                    msg.timestamp|date:"M d, h:i A" }}</div>
+                  <div class="meta">{{ msg.sender.get_full_name|default:msg.sender.username }} • {{ msg.timestamp|date:"M d, h:i A" }}</div>
                   <div class="text">{{ msg.content }}</div>
                 </div>
                 {% endfor %}

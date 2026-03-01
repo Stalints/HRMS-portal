@@ -4,10 +4,12 @@ import calendar
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.db.models import Q
+from django.http import HttpResponseForbidden
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from .models import EmployeeProfile
+from .models import EmployeeProfile, EmployeeTodo
 from hr.models import LeaveRequest as Leave, Announcement, LeaveCategory, Attendance, Event
 from core.models import Task
 
@@ -42,9 +44,17 @@ def employee_logout(request):
 @login_required
 def employee_dashboard(request):
     leaves = Leave.objects.filter(user=request.user)
-
+    today = timezone.now().date()
+    upcoming_todos = []
+    if request.user.groups.filter(name="EMPLOYEE").exists() and not getattr(request.user, "client_profile", None):
+        upcoming_todos = list(
+            EmployeeTodo.objects.filter(employee=request.user, status="PENDING")
+            .filter(Q(due_date__gte=today) | Q(due_date__isnull=True))
+            .order_by("due_date")[:5]
+        )
     context = {
         "pending_leaves": leaves.filter(status="Pending").count(),
+        "upcoming_todos": upcoming_todos,
     }
     return render(request, "employee/dashboard.html", context)
 
@@ -305,3 +315,119 @@ def chat_delete(request, pk):
     conversation = get_object_or_404(request.user.conversations, pk=pk)
     conversation.delete()
     return redirect('employee:chat_dashboard')
+
+
+# ==========================================
+# Personal To-Do (Employee only)
+# ==========================================
+
+def _employee_todo_access(request):
+    """Only Employee role can access. Deny HR and Client."""
+    if request.user.groups.filter(name="HR").exists():
+        return False
+    if getattr(request.user, "client_profile", None) is not None:
+        return False
+    return request.user.groups.filter(name="EMPLOYEE").exists()
+
+
+@login_required
+def employee_todo_list_view(request):
+    if not _employee_todo_access(request):
+        return HttpResponseForbidden("Only employees can access Personal To-Do.")
+    today = timezone.now().date()
+    todos_qs = EmployeeTodo.objects.filter(employee=request.user)
+    priority_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+    todos = sorted(
+        list(todos_qs),
+        key=lambda t: (priority_order.get(t.priority, 1), t.due_date or date.max),
+    )
+    total = len(todos)
+    pending = sum(1 for t in todos if t.status == "PENDING")
+    completed = sum(1 for t in todos if t.status == "COMPLETED")
+    context = {
+        "todos": todos,
+        "total_todos": total,
+        "pending_count": pending,
+        "completed_count": completed,
+        "today": today,
+    }
+    return render(request, "employee/todo_list.html", context)
+
+
+@login_required
+def employee_todo_create_view(request):
+    if not _employee_todo_access(request):
+        return HttpResponseForbidden("Only employees can access Personal To-Do.")
+    if request.method != "POST":
+        return redirect("employee:employee_todo_list")
+    title = (request.POST.get("title") or "").strip()
+    if not title:
+        messages.error(request, "Title is required.")
+        return redirect("employee:employee_todo_list")
+    due_str = request.POST.get("due_date") or None
+    due_date = None
+    if due_str:
+        try:
+            due_date = datetime.strptime(due_str, "%Y-%m-%d").date()
+        except ValueError:
+            pass
+    EmployeeTodo.objects.create(
+        employee=request.user,
+        title=title,
+        description=(request.POST.get("description") or "").strip(),
+        due_date=due_date,
+        priority=request.POST.get("priority") or "MEDIUM",
+        status="PENDING",
+    )
+    messages.success(request, "To-Do added.")
+    return redirect("employee:employee_todo_list")
+
+
+@login_required
+def employee_todo_update_view(request, pk):
+    if not _employee_todo_access(request):
+        return HttpResponseForbidden("Only employees can access Personal To-Do.")
+    todo = get_object_or_404(EmployeeTodo, pk=pk, employee=request.user)
+    if request.method != "POST":
+        return redirect("employee:employee_todo_list")
+    title = (request.POST.get("title") or "").strip()
+    if not title:
+        messages.error(request, "Title is required.")
+        return redirect("employee:employee_todo_list")
+    due_str = request.POST.get("due_date") or None
+    due_date = None
+    if due_str:
+        try:
+            due_date = datetime.strptime(due_str, "%Y-%m-%d").date()
+        except ValueError:
+            pass
+    todo.title = title
+    todo.description = (request.POST.get("description") or "").strip()
+    todo.due_date = due_date
+    todo.priority = request.POST.get("priority") or "MEDIUM"
+    todo.save()
+    messages.success(request, "To-Do updated.")
+    return redirect("employee:employee_todo_list")
+
+
+@login_required
+def employee_todo_delete_view(request, pk):
+    if not _employee_todo_access(request):
+        return HttpResponseForbidden("Only employees can access Personal To-Do.")
+    todo = get_object_or_404(EmployeeTodo, pk=pk, employee=request.user)
+    if request.method == "POST":
+        todo.delete()
+        messages.success(request, "To-Do deleted.")
+    return redirect("employee:employee_todo_list")
+
+
+@login_required
+def employee_todo_toggle_status_view(request, pk):
+    if not _employee_todo_access(request):
+        return HttpResponseForbidden("Only employees can access Personal To-Do.")
+    todo = get_object_or_404(EmployeeTodo, pk=pk, employee=request.user)
+    if request.method == "POST":
+        todo.status = "COMPLETED" if todo.status == "PENDING" else "PENDING"
+        todo.save()
+        messages.success(request, f"Marked as {todo.get_status_display().lower()}.")
+    return redirect("employee:employee_todo_list")

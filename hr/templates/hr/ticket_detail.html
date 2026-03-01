@@ -3,10 +3,12 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
     <h1 class="h4 mb-1">Ticket {{ ticket.ticket_id }}</h1>
-    <p class="text-muted small mb-0">{{ ticket.subject }}</p>
+    <p class="text-muted small mb-0">{{ ticket.title }}</p>
   </div>
   <div class="d-flex gap-2">
+    {% if is_hr %}
     <a class="btn btn-outline-secondary btn-sm" href="{% url 'hr:ticket_update' ticket.pk %}">Edit</a>
+    {% endif %}
     <a class="btn btn-outline-secondary btn-sm" href="{% url 'hr:ticket_list' %}">Back</a>
   </div>
 </div>
@@ -17,15 +19,7 @@
   </div>
   <div class="card-body small">
     <div class="row g-3">
-      <div class="col-md-6"><strong>Client:</strong> {{ ticket.client.company_name }}</div>
-      <div class="col-md-6">
-        <strong>Project:</strong>
-        {% if ticket.project %}
-        {{ ticket.project.name }}
-        {% else %}
-        -
-        {% endif %}
-      </div>
+      <div class="col-md-6"><strong>Client:</strong> {{ ticket.client.company|default:ticket.client.full_name }}</div>
       <div class="col-md-6"><strong>Priority:</strong> {{ ticket.get_priority_display }}</div>
       <div class="col-md-6"><strong>Status:</strong> {{ ticket.get_status_display }}</div>
       <div class="col-md-6">
@@ -55,6 +49,13 @@
         <label class="form-label small fw-semibold mb-1">Comment</label>
         {{ comment_form.comment }}
       </div>
+      {% if is_hr %}
+      <div class="mb-3">
+        <label class="form-label small fw-semibold mb-1">Send To</label>
+        {{ comment_form.send_to }}
+        <div class="form-text small">Client: visible to client and HR. Assigned Employee: visible to assigned employee and HR.</div>
+      </div>
+      {% endif %}
       <button type="submit" class="btn btn-primary btn-sm">Add Comment</button>
     </form>
   </div>

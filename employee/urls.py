@@ -24,4 +24,10 @@ urlpatterns = [
     path('chat/<int:pk>/', views.chat_room, name='chat_room'),
     path('chat/start/<int:user_id>/', views.chat_start, name='chat_start'),
     path('chat/delete/<int:pk>/', views.chat_delete, name='chat_delete'),
+
+    path('todo/', views.employee_todo_list_view, name='employee_todo_list'),
+    path('todo/create/', views.employee_todo_create_view, name='employee_todo_create'),
+    path('todo/<int:pk>/update/', views.employee_todo_update_view, name='employee_todo_update'),
+    path('todo/<int:pk>/delete/', views.employee_todo_delete_view, name='employee_todo_delete'),
+    path('todo/<int:pk>/toggle/', views.employee_todo_toggle_status_view, name='employee_todo_toggle'),
 ]

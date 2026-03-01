@@ -62,14 +62,43 @@ from django.contrib.auth import logout
 User = get_user_model()
 
 
-def _create_notification(title: str, message: str, notification_type: str) -> None:
+def _create_notification(title: str, message: str, notification_type: str, user=None) -> None:
     if notification_type not in dict(NotificationType.choices):
         notification_type = NotificationType.ANNOUNCEMENT
     Notification.objects.create(
+        user=user,
         title=title[:255],
         message=message,
         type=notification_type,
     )
+
+
+def _ticket_user_role(request, ticket):
+    """Return 'hr', 'client', or 'employee' if the user has access to this ticket; else None."""
+    if not request.user.is_authenticated:
+        return None
+    if request.user.groups.filter(name="HR").exists():
+        return "hr"
+    if getattr(ticket.client, "user_id", None) == request.user.pk:
+        return "client"
+    if getattr(ticket, "assigned_to_id", None) == request.user.pk:
+        return "employee"
+    return None
+
+
+def _user_can_access_ticket(request, ticket):
+    return _ticket_user_role(request, ticket) is not None
+
+
+def _ticket_queryset_for_user(request):
+    """Return tickets the current user is allowed to see."""
+    if not request.user.is_authenticated:
+        return Ticket.objects.none()
+    if request.user.groups.filter(name="HR").exists():
+        return Ticket.objects.all()
+    if hasattr(request.user, "client_profile"):
+        return Ticket.objects.filter(client__user=request.user)
+    return Ticket.objects.filter(assigned_to=request.user)
 def _employee_total_count():
     # Real-time total employee records across statuses.
     return User.objects.filter(groups__name="EMPLOYEE").count()
@@ -366,6 +395,22 @@ def employee_deactivate(request, pk):
     )
 
     messages.success(request, f"{member.get_full_name()} deactivated.")
+    return redirect("hr:employee_list")
+
+
+def employee_delete(request, pk):
+    member = get_object_or_404(User, pk=pk)
+    if member.pk == request.user.pk:
+        messages.error(request, "You cannot delete your own account.")
+        return redirect("hr:employee_list")
+    name = member.get_full_name() or member.username
+    member.delete()  # Cascades to UserProfile, EmployeeProfile, attendances, etc.
+    _create_notification(
+        "Team member deleted",
+        f"{name} was permanently removed from the system.",
+        NotificationType.SECURITY,
+    )
+    messages.success(request, f"{name} has been permanently deleted.")
     return redirect("hr:employee_list")
 
 
@@ -852,28 +897,52 @@ def payment_list_view(request):
 # =====================
 
 def ticket_list_view(request):
-    tickets = Ticket.objects.all().order_by("-created_at")
-    context = {"tickets": tickets, **_ticket_summary(tickets)}
+    tickets = _ticket_queryset_for_user(request).order_by("-created_at")
+    is_hr = request.user.is_authenticated and request.user.groups.filter(name="HR").exists()
+    context = {"tickets": tickets, "is_hr": is_hr, **_ticket_summary(tickets)}
     return render(request, "hr/ticket_list.html", context)
 
 
 def ticket_detail_view(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
-    comments = ticket.comments.all().order_by("created_at")
+    if not _user_can_access_ticket(request, ticket):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You do not have access to this ticket.")
+    role = _ticket_user_role(request, ticket)
+    comments_qs = ticket.comments.all().order_by("created_at")
+    if role == "client":
+        comments_qs = comments_qs.filter(send_to="CLIENT")
+    elif role == "employee":
+        comments_qs = comments_qs.filter(send_to="EMPLOYEE")
+    comments = list(comments_qs)
     comment_form = TicketCommentForm()
+    is_hr = role == "hr"
     return render(
         request,
         "hr/ticket_detail.html",
-        {"ticket": ticket, "comments": comments, "comment_form": comment_form},
+        {
+            "ticket": ticket,
+            "comments": comments,
+            "comment_form": comment_form,
+            "is_hr": is_hr,
+        },
     )
 
 
 def ticket_update_view(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
+    if not _user_can_access_ticket(request, ticket):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You do not have access to this ticket.")
+    if not request.user.groups.filter(name="HR").exists():
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("Only HR can update tickets.")
     if request.method == "POST":
         form = TicketManagementForm(request.POST, instance=ticket)
         if form.is_valid():
-            form.save()
+            old_assigned_to_id = ticket.assigned_to_id
+            ticket = form.save()
+            _ensure_ticket_task(ticket, ticket.assigned_to, old_assigned_to_id)
             messages.success(request, f"Ticket {ticket.ticket_id} updated.")
             return redirect("hr:ticket_detail", pk=ticket.pk)
         messages.error(request, "Please correct the errors in the form.")
@@ -882,8 +951,37 @@ def ticket_update_view(request, pk):
     return render(request, "hr/ticket_edit.html", {"ticket": ticket, "form": form})
 
 
+def _ensure_ticket_task(ticket, assigned_to, old_assigned_to_id):
+    """Create or update linked Task when ticket is assigned to an employee."""
+    from datetime import timedelta
+    if not assigned_to:
+        return
+    if ticket.related_task_id:
+        task = ticket.related_task
+        task.assigned_to = assigned_to
+        task.title = ticket.title
+        task.description = ticket.description or ""
+        task.save(update_fields=["assigned_to", "title", "description"])
+        return
+    due = timezone.now().date() + timedelta(days=7)
+    task = Task.objects.create(
+        project=None,
+        assigned_to=assigned_to,
+        title=ticket.title,
+        description=ticket.description or "",
+        due_date=due,
+        status="Pending",
+        priority="Medium",
+    )
+    ticket.related_task = task
+    ticket.save(update_fields=["related_task"])
+
+
 def ticket_delete_view(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
+    if not request.user.groups.filter(name="HR").exists():
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("Only HR can delete tickets.")
     if request.method == "POST":
         ticket.delete()
         messages.success(request, "Ticket deleted.")
@@ -892,16 +990,43 @@ def ticket_delete_view(request, pk):
 
 def ticket_comment_create_view(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
-    if request.method == "POST":
-        form = TicketCommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.ticket = ticket
-            comment.author = request.user
-            comment.save()
-            messages.success(request, "Comment added.")
+    if not _user_can_access_ticket(request, ticket):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You do not have access to this ticket.")
+    if request.method != "POST":
+        return redirect("hr:ticket_detail", pk=ticket.pk)
+    is_hr = request.user.groups.filter(name="HR").exists()
+    form_data = request.POST.copy()
+    if not is_hr:
+        if hasattr(request.user, "client_profile") and ticket.client.user_id == request.user.pk:
+            form_data.setdefault("send_to", "CLIENT")
         else:
-            messages.error(request, "Comment could not be added.")
+            form_data.setdefault("send_to", "EMPLOYEE")
+    form = TicketCommentForm(form_data)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.ticket = ticket
+        comment.author = request.user
+        if not is_hr:
+            comment.send_to = "CLIENT" if hasattr(request.user, "client_profile") and ticket.client.user_id == request.user.pk else "EMPLOYEE"
+        comment.save()
+        if comment.send_to == "CLIENT" and ticket.client and getattr(ticket.client, "user_id", None):
+            _create_notification(
+                "New comment on ticket",
+                f"Ticket {ticket.ticket_id}: {comment.comment[:100]}...",
+                NotificationType.ANNOUNCEMENT,
+                user=ticket.client.user,
+            )
+        elif comment.send_to == "EMPLOYEE" and ticket.assigned_to_id:
+            _create_notification(
+                "New comment on assigned ticket",
+                f"Ticket {ticket.ticket_id}: {comment.comment[:100]}...",
+                NotificationType.ANNOUNCEMENT,
+                user=ticket.assigned_to,
+            )
+        messages.success(request, "Comment added.")
+    else:
+        messages.error(request, "Comment could not be added.")
     return redirect("hr:ticket_detail", pk=ticket.pk)
 
 
@@ -931,7 +1056,7 @@ def task_create(request):
             task = form.save()
             _create_notification(
                 "Task created",
-                f"Task '{task.title}' was created in project '{task.project.name}'.",
+                f"Task '{task.title}' was created" + (f" in project '{task.project.name}'." if task.project_id else " (ticket-linked)."),
                 NotificationType.ANNOUNCEMENT,
             )
             messages.success(request, "Task created.")
@@ -946,6 +1071,15 @@ def task_update(request, pk):
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
             task = form.save()
+            linked_ticket = task.support_ticket.first()
+            if linked_ticket and task.status == "Completed":
+                linked_ticket.status = "RESOLVED"
+                linked_ticket.save(update_fields=["status"])
+                _create_notification(
+                    "Ticket auto-resolved",
+                    f"Ticket {linked_ticket.ticket_id} set to Resolved (task completed).",
+                    NotificationType.SECURITY,
+                )
             _create_notification(
                 "Task updated",
                 f"Task '{task.title}' was updated.",

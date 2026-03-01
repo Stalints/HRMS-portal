@@ -1,0 +1,245 @@
+{% extends 'employee/base.html' %}
+{% block page_title %}My Personal To-Do{% endblock %}
+
+{% block content %}
+<style>
+.todo-header-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; }
+.todo-summary-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; align-items: stretch; }
+.todo-summary-card { background: white; padding: 16px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1; min-width: 120px; max-width: 200px; }
+.todo-summary-card .num { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+.todo-summary-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+.badge-priority { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-priority.high { background: #fee2e2; color: #b91c1c; }
+.badge-priority.medium { background: #fef3c7; color: #b45309; }
+.badge-priority.low { background: #d1fae5; color: #047857; }
+.todo-table { width: 100%; border-collapse: collapse; }
+.todo-table th { text-align: left; padding: 12px; background: #f8fafc; border-bottom: 2px solid #e5e7eb; font-size: 14px; }
+.todo-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+.todo-table tr:hover { background: #f9fafb; }
+.todo-table tr.todo-overdue { background: #fef2f2; }
+.todo-table tr.todo-overdue:hover { background: #fee2e2; }
+.todo-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.todo-actions form { display: inline; }
+.btn-small { padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn-edit { background: #e0e7ff; color: #3730a3; }
+.btn-edit:hover { background: #c7d2fe; }
+.btn-complete { background: #d1fae5; color: #047857; }
+.btn-complete:hover { background: #a7f3d0; }
+.btn-pending { background: #fef3c7; color: #b45309; }
+.btn-pending:hover { background: #fde68a; }
+.btn-delete { background: #fee2e2; color: #b91c1c; }
+.btn-delete:hover { background: #fecaca; }
+.todo-form-card { margin-bottom: 20px; }
+.todo-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 20px; align-items: end; }
+@media (max-width: 768px) { .todo-form-grid { grid-template-columns: 1fr; } }
+.todo-form-grid .form-group { display: flex; flex-direction: column; min-width: 0; }
+.todo-form-grid label { display: block; font-size: 14px; margin-bottom: 6px; color: #475569; }
+.todo-form-grid input, .todo-form-grid select { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 14px; box-sizing: border-box; }
+.todo-form-desc { margin-top: 16px; grid-column: 1 / -1; }
+.todo-form-desc label { display: block; font-size: 14px; margin-bottom: 6px; color: #475569; }
+.todo-form-desc textarea { width: 100%; max-width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 14px; box-sizing: border-box; }
+.todo-form-submit { margin-top: 16px; }
+.status.completed { background: #d1fae5; color: #047857; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+
+
+.todo-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;   /* 🔥 important for alignment */
+}
+
+.todo-table th,
+.todo-table td {
+    padding: 12px 10px;
+    text-align: left;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+.todo-table th {
+    font-weight: 600;
+    background: #f8fafc;
+}
+
+/* Set column widths */
+.todo-table th:nth-child(1) { width: 30%; }  /* Title */
+.todo-table th:nth-child(2) { width: 15%; }  /* Due */
+.todo-table th:nth-child(3) { width: 15%; }  /* Priority */
+.todo-table th:nth-child(4) { width: 15%; }  /* Status */
+.todo-table th:nth-child(5) { width: 25%; }  /* Actions */
+
+/* Align actions column properly */
+.todo-table td:last-child {
+    text-align: right;
+}
+
+.todo-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.todo-table tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.todo-table tr:hover {
+    background: #f9fafb;
+}
+
+
+</style>
+
+<div class="todo-header-row">
+    <a href="#add-todo-form" class="btn-primary">+ Add To-Do</a>
+</div>
+
+<div class="todo-summary-row">
+    <div class="todo-summary-card">
+        <div class="num">{{ total_todos }}</div>
+        <div class="label">Total To-Dos</div>
+    </div>
+    <div class="todo-summary-card">
+        <div class="num">{{ pending_count }}</div>
+        <div class="label">Pending</div>
+    </div>
+    <div class="todo-summary-card">
+        <div class="num">{{ completed_count }}</div>
+        <div class="label">Completed</div>
+    </div>
+</div>
+
+<div class="card todo-form-card" id="add-todo-form">
+    <h3 style="margin-bottom: 16px;">Add new To-Do</h3>
+    <form method="post" action="{% url 'employee:employee_todo_create' %}">
+        {% csrf_token %}
+        <div class="todo-form-grid">
+            <div class="form-group">
+                <label for="id_title">Title *</label>
+                <input type="text" id="id_title" name="title" required placeholder="What to do?" maxlength="255">
+            </div>
+            <div class="form-group">
+                <label for="id_due_date">Due Date</label>
+                <input type="date" id="id_due_date" name="due_date">
+            </div>
+            <div class="form-group">
+                <label for="id_priority">Priority</label>
+                <select id="id_priority" name="priority">
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM" selected>Medium</option>
+                    <option value="HIGH">High</option>
+                </select>
+            </div>
+            <div class="todo-form-desc">
+                <label for="id_description">Description (optional)</label>
+                <textarea id="id_description" name="description" rows="2" placeholder="Details..."></textarea>
+            </div>
+        </div>
+        <div class="todo-form-submit">
+            <button type="submit" class="btn-primary">Add To-Do</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 12px;">Your To-Dos</h3>
+    <table class="todo-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for todo in todos %}
+            <tr class="{% if todo.due_date and todo.due_date < today and todo.status == 'PENDING' %}todo-overdue{% endif %}">
+                <td>
+                    <strong>{{ todo.title }}</strong>
+                    {% if todo.description %}<div style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ todo.description|truncatewords:15 }}</div>{% endif %}
+                </td>
+                <td>{% if todo.due_date %}{{ todo.due_date|date:"M d, Y" }}{% if todo.due_date < today and todo.status == 'PENDING' %} <span style="color:#b91c1c; font-size: 12px;">(Overdue)</span>{% endif %}{% else %}—{% endif %}</td>
+                <td><span class="badge-priority {{ todo.priority|lower }}">{{ todo.get_priority_display }}</span></td>
+                <td><span class="status {{ todo.status|lower }}">{{ todo.get_status_display }}</span></td>
+                <td style="text-align: right;">
+                    <div class="todo-actions">
+                        <form method="post" action="{% url 'employee:employee_todo_toggle' todo.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            {% if todo.status == 'PENDING' %}
+                            <button type="submit" class="btn-small btn-complete">Mark Complete</button>
+                            {% else %}
+                            <button type="submit" class="btn-small btn-pending">Mark Pending</button>
+                            {% endif %}
+                        </form>
+                        <a href="#" class="btn-small btn-edit" data-update-url="{% url 'employee:employee_todo_update' todo.pk %}" data-title="{{ todo.title|escapejs }}" data-description="{{ todo.description|escapejs }}" data-due="{{ todo.due_date|date:'Y-m-d'|default:'' }}" data-priority="{{ todo.priority }}" onclick="openEditModal(this); return false;">Edit</a>
+                        <form method="post" action="{% url 'employee:employee_todo_delete' todo.pk %}" style="display:inline;" onsubmit="return confirm('Delete this To-Do?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-small btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 24px; color: #64748b;">No To-Dos yet. Use the form above to add one.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="edit-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 24px; border-radius: 12px; max-width: 480px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.15);">
+        <h3 style="margin-top: 0;">Edit To-Do</h3>
+        <form method="post" id="edit-form" action="">
+            {% csrf_token %}
+            <div style="margin-bottom: 12px;">
+                <label for="edit_title">Title *</label>
+                <input type="text" id="edit_title" name="title" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #d1d5db;">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label for="edit_due_date">Due Date</label>
+                <input type="date" id="edit_due_date" name="due_date" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #d1d5db;">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label for="edit_priority">Priority</label>
+                <select id="edit_priority" name="priority" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #d1d5db;">
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label for="edit_description">Description</label>
+                <textarea id="edit_description" name="description" rows="3" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #d1d5db;"></textarea>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="btn-primary">Save</button>
+                <button type="button" class="btn-small btn-delete" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(btn) {
+    var u = btn.getAttribute('data-update-url');
+    document.getElementById('edit-form').action = u;
+    document.getElementById('edit_title').value = btn.getAttribute('data-title') || '';
+    document.getElementById('edit_description').value = btn.getAttribute('data-description') || '';
+    document.getElementById('edit_due_date').value = btn.getAttribute('data-due') || '';
+    document.getElementById('edit_priority').value = btn.getAttribute('data-priority') || 'MEDIUM';
+    document.getElementById('edit-modal').style.display = 'flex';
+}
+function closeEditModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+}
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
+</script>
+{% endblock %}

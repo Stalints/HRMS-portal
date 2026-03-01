@@ -6,10 +6,11 @@ from hr.models import Notification, NotificationType
 @receiver(post_save, sender=Task)
 def notify_task_assignment(sender, instance, created, **kwargs):
     if created and instance.assigned_to:
+        project_desc = instance.project.name if instance.project_id else "support ticket"
         Notification.objects.create(
             user=instance.assigned_to,
             title="New Task Assigned",
-            message=f"You have been assigned to task: '{instance.title}' for project '{instance.project.name}'.",
+            message=f"You have been assigned to task: '{instance.title}' for {project_desc}.",
             type=NotificationType.EVENT
         )
 

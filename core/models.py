@@ -101,7 +101,9 @@ class Task(models.Model):
         ("YEARLY", "Yearly"),
     ]
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="tasks", null=True, blank=True
+    )
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tasks")
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -301,6 +303,14 @@ class SupportTicket(models.Model):
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="OPEN")
 
+    related_task = models.ForeignKey(
+        "Task",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="support_ticket",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -314,9 +324,19 @@ class SupportTicket(models.Model):
         return f"{self.ticket_id} - {self.title}"
 
 class TicketComment(models.Model):
+    SEND_TO_CHOICES = [
+        ("CLIENT", "Client"),
+        ("EMPLOYEE", "Assigned Employee"),
+    ]
     ticket = models.ForeignKey(SupportTicket, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comment = models.TextField()
+    send_to = models.CharField(
+        max_length=20,
+        choices=SEND_TO_CHOICES,
+        default="CLIENT",
+        help_text="Who can see this comment: Client or Assigned Employee.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

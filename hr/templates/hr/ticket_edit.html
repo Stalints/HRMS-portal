@@ -12,9 +12,8 @@
   <div class="card-header"><h2 class="h6 mb-0">Ticket Details (Read Only)</h2></div>
   <div class="card-body small">
     <div class="row g-3">
-      <div class="col-md-6"><strong>Client:</strong> {{ ticket.client.company_name }}</div>
-      <div class="col-md-6"><strong>Project:</strong> {% if ticket.project %}{{ ticket.project.name }}{% else %}-{% endif %}</div>
-      <div class="col-md-6"><strong>Subject:</strong> {{ ticket.subject }}</div>
+      <div class="col-md-6"><strong>Client:</strong> {{ ticket.client.company|default:ticket.client.full_name }}</div>
+      <div class="col-md-6"><strong>Subject:</strong> {{ ticket.title }}</div>
       <div class="col-md-6"><strong>Created:</strong> {{ ticket.created_at|date:"Y-m-d" }}</div>
       <div class="col-12"><strong>Description:</strong><div class="mt-1">{{ ticket.description }}</div></div>
     </div>

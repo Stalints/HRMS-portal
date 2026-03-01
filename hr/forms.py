@@ -210,6 +210,7 @@ class TaskForm(forms.ModelForm):
             groups__name="EMPLOYEE",
             is_active=True
         )
+        self.fields['project'].required = False
 
     class Meta:
         model = Task
@@ -413,10 +414,17 @@ class TicketManagementForm(forms.ModelForm):
 class TicketCommentForm(forms.ModelForm):
     class Meta:
         model = TicketComment
-        fields = ["comment"]
+        fields = ["comment", "send_to"]
         widgets = {
             "comment": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Add an update/comment"}),
+            "send_to": forms.Select(attrs={"class": "form-select form-select-sm"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["send_to"].choices = TicketComment.SEND_TO_CHOICES
+        self.fields["send_to"].required = True
+        self.fields["send_to"].initial = "CLIENT"
 
 
 class NoteForm(forms.ModelForm):

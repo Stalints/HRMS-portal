@@ -56,6 +56,26 @@
         <p>View company events</p>
     </a>
 
+    <a href="{% url 'employee:employee_todo_list' %}" class="dash-card orange">
+        <h3>📋 My To-Do</h3>
+        <p>Personal to-do list</p>
+    </a>
+
 </div>
+
+{% if upcoming_todos %}
+<div class="card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 12px;">📋 Upcoming To-Dos</h3>
+    <ul style="margin: 0; padding-left: 20px;">
+        {% for todo in upcoming_todos %}
+        <li style="margin-bottom: 6px;">
+            <strong>{{ todo.title }}</strong>
+            {% if todo.due_date %} — Due {{ todo.due_date|date:"M d, Y" }}{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'employee:employee_todo_list' %}" class="btn-primary" style="margin-top: 12px; display: inline-block;">View all To-Dos</a>
+</div>
+{% endif %}
 
 {% endblock %}

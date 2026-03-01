@@ -47,9 +47,9 @@
           {% for ticket in tickets %}
             <tr>
               <td>{{ ticket.ticket_id }}</td>
-              <td>{{ ticket.client.company_name }}</td>
-              <td>{% if ticket.project %}{{ ticket.project.name }}{% else %}-{% endif %}</td>
-              <td>{{ ticket.subject }}</td>
+              <td>{{ ticket.client.company|default:ticket.client.full_name }}</td>
+              <td>-</td>
+              <td>{{ ticket.title }}</td>
               <td>
                 {% if ticket.priority == "HIGH" %}
                   <span class="badge bg-danger-subtle text-danger">High</span>
@@ -74,8 +74,10 @@
               <td>{{ ticket.created_at|date:"Y-m-d" }}</td>
               <td class="text-end">
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'hr:ticket_detail' ticket.pk %}">View</a>
+                {% if is_hr %}
                 <a class="btn btn-sm btn-outline-secondary" href="{% url 'hr:ticket_update' ticket.pk %}">Edit</a>
                 <form method="post" action="{% url 'hr:ticket_delete' ticket.pk %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger">Delete</button></form>
+                {% endif %}
               </td>
             </tr>
           {% empty %}

@@ -386,9 +386,8 @@
 .dash-card.pink { background: #fce7f3; }
 .dash-card.purple { background: #ede9fe; }
 
-.dash-card.sky {
-    background: #e0f2fe;
-}
+.dash-card.sky { background: #e0f2fe; }
+.dash-card.orange { background: #ffedd5; }
 .calendar-table {
     width: 100%;
     border-collapse: collapse;
