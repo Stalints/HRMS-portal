@@ -6,9 +6,6 @@ from .models import Attendance
 from .models import (
     LeaveCategory,
     Announcement,
-    Project,
-    Task,
-    Client,
     Event,
     Note,
     TimelinePost,
@@ -18,9 +15,15 @@ from .models import (
     PersonalTask,
     Team,
     Payroll,
+)
+
+from core.models import (
+    Project,
+    Task,
+    ClientProfile as Client,
     Invoice,
     Payment,
-    Ticket,
+    SupportTicket as Ticket,
     TicketComment,
 )
 
@@ -80,7 +83,7 @@ class AttendanceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.filter(is_active=True).order_by('first_name', 'last_name')
+        self.fields['user'].queryset = User.objects.filter(is_active=True, groups__name="EMPLOYEE").order_by('first_name', 'last_name')
         self.fields['check_in'].required = False
         self.fields['check_out'].required = False
 
@@ -141,7 +144,7 @@ class TeamForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        employees = User.objects.order_by("first_name", "last_name", "username")
+        employees = User.objects.filter(groups__name="EMPLOYEE").order_by("first_name", "last_name", "username")
         self.fields["team_lead"].queryset = employees
         self.fields["team_lead"].required = False
         self.fields["members"].queryset = employees
@@ -175,45 +178,39 @@ class AnnouncementForm(forms.ModelForm):
 
 
 class ProjectForm(forms.ModelForm):
-    client_name = forms.ChoiceField(
-        choices=[],
-        widget=forms.Select(attrs={"class": "form-select form-select-sm"}),
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        client_choices = [("", "Select Client")]
-        for client in Client.objects.order_by("company_name"):
-            client_choices.append((client.company_name, client.company_name))
-
-        current_value = self.initial.get("client_name") or getattr(self.instance, "client_name", "")
-        if current_value and current_value not in dict(client_choices):
-            client_choices.append((current_value, current_value))
-
-        self.fields["client_name"].choices = client_choices
-
     class Meta:
         model = Project
         fields = [
             "name",
-            "client_name",
+            "client",
             "start_date",
-            "deadline",
+            "end_date",
             "status",
             "progress_percentage",
             "description",
+            "employees",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Project name"}),
+            "client": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "start_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
-            "deadline": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "end_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
             "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "progress_percentage": forms.NumberInput(attrs={"class": "form-control form-control-sm", "min": 0, "max": 100}),
             "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Describe the project"}),
+            "employees": forms.SelectMultiple(attrs={"class": "form-select form-select-sm"}),
         }
 
 
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only show registered active employees (exclude HR and Clients)
+        self.fields['assigned_to'].queryset = User.objects.filter(
+            groups__name="EMPLOYEE",
+            is_active=True
+        )
+
     class Meta:
         model = Task
         fields = [
@@ -228,7 +225,7 @@ class TaskForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Task title"}),
             "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "assigned_to": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Assignee name"}),
+            "assigned_to": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "due_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
             "priority": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
@@ -237,24 +234,43 @@ class TaskForm(forms.ModelForm):
 
 
 class ClientForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Password'}),
+        required=True,
+    )
+    password_confirm = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Confirm Password'}),
+        required=True,
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'email@example.com'}),
+        required=True,
+    )
+
     class Meta:
         model = Client
         fields = [
-            "company_name",
-            "contact_person",
+            "company",
+            "full_name",
             "email",
             "phone",
             "address",
-            "status",
+            "is_active",
         ]
         widgets = {
-            "company_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Company name"}),
-            "contact_person": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Contact person"}),
-            "email": forms.EmailInput(attrs={"class": "form-control form-control-sm", "placeholder": "email@example.com"}),
+            "company": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Company name"}),
+            "full_name": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Contact person"}),
             "phone": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Phone number"}),
             "address": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Address"}),
-            "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "is_active": forms.Select(choices=[(True, 'Active'), (False, 'Inactive')], attrs={"class": "form-select form-select-sm"}),
         }
+
+    def clean_password_confirm(self):
+        password = self.cleaned_data.get('password')
+        password_confirm = self.cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError('Passwords do not match.')
+        return password_confirm
 
 
 class PayrollForm(forms.ModelForm):
@@ -265,7 +281,7 @@ class PayrollForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        employees = User.objects.filter(is_superuser=False).order_by("first_name", "last_name", "username")
+        employees = User.objects.filter(groups__name="EMPLOYEE").order_by("first_name", "last_name", "username")
         choices = [("", "Select Employee")]
         for employee in employees:
             value = employee.get_full_name().strip() or employee.username
@@ -324,13 +340,14 @@ class EventForm(forms.ModelForm):
 class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
-        fields = ["client", "project", "amount", "tax_percentage", "due_date", "status"]
+        fields = ["client", "project", "amount", "tax_1_percentage", "due_date", "status", "issued_date"]
         widgets = {
             "client": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "amount": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
-            "tax_percentage": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
+            "tax_1_percentage": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0"}),
             "due_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
+            "issued_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
             "status": forms.Select(attrs={"class": "form-select form-select-sm"}),
         }
 
@@ -338,23 +355,23 @@ class InvoiceForm(forms.ModelForm):
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ["amount_paid", "payment_date", "payment_method", "reference_number"]
+        fields = ["amount_paid", "payment_date", "method", "txn_id"]
         widgets = {
             "amount_paid": forms.NumberInput(attrs={"class": "form-control form-control-sm", "step": "0.01", "min": "0.01"}),
             "payment_date": forms.DateInput(attrs={"class": "form-control form-control-sm", "type": "date"}),
-            "payment_method": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "reference_number": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Optional reference"}),
+            "method": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "txn_id": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Optional reference"}),
         }
 
 
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ["client", "project", "subject", "description", "priority", "assigned_to", "status"]
+        fields = ["client", "category", "title", "description", "priority", "assigned_to", "status"]
         widgets = {
             "client": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "project": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "subject": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Ticket subject"}),
+            "category": forms.Select(attrs={"class": "form-select form-select-sm"}),
+            "title": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Ticket subject"}),
             "description": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 4, "placeholder": "Describe the issue"}),
             "priority": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "assigned_to": forms.Select(attrs={"class": "form-select form-select-sm"}),
@@ -363,9 +380,8 @@ class TicketForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["project"].required = False
         self.fields["assigned_to"].required = False
-        self.fields["assigned_to"].queryset = User.objects.filter(is_superuser=False).order_by(
+        self.fields["assigned_to"].queryset = User.objects.filter(groups__name="EMPLOYEE").order_by(
             "first_name",
             "last_name",
             "username",
@@ -386,7 +402,7 @@ class TicketManagementForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["assigned_to"].required = False
-        self.fields["assigned_to"].queryset = User.objects.filter(is_superuser=False).order_by(
+        self.fields["assigned_to"].queryset = User.objects.filter(groups__name="EMPLOYEE").order_by(
             "first_name",
             "last_name",
             "username",
@@ -397,9 +413,9 @@ class TicketManagementForm(forms.ModelForm):
 class TicketCommentForm(forms.ModelForm):
     class Meta:
         model = TicketComment
-        fields = ["comment_text"]
+        fields = ["comment"]
         widgets = {
-            "comment_text": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Add an update/comment"}),
+            "comment": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 3, "placeholder": "Add an update/comment"}),
         }
 
 

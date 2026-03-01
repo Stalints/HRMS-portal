@@ -32,6 +32,12 @@
           <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}"><span class="me-2" aria-hidden="true">&#128227;</span> Announcements</a></li>
           <li class="nav-item"><a class="nav-link active d-flex align-items-center" href="#"><span class="me-2" aria-hidden="true">&#128193;</span> Projects</a></li>
           <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}"><span class="me-2" aria-hidden="true">&#9989;</span> Tasks</a></li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'chat_dashboard' or request.resolver_match.url_name == 'chat_room' %}active{% endif %}"
+            href="{% url 'hr:chat_dashboard' %}">
+            <span class="me-2" aria-hidden="true">&#128172;</span> Chat <span class="global-chat-badge badge bg-danger ms-2" style="display:none;">0</span>
+          </a>
+        </li>
           <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}"><span class="me-2" aria-hidden="true">&#127970;</span> Clients</a></li>
           <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}"><span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar</a></li>
           <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}"><span class="me-2" aria-hidden="true">&#128176;</span> Payroll</a></li>
@@ -156,7 +162,62 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
-  </body>
+  
+    <!-- Notification System JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const notifySocket = new WebSocket(wsProtocol + window.location.host + '/ws/notifications/');
+
+            function updateBadge(count) {
+                const badges = document.querySelectorAll('.global-chat-badge');
+                badges.forEach(b => {
+                    if(count > 0) {
+                        b.textContent = count;
+                        b.style.display = 'inline-block';
+                    } else {
+                        b.style.display = 'none';
+                    }
+                });
+            }
+
+            function showToast(sender, preview) {
+                const toast = document.createElement('div');
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.background = '#4f46e5';
+                toast.style.color = 'white';
+                toast.style.padding = '12px 20px';
+                toast.style.borderRadius = '12px';
+                toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                toast.style.zIndex = '9999';
+                toast.style.transition = 'opacity 0.3s';
+                toast.style.fontFamily = 'system-ui, sans-serif';
+                toast.innerHTML = `<div style="font-weight:bold; margin-bottom:4px;">New Message from ${sender} <span style="font-size:16px;">💬</span></div><div style="font-size:0.9em; opacity:0.9;">${preview}</div>`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            notifySocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.type === 'unread_count_init') {
+                    updateBadge(data.unread_count);
+                } else if (data.type === 'chat_notification') {
+                    updateBadge(data.unread_count);
+                    if (!window.location.pathname.includes('/chat/') && !window.location.pathname.includes('/messages/')) {
+                        showToast(data.sender_name, data.message_preview);
+                    }
+                }
+            };
+        });
+    </script>
+</body>
+
 </html>
 
 

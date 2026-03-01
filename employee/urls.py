@@ -19,4 +19,9 @@ urlpatterns = [
     path('clock-out/', views.clock_out, name='clock_out'),
 
     path('events/', views.employee_events, name='employee_events'),
+
+    path('chat/', views.chat_dashboard, name='chat_dashboard'),
+    path('chat/<int:pk>/', views.chat_room, name='chat_room'),
+    path('chat/start/<int:user_id>/', views.chat_start, name='chat_start'),
+    path('chat/delete/<int:pk>/', views.chat_delete, name='chat_delete'),
 ]

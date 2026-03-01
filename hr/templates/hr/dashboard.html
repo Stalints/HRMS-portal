@@ -19,7 +19,8 @@
 <body>
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
+    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation"
+      style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
       <div class="mb-4">
         <div class="d-flex align-items-center mb-2">
           <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
@@ -81,6 +82,12 @@
           <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}"
             href="{% url 'hr:task_list' %}">
             <span class="me-2" aria-hidden="true">&#9989;</span> Tasks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'chat_dashboard' or request.resolver_match.url_name == 'chat_room' %}active{% endif %}"
+            href="{% url 'hr:chat_dashboard' %}">
+            <span class="me-2" aria-hidden="true">&#128172;</span> Chat <span class="global-chat-badge badge bg-danger ms-2" style="display:none;">0</span>
           </a>
         </li>
         <li class="nav-item">
@@ -184,7 +191,8 @@
             </ul>
 
             <div class="d-flex align-items-center gap-3">
-              <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+              <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2"
+                aria-label="Notifications">
                 <i class="fa-solid fa-bell"></i>
                 {% if navbar_unread_notifications > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -248,7 +256,8 @@
                 <div>
                   <div class="text-muted small">Today's Attendance</div>
                   <div class="fs-4 fw-semibold">{{ present_today }}</div>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">{{ attendance_percent }}%
+                  <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">{{
+                    attendance_percent }}%
                     Present</span>
                 </div>
                 <div class="summary-card-icon"><i class="fa-solid fa-stopwatch"></i></div>
@@ -274,7 +283,8 @@
                 <div>
                   <div class="text-muted small">Active Announcements</div>
                   <div class="fs-4 fw-semibold">{{ active_announcements_count }}</div>
-                  <span class="badge bg-info-subtle text-info border border-info-subtle mt-1">{{ announcements_this_week }} new this week</span>
+                  <span class="badge bg-info-subtle text-info border border-info-subtle mt-1">{{ announcements_this_week
+                    }} new this week</span>
                 </div>
                 <div class="summary-card-icon"><i class="fa-solid fa-bullhorn"></i></div>
               </div>
@@ -321,15 +331,15 @@
               <div class="card-body">
                 <ul class="list-group list-group-flush small">
                   {% for ticket in recent_tickets %}
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                      <div>
-                        <div class="fw-semibold">{{ ticket.ticket_id }}</div>
-                        <div class="text-muted">{{ ticket.client.company_name }} &middot; {{ ticket.subject }}</div>
-                      </div>
-                      <span class="badge bg-primary-subtle text-primary">{{ ticket.get_status_display }}</span>
-                    </li>
+                  <li class="list-group-item px-0 d-flex justify-content-between">
+                    <div>
+                      <div class="fw-semibold">{{ ticket.ticket_id }}</div>
+                      <div class="text-muted">{{ ticket.client.company_name }} &middot; {{ ticket.subject }}</div>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary">{{ ticket.get_status_display }}</span>
+                  </li>
                   {% empty %}
-                    <li class="list-group-item px-0 text-muted">No support tickets available</li>
+                  <li class="list-group-item px-0 text-muted">No support tickets available</li>
                   {% endfor %}
                 </ul>
               </div>
@@ -363,15 +373,15 @@
               <div class="card-body">
                 <ul class="list-group list-group-flush small">
                   {% for record in latest_payroll_records %}
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                      <div>
-                        <div class="fw-semibold">{{ record.employee_name }}</div>
-                        <div class="text-muted">{{ record.month }}</div>
-                      </div>
-                      <span class="badge bg-primary-subtle text-primary">{{ record.net_salary }}</span>
-                    </li>
+                  <li class="list-group-item px-0 d-flex justify-content-between">
+                    <div>
+                      <div class="fw-semibold">{{ record.employee_name }}</div>
+                      <div class="text-muted">{{ record.month }}</div>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary">{{ record.net_salary }}</span>
+                  </li>
                   {% empty %}
-                    <li class="list-group-item px-0 text-muted">No payroll records available</li>
+                  <li class="list-group-item px-0 text-muted">No payroll records available</li>
                   {% endfor %}
                 </ul>
               </div>
@@ -403,15 +413,16 @@
               <div class="card-body">
                 <ul class="list-group list-group-flush small">
                   {% for invoice in recent_invoices %}
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                      <div>
-                        <div class="fw-semibold">{{ invoice.invoice_number }}</div>
-                        <div class="text-muted">{{ invoice.client.company_name }} &middot; {{ invoice.project.name }}</div>
+                  <li class="list-group-item px-0 d-flex justify-content-between">
+                    <div>
+                      <div class="fw-semibold">{{ invoice.invoice_number }}</div>
+                      <div class="text-muted">{{ invoice.client.company_name }} &middot; {{ invoice.project.name }}
                       </div>
-                      <span class="badge bg-primary-subtle text-primary">{{ invoice.total_amount }}</span>
-                    </li>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary">{{ invoice.total_amount }}</span>
+                  </li>
                   {% empty %}
-                    <li class="list-group-item px-0 text-muted">No invoice records available</li>
+                  <li class="list-group-item px-0 text-muted">No invoice records available</li>
                   {% endfor %}
                 </ul>
               </div>
@@ -434,7 +445,8 @@
                     <div>
                       <div class="fw-semibold">{{ ev.title }}</div>
                       <div class="text-muted">
-                        {{ ev.event_date|date:"d M Y" }} &middot; {{ ev.start_time }}{% if ev.end_time %} - {{ ev.end_time }}{% endif %}
+                        {{ ev.event_date|date:"d M Y" }} &middot; {{ ev.start_time }}{% if ev.end_time %} - {{
+                        ev.end_time }}{% endif %}
                       </div>
                     </div>
                     <span class="badge bg-primary-subtle text-primary">{{ ev.share_with }}</span>
@@ -511,7 +523,8 @@
             <div class="card border-0 shadow-sm h-100" id="announcements">
               <div class="card-header card-header-small d-flex justify-content-between">
                 <h2 class="h6 mb-0">Announcements Preview</h2>
-                <span class="badge bg-primary-subtle text-primary">Active: {{ active_announcements_count|default_if_none:0 }}</span>
+                <span class="badge bg-primary-subtle text-primary">Active: {{
+                  active_announcements_count|default_if_none:0 }}</span>
               </div>
               <div class="card-body small">
                 {% if active_announcements %}
@@ -583,10 +596,61 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
+
+    <!-- Notification System JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const notifySocket = new WebSocket(wsProtocol + window.location.host + '/ws/notifications/');
+
+            function updateBadge(count) {
+                const badges = document.querySelectorAll('.global-chat-badge');
+                badges.forEach(b => {
+                    if(count > 0) {
+                        b.textContent = count;
+                        b.style.display = 'inline-block';
+                    } else {
+                        b.style.display = 'none';
+                    }
+                });
+            }
+
+            function showToast(sender, preview) {
+                const toast = document.createElement('div');
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.background = '#4f46e5';
+                toast.style.color = 'white';
+                toast.style.padding = '12px 20px';
+                toast.style.borderRadius = '12px';
+                toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                toast.style.zIndex = '9999';
+                toast.style.transition = 'opacity 0.3s';
+                toast.style.fontFamily = 'system-ui, sans-serif';
+                toast.innerHTML = `<div style="font-weight:bold; margin-bottom:4px;">New Message from ${sender} <span style="font-size:16px;">💬</span></div><div style="font-size:0.9em; opacity:0.9;">${preview}</div>`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            notifySocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.type === 'unread_count_init') {
+                    updateBadge(data.unread_count);
+                } else if (data.type === 'chat_notification') {
+                    updateBadge(data.unread_count);
+                    if (!window.location.pathname.includes('/chat/') && !window.location.pathname.includes('/messages/')) {
+                        showToast(data.sender_name, data.message_preview);
+                    }
+                }
+            };
+        });
+    </script>
 </body>
 
+
 </html>
-
-
-
-

@@ -12,7 +12,30 @@ from django.utils import timezone
 import re
 
 from .forms import AttendanceForm, TeamMemberAddForm, TeamMemberEditForm, AnnouncementForm, ProjectForm, TaskForm, ClientForm, TeamForm, PayrollForm, InvoiceForm, TicketManagementForm, TicketCommentForm
-from .models import Attendance, Status, LeaveRequest, LeaveCategory, Announcement, AnnouncementStatus, Project, Task, TaskStatus, Client, ClientStatus, Team, Payroll, Invoice, Payment, Ticket, TicketComment
+from .models import (
+    Attendance,
+    LeaveRequest,
+    LeaveCategory,
+    Announcement,
+    AnnouncementStatus,
+    Team,
+    Payroll,
+    Notification,
+    Event, EventType,
+    PersonalTask, Note, NoteVisibility, 
+    TimelinePost, TimelineComment, TimelineLike, TimelinePostType,
+    HelpArticle, HelpCategory,
+)
+
+from core.models import (
+    Project,
+    Task,
+    ClientProfile as Client,
+    Invoice,
+    Payment,
+    SupportTicket as Ticket,
+    TicketComment,
+)
 from .forms import LeaveCategoryForm
 from .forms import EventForm, NoteForm, TimelinePostForm, TimelineCommentForm, HelpArticleForm, PersonalTaskForm
 from .models import (
@@ -49,7 +72,7 @@ def _create_notification(title: str, message: str, notification_type: str) -> No
     )
 def _employee_total_count():
     # Real-time total employee records across statuses.
-    return User.objects.filter(is_superuser=False).count()
+    return User.objects.filter(groups__name="EMPLOYEE").count()
 
 
 def _payroll_summary(queryset):
@@ -69,7 +92,7 @@ def _payroll_summary(queryset):
 
 
 def _invoice_summary(queryset):
-    total_revenue = queryset.aggregate(total=Sum("total_amount"))["total"] or 0
+    total_revenue = sum(inv.total_amount for inv in queryset)
     paid_total = Payment.objects.filter(invoice__in=queryset).aggregate(total=Sum("amount_paid"))["total"] or 0
     pending_total = total_revenue - paid_total
     return {
@@ -77,7 +100,7 @@ def _invoice_summary(queryset):
         "total_revenue": total_revenue,
         "paid_total": paid_total,
         "pending_total": pending_total if pending_total > 0 else 0,
-        "overdue_count": queryset.filter(due_date__lt=timezone.localdate()).exclude(status="PAID").count(),
+        "overdue_count": len([i for i in queryset if i.due_date and i.due_date < timezone.localdate() and i.status != "PAID"]),
     }
 
 
@@ -99,7 +122,7 @@ def dashboard(request):
     today = timezone.localdate()
     now = timezone.now()
 
-    employees_qs = User.objects.filter(is_superuser=False)
+    employees_qs = User.objects.filter(groups__name="EMPLOYEE")
     total_employees = employees_qs.count()
 
     attendance_today_qs = Attendance.objects.filter(date=today)
@@ -133,8 +156,8 @@ def dashboard(request):
     payroll_pending_count = payroll_qs.filter(status="PENDING").count()
     latest_payroll_records = payroll_qs[:5]
 
-    invoices_qs = Invoice.objects.select_related("client", "project").order_by("-created_at")
-    invoice_total_revenue = invoices_qs.aggregate(total=Sum("total_amount"))["total"] or 0
+    invoices_qs = Invoice.objects.select_related("project__client").order_by("-created_at")
+    invoice_total_revenue = sum(inv.total_amount for inv in invoices_qs)
     invoice_paid_count = invoices_qs.filter(status="PAID").count()
     invoice_pending_count = invoices_qs.exclude(status="PAID").count()
     recent_invoices = invoices_qs[:5]
@@ -190,7 +213,7 @@ def dashboard(request):
 def employee_list(request):
     query = request.GET.get("q", "").strip()
 
-    members = User.objects.all()
+    members = User.objects.filter(groups__name="EMPLOYEE")
 
     if query:
         members = members.filter(
@@ -215,15 +238,48 @@ def employee_add(request):
         form = TeamMemberAddForm(request.POST)
         if form.is_valid():
             member = form.save()
+            
+            # Force role to EMPLOYEE for security and logic in HR Portal
+            role = "EMPLOYEE"
+            status = request.POST.get("status", "ACTIVE")
+            
+            member.is_active = (status == "ACTIVE")
+            
+            try:
+                from employee.models import EmployeeProfile
+                from django.contrib.auth.models import Group
+                
+                # Assign to Django Group for authentication
+                group, _ = Group.objects.get_or_create(name=role)
+                member.groups.add(group)
+                
+                EmployeeProfile.objects.update_or_create(
+                    user=member,
+                    defaults={
+                        'department': request.POST.get("role", "EMPLOYEE"), # Store their departmental role here instead
+                        'designation': request.POST.get("role", "EMPLOYEE"),
+                        'emp_id': f"EMP-{member.id:04d}",
+                        'phone': '',
+                        'date_joined': member.date_joined.date() if member.date_joined else None
+                    }
+                )
+            except ImportError:
+                pass
+                
+            member.save()
+
             _create_notification(
                 "Team member added",
-                f"{member.get_full_name() or member.username} was added to Team Management.",
+                f"{member.get_full_name() or member.username} was added to Team Management as {role}.",
                 NotificationType.SECURITY,
             )
             messages.success(request, "Team member added successfully.")
             return redirect("hr:employee_list")
-        messages.error(request, "Could not add employee. Please check the form values and try again.")
-        return redirect("hr:employee_list")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+            return redirect("hr:employee_list")
     return redirect("hr:employee_list")
 
 
@@ -234,6 +290,42 @@ def employee_edit(request, pk):
         form = TeamMemberEditForm(request.POST, instance=member)
         if form.is_valid():
             member = form.save()
+            
+            # The role and status fields are custom HTML dropdowns, capture them manually
+            role = request.POST.get("role")
+            status = request.POST.get("status")
+            
+            if status:
+                member.is_active = (status == "ACTIVE")
+                
+            try:
+                from employee.models import EmployeeProfile
+                from django.contrib.auth.models import Group
+                
+                if role:
+                    member.groups.clear()
+                    group, _ = Group.objects.get_or_create(name=role)
+                    member.groups.add(group)
+
+                profile, created = EmployeeProfile.objects.get_or_create(
+                    user=member,
+                    defaults={
+                        'department': role or 'EMPLOYEE',
+                        'designation': role or 'EMPLOYEE',
+                        'emp_id': f"EMP-{member.id:04d}",
+                        'phone': '',
+                        'date_joined': member.date_joined.date() if member.date_joined else None
+                    }
+                )
+                if not created and role:
+                    profile.department = role
+                    profile.designation = role
+                    profile.save()
+            except ImportError:
+                pass
+                
+            member.save()
+
             _create_notification(
                 "Team member updated",
                 f"{member.get_full_name() or member.username} profile details were updated.",
@@ -241,14 +333,16 @@ def employee_edit(request, pk):
             )
             messages.success(request, "Team member updated successfully.")
             return redirect("hr:employee_list")
-        messages.error(request, "Could not update employee. Please check the form values and try again.")
-        return redirect("hr:employee_list")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+            return redirect("hr:employee_list")
     return redirect("hr:employee_list")
 
 
 def employee_activate(request, pk):
     member = get_object_or_404(User, pk=pk)
-    member.status = Status.ACTIVE
     member.is_active = True
     member.save()
     _create_notification(
@@ -263,7 +357,6 @@ def employee_activate(request, pk):
 
 def employee_deactivate(request, pk):
     member = get_object_or_404(User, pk=pk)
-    member.status = Status.INACTIVE
     member.is_active = False
     member.save()
     _create_notification(
@@ -543,8 +636,12 @@ def announcement_delete(request, pk):
 # =====================
 
 def project_list(request):
-    projects = Project.objects.all()
-    return render(request, "hr/projects.html", {"projects": projects, "project_form": ProjectForm()})
+    projects = Project.objects.select_related("client").all()
+    return render(request, "hr/projects.html", {
+        "projects": projects,
+        "clients": Client.objects.filter(is_active=True),
+        "project_form": ProjectForm()
+    })
 
 
 def project_create(request):
@@ -682,6 +779,10 @@ def invoice_create_view(request):
             form.save()
             messages.success(request, "Invoice created.")
             return redirect("hr:invoice_list")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     return redirect("hr:invoice_list")
 
 
@@ -796,6 +897,7 @@ def ticket_comment_create_view(request, ticket_id):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.ticket = ticket
+            comment.author = request.user
             comment.save()
             messages.success(request, "Comment added.")
         else:
@@ -810,10 +912,16 @@ def ticket_comment_create_view(request, ticket_id):
 def task_list(request):
     status_filter = request.GET.get("status")
     tasks = Task.objects.select_related("project").all()
-    if status_filter in dict(TaskStatus.choices).keys():
+    if status_filter in dict(Task.STATUS_CHOICES).keys():
         tasks = tasks.filter(status=status_filter)
     form = TaskForm()
-    return render(request, "hr/tasks.html", {"tasks": tasks, "form": form, "status_filter": status_filter})
+    
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    active_employees = User.objects.filter(groups__name="EMPLOYEE", is_active=True)
+    projects = Project.objects.all()
+
+    return render(request, "hr/tasks.html", {"tasks": tasks, "form": form, "status_filter": status_filter, "active_employees": active_employees, "projects": projects})
 
 
 def task_create(request):
@@ -873,15 +981,50 @@ def client_create(request):
     if request.method == "POST":
         form = ClientForm(request.POST)
         if form.is_valid():
-            client = form.save()
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            company = form.cleaned_data.get('company')
+            full_name = form.cleaned_data.get('full_name')
+
+            from django.contrib.auth.models import User, Group
+            
+            # Check if user with this email already exists
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "A user with this email already exists.")
+                return redirect("hr:client_list")
+                
+            # Parse names
+            parts = full_name.split(' ', 1)
+            first_name = parts[0]
+            last_name = parts[1] if len(parts) > 1 else ''
+            
+            # Create the backing User account
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            
+            # Assign them to the CLIENT group
+            client_group, _ = Group.objects.get_or_create(name='CLIENT')
+            user.groups.add(client_group)
+
+            client = form.save(commit=False)
+            client.user = user
+            client.save()
+            
             _create_notification(
                 "Client added",
-                f"Client '{client.company_name}' was added.",
+                f"Client '{client.company}' was added.",
                 NotificationType.ANNOUNCEMENT,
             )
-            messages.success(request, "Client added.")
+            messages.success(request, "Client added successfully.")
         else:
-            messages.error(request, "Please correct the errors in the form.")
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
     return redirect("hr:client_list")
 
 
@@ -893,7 +1036,7 @@ def client_update(request, pk):
             client = form.save()
             _create_notification(
                 "Client updated",
-                f"Client '{client.company_name}' was updated.",
+                f"Client '{client.company}' was updated.",
                 NotificationType.ANNOUNCEMENT,
             )
             messages.success(request, "Client updated.")
@@ -905,11 +1048,11 @@ def client_update(request, pk):
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == "POST":
-        company_name = client.company_name
+        company = client.company
         client.delete()
         _create_notification(
             "Client deleted",
-            f"Client '{company_name}' was deleted.",
+            f"Client '{company}' was deleted.",
             NotificationType.ANNOUNCEMENT,
         )
         messages.success(request, "Client deleted.")
@@ -1649,3 +1792,147 @@ def note_detail_view(request, pk):
 def logout_view(request):
     logout(request)
     return redirect("accounts:login")
+
+# ==========================================
+# Chat System Views
+# ==========================================
+from .models import Conversation, Message
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+
+@login_required
+def chat_dashboard(request):
+    user = request.user
+    
+    # All conversations the user is a part of
+    conversations = user.conversations.all().order_by('-created_at')
+    
+    # Filter users based on role for "Start Chat" functionality
+    User = get_user_model()
+    available_users = User.objects.none()
+    
+    is_hr = hasattr(user, 'profile') and user.profile.role == 'HR'
+    is_employee = hasattr(user, 'profile') and user.profile.role == 'EMPLOYEE'
+    is_client = hasattr(user, 'client_profile')
+    
+    if getattr(user, 'is_superuser', False) and not is_hr and not is_employee and not is_client:
+        is_hr = True # Fallback for raw superusers
+        
+    if is_hr:
+        # HR can chat with active Employee and active Clients
+        available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+            Q(profile__role='EMPLOYEE', profile__status='ACTIVE') | 
+            Q(client_profile__isnull=False, client_profile__is_active=True)
+        ).distinct()
+    elif is_employee:
+        # Employee can chat with active HR, active Employees, and Clients
+        available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+            Q(profile__role='HR', profile__status='ACTIVE') | 
+            Q(profile__role='EMPLOYEE', profile__status='ACTIVE') |
+            Q(client_profile__isnull=False, client_profile__is_active=True)
+        ).distinct()
+    elif is_client:
+        # Client can chat ONLY with active HR
+        available_users = User.objects.filter(is_active=True, profile__role='HR', profile__status='ACTIVE').distinct()
+
+    context = {
+        'conversations': conversations,
+        'active_conversation': None,
+        'messages': [],
+        'available_users': available_users
+    }
+    # Note: we are currently reusing hr's base.html but keeping it flexible if accessed by client/employee directly.
+    return render(request, "hr/chat.html", context)
+
+@login_required
+def chat_room(request, pk):
+    user = request.user
+    conversation = get_object_or_404(user.conversations, pk=pk)
+    
+    # Mark messages as read
+    Message.objects.filter(conversation=conversation).exclude(sender=user).update(is_read=True)
+    
+    conversations = user.conversations.all().order_by('-created_at')
+    messages = conversation.messages.all()
+    
+    User = get_user_model()
+    available_users = User.objects.none()
+    
+    is_hr = hasattr(user, 'profile') and user.profile.role == 'HR'
+    is_employee = hasattr(user, 'profile') and user.profile.role == 'EMPLOYEE'
+    is_client = hasattr(user, 'client_profile')
+    
+    if getattr(user, 'is_superuser', False) and not is_hr and not is_employee and not is_client:
+        is_hr = True
+
+    if is_hr:
+        available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+            Q(profile__role='EMPLOYEE', profile__status='ACTIVE') | 
+            Q(client_profile__isnull=False, client_profile__is_active=True)
+        ).distinct()
+    elif is_employee:
+        available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+            Q(profile__role='HR', profile__status='ACTIVE') | 
+            Q(profile__role='EMPLOYEE', profile__status='ACTIVE') |
+            Q(client_profile__isnull=False, client_profile__is_active=True)
+        ).distinct()
+    elif is_client:
+        available_users = User.objects.filter(is_active=True, profile__role='HR', profile__status='ACTIVE').distinct()
+    
+    context = {
+        'conversations': conversations,
+        'active_conversation': conversation,
+        'messages': messages,
+        'available_users': available_users
+    }
+    return render(request, "hr/chat.html", context)
+
+@login_required
+def chat_start(request, user_id):
+    User = get_user_model()
+    other_user = get_object_or_404(User, id=user_id)
+    
+    user = request.user
+    
+    is_hr = hasattr(user, 'profile') and user.profile.role == 'HR'
+    is_employee = hasattr(user, 'profile') and user.profile.role == 'EMPLOYEE'
+    is_client = hasattr(user, 'client_profile')
+    if getattr(user, 'is_superuser', False) and not is_hr and not is_employee and not is_client: is_hr = True
+    
+    target_is_hr = hasattr(other_user, 'profile') and other_user.profile.role == 'HR'
+    target_is_employee = hasattr(other_user, 'profile') and other_user.profile.role == 'EMPLOYEE'
+    target_is_client = hasattr(other_user, 'client_profile')
+    if getattr(other_user, 'is_superuser', False) and not target_is_hr and not target_is_employee and not target_is_client: target_is_hr = True
+    
+    allowed = False
+    
+    if is_hr:
+        allowed = True
+    elif is_employee:
+        if target_is_hr or target_is_employee or target_is_client:
+            allowed = True
+    elif is_client:
+        if target_is_hr:
+            allowed = True
+            
+    if not allowed:
+        messages.error(request, "You do not have permission to chat with this user.")
+        return redirect('hr:chat_dashboard')
+
+    # Ensure a private conversation doesn't already exist correctly checking m2m rules
+    conv = Conversation.objects.filter(is_group=False, participants=request.user).filter(participants=other_user).first()
+    
+    if not conv:
+        conv = Conversation.objects.create(is_group=False)
+        conv.participants.add(request.user, other_user)
+        
+    return redirect('hr:chat_room', pk=conv.id)
+
+@login_required
+def chat_delete(request, pk):
+    conversation = get_object_or_404(request.user.conversations, pk=pk)
+    conversation.delete()
+    return redirect('hr:chat_dashboard')

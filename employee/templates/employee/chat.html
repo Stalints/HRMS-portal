@@ -1,0 +1,240 @@
+{% extends 'employee/base.html' %}
+{% load static %}
+
+{% block title %}Employee Portal | Chat{% endblock %}
+{% block page_title %}Messages{% endblock %}
+
+{% block content %}
+
+<!-- To ensure Bootstrap 5 layout runs securely within the custom `employee` layout engine: -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container-fluid py-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <p class="text-muted small mb-0">Communicate with your team and clients in real-time.</p>
+        </div>
+
+        {% if available_users %}
+        <div class="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="startChatMenu"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-plus me-1"></i> Start New Chat
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="startChatMenu">
+                {% for u in available_users %}
+                <li><a class="dropdown-item" href="{% url 'employee:chat_start' u.id %}">
+                        {% if u.client_profile %}
+                        {{ u.get_full_name|default:u.username }} (CLIENT)
+                        {% elif u.profile %}
+                        {{ u.get_full_name|default:u.username }} ({{ u.profile.role }})
+                        {% elif u.is_superuser %}
+                        {{ u.get_full_name|default:u.username }} (HR Admin)
+                        {% else %}
+                        {{ u.get_full_name|default:u.username }}
+                        {% endif %}
+                    </a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row g-0 border rounded outline-none shadow-sm bg-white overflow-hidden"
+        style="height: 600px; font-family: system-ui, -apple-system, sans-serif;">
+        <!-- LEFT PANEL -->
+        <div class="col-12 col-md-4 border-end d-flex flex-column h-100 bg-white">
+            <div class="p-3 border-bottom bg-light">
+                <h5 class="mb-0 h6 fw-bold text-secondary">Active Conversations</h5>
+            </div>
+            <div class="list-group list-group-flush overflow-auto flex-grow-1 border-0">
+                {% for conv in conversations %}
+                <a href="{% url 'employee:chat_room' conv.id %}"
+                    class="list-group-item border-start-0 border-end-0 border-top-0 list-group-item-action p-3 {% if active_conversation and active_conversation.id == conv.id %}bg-primary-subtle border-start border-4 border-primary{% endif %}">
+                    <div class="d-flex w-100 justify-content-between align-items-start mb-1 text-decoration-none">
+                        <h6 class="mb-0 fw-semibold text-dark text-truncate" style="max-width: 80%;">
+                            {% for p in conv.participants.all %}
+                            {% if p != request.user %}
+                            <span class="position-relative d-inline-block me-1">
+                                {{ p.get_full_name|default:p.username }}
+                            </span>
+                            {% endif %}
+                            {% endfor %}
+                        </h6>
+                        <small class="text-muted" style="font-size: 0.70rem;">
+                            {% if conv.get_last_message %}
+                            {{ conv.get_last_message.timestamp|date:"M d, H:i" }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    <p class="mb-0 small text-muted text-truncate">
+                        {% if conv.get_last_message %}
+                        {{ conv.get_last_message.content }}
+                        {% else %}
+                        No messages yet
+                        {% endif %}
+                    </p>
+                </a>
+                {% empty %}
+                <div class="p-4 text-center text-muted">
+                    <br>
+                    <h2 class="fs-1 opacity-50 mb-3">&#128172;</h2>
+                    <p class="mb-0 small">No active conversations.</p>
+                    <p class="small">Click "Start New Chat" above.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="col-12 col-md-8 d-flex flex-column h-100 bg-light position-relative">
+            {% if active_conversation %}
+            <!-- Chat Header -->
+            <div class="p-3 border-bottom bg-white shadow-sm d-flex align-items-center justify-content-between z-1">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3 shadow-sm"
+                        style="width: 40px; height: 40px;">
+                        <span aria-hidden="true">&#128100;</span>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-dark">
+                            {% for p in active_conversation.participants.all %}
+                            {% if p != request.user %}
+                            {{ p.get_full_name|default:p.username }}
+                            {% endif %}
+                            {% endfor %}
+                        </h6>
+                        <small class="text-muted text-decoration-none" id="chat-status-text">Connected securely</small>
+                    </div>
+                </div>
+                <!-- Delete Button -->
+                <div>
+                    <a href="{% url 'employee:chat_delete' active_conversation.id %}"
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Are you sure you want to delete this conversation for both parties?');">
+                        <i class="fa-solid fa-trash me-1"></i> Delete
+                    </a>
+                </div>
+            </div>
+
+            <!-- Chat Log -->
+            <div id="chat-log" class="p-3 p-md-4 flex-grow-1 overflow-auto d-flex flex-column gap-3"
+                style="background-color: #f8f9fa;">
+                {% for msg in messages %}
+                <div class="d-flex {% if msg.sender == request.user %}justify-content-end{% endif %}">
+                    <div class="px-3 py-2 rounded-4 shadow-sm {% if msg.sender == request.user %}bg-primary text-white rounded-bottom-end-0{% else %}bg-white border rounded-bottom-start-0{% endif %}"
+                        style="max-width: 75%;">
+                        <p class="mb-1" style="font-size: 0.9rem;">{{ msg.content }}</p>
+                        <div class="text-end">
+                            <small
+                                class="{% if msg.sender == request.user %}text-white-50{% else %}text-muted{% endif %} opacity-75"
+                                style="font-size: 0.65rem;">{{ msg.timestamp|date:"h:i A" }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Chat Input Form -->
+            <div class="p-3 border-top bg-white">
+                <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+                    <button class="btn btn-light px-3 text-secondary border-0 z-0" type="button"
+                        title="Attach file"><span aria-hidden="true">&#128206;</span></button>
+                    <input type="text" id="chat-message-input" class="form-control border-0 shadow-none bg-light z-0"
+                        placeholder="Type your message here..." autocomplete="off">
+                    <button class="btn btn-primary px-4 fw-bold z-0" id="chat-message-submit">
+                        Send <span aria-hidden="true">&#10148;</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- JS WebSocket Setup -->
+            {{ active_conversation.id|json_script:"room-name" }}
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const roomId = JSON.parse(document.getElementById('room-name').textContent);
+                    const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+                    const chatSocket = new WebSocket(wsProtocol + window.location.host + '/ws/chat/' + roomId + '/');
+
+                    const chatLog = document.getElementById('chat-log');
+                    chatLog.scrollTop = chatLog.scrollHeight;
+
+                    chatSocket.onmessage = function (e) {
+                        const data = JSON.parse(e.data);
+
+                        if (data.type === 'new_message') {
+                            const currentUserId = Number("{{ request.user.id }}");
+                            const isSender = (Number(data.sender_id) === currentUserId);
+                            const msgDiv = document.createElement('div');
+                            msgDiv.className = `d-flex ${isSender ? 'justify-content-end' : ''}`;
+
+                            const outerClasses = `px-3 py-2 rounded-4 shadow-sm ${isSender ? 'bg-primary text-white rounded-bottom-end-0' : 'bg-white border rounded-bottom-start-0'}`;
+                            const timeClasses = `${isSender ? 'text-white-50' : 'text-muted'} opacity-75`;
+
+                            msgDiv.innerHTML = `
+                                <div class="${outerClasses}" style="max-width: 75%;">
+                                    <p class="mb-1" style="font-size: 0.9rem;">${data.message}</p>
+                                    <div class="text-end">
+                                        <small class="${timeClasses}" style="font-size: 0.65rem;">${data.timestamp}</small>
+                                    </div>
+                                </div>
+                            `;
+
+                            chatLog.appendChild(msgDiv);
+                            chatLog.classList.add("gap-3");
+                            chatLog.scrollTop = chatLog.scrollHeight;
+                        }
+                    };
+
+                    chatSocket.onclose = function (e) {
+                        console.error('Chat socket closed unexpectedly');
+                        document.getElementById('chat-status-text').innerText = "Disconnected";
+                        document.getElementById('chat-status-text').classList.add("text-danger");
+                    };
+
+                    const messageInputDom = document.getElementById('chat-message-input');
+                    messageInputDom.focus();
+
+                    messageInputDom.onkeyup = function (e) {
+                        if (e.keyCode === 13) {  // enter, return
+                            document.getElementById('chat-message-submit').click();
+                        }
+                    };
+
+                    document.getElementById('chat-message-submit').onclick = function (e) {
+                        const message = messageInputDom.value.trim();
+                        if (message !== "") {
+                            chatSocket.send(JSON.stringify({
+                                'message': message
+                            }));
+                            messageInputDom.value = '';
+                        }
+                    };
+                });
+            </script>
+            {% else %}
+            <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
+                <div class="bg-white p-4 rounded-circle shadow-sm mb-3">
+                    <h1 class="opacity-50">&#128172;</h1>
+                </div>
+                <h5 class="fw-bold text-secondary">Your Messages</h5>
+                <p class="small text-muted mb-0">Select a conversation from the left to start messaging</p>
+                <p class="small text-muted">or click "Start New Chat" to begin a new thread.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Init Global Online Tracker JS -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        const statusSocket = new WebSocket(wsProtocol + window.location.host + '/ws/online-status/');
+        statusSocket.onclose = function (e) { console.log("Status connection closed."); };
+    });
+</script>
+{% endblock %}

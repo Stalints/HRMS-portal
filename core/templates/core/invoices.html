@@ -418,11 +418,18 @@
       border-bottom: 1px solid rgba(15, 23, 42, .06);
     }
 
-    .skeleton-row .skeleton:nth-child(2) { height: 18px; }
+    .skeleton-row .skeleton:nth-child(2) {
+      height: 18px;
+    }
 
     @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
     }
 
     /* ===== Pagination ===== */
@@ -493,6 +500,7 @@
         width: 100%;
         justify-content: flex-start !important;
       }
+
       .skeleton-row {
         grid-template-columns: 120px 1fr 90px 90px 110px 90px 180px;
       }
@@ -586,7 +594,9 @@
     }
 
     #invoicePayModal .powered .dot {
-      width: 6px; height: 6px; border-radius: 99px;
+      width: 6px;
+      height: 6px;
+      border-radius: 99px;
       background: rgba(99, 102, 241, .9);
     }
   </style>
@@ -678,7 +688,8 @@
     <!-- TABLE CARD -->
     <section class="card-base mt-4">
       <div class="p-4 p-sm-4 border-bottom" style="border-color:rgba(15,23,42,.08) !important;">
-        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
+        <div
+          class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
           <div>
             <div style="font-weight:950; letter-spacing:-.01em; font-size:1rem;">All Invoices</div>
             <div style="color:var(--muted); font-weight:750; font-size:13px;">
@@ -710,16 +721,31 @@
       <!-- Skeleton (loading shimmer) -->
       <div class="skeleton-wrap" id="skeletonWrap">
         <div class="skeleton-row">
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
         </div>
         <div class="skeleton-row">
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
         </div>
         <div class="skeleton-row">
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
         </div>
       </div>
 
@@ -739,9 +765,7 @@
 
           <tbody>
             {% for inv in invoices %}
-            <tr class="invoice-row"
-              data-invoice-id="{{ inv.id }}"
-              data-status="{{ inv.status }}"
+            <tr class="invoice-row" data-invoice-id="{{ inv.id }}" data-status="{{ inv.status }}"
               data-text="INV-{{ inv.id }} {{ inv.project.name }} {{ inv.issued_date }} {{ inv.due_date|default:'' }} {{ inv.amount }} {{ inv.status }}">
 
               <!-- Swipe action button (mobile) -->
@@ -751,11 +775,11 @@
                 </button>
               </td>
 
-              <td class="fw-bold">INV-{{ inv.id }}</td>
+              <td class="fw-bold">{{ inv.invoice_number|default:inv.id }}</td>
               <td>{{ inv.project.name }}</td>
               <td>{{ inv.issued_date }}</td>
               <td>{{ inv.due_date|default:"-" }}</td>
-              <td class="fw-bold">₹{{ inv.amount }}</td>
+              <td class="fw-bold">₹{{ inv.total_amount }}</td>
 
               <td>
                 {% if inv.status == "PAID" %}
@@ -1454,6 +1478,61 @@
       applyInvoiceFilter(true);
     });
   </script>
+
+    <!-- Notification System JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const notifySocket = new WebSocket(wsProtocol + window.location.host + '/ws/notifications/');
+
+            function updateBadge(count) {
+                const badges = document.querySelectorAll('.global-chat-badge');
+                badges.forEach(b => {
+                    if(count > 0) {
+                        b.textContent = count;
+                        b.style.display = 'inline-block';
+                    } else {
+                        b.style.display = 'none';
+                    }
+                });
+            }
+
+            function showToast(sender, preview) {
+                const toast = document.createElement('div');
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.background = '#4f46e5';
+                toast.style.color = 'white';
+                toast.style.padding = '12px 20px';
+                toast.style.borderRadius = '12px';
+                toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                toast.style.zIndex = '9999';
+                toast.style.transition = 'opacity 0.3s';
+                toast.style.fontFamily = 'system-ui, sans-serif';
+                toast.innerHTML = `<div style="font-weight:bold; margin-bottom:4px;">New Message from ${sender} <span style="font-size:16px;">💬</span></div><div style="font-size:0.9em; opacity:0.9;">${preview}</div>`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            notifySocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.type === 'unread_count_init') {
+                    updateBadge(data.unread_count);
+                } else if (data.type === 'chat_notification') {
+                    updateBadge(data.unread_count);
+                    if (!window.location.pathname.includes('/chat/') && !window.location.pathname.includes('/messages/')) {
+                        showToast(data.sender_name, data.message_preview);
+                    }
+                }
+            };
+        });
+    </script>
 </body>
+
 
 </html>

@@ -16,8 +16,10 @@ urlpatterns = [
     path("payments/<int:pk>/delete/", views.payment_delete, name="payment_delete"),
 
     path("invoice/pay-now/", views.invoice_pay_now, name="invoice_pay_now"),  # ✅ ajax endpoint
-
-    path("messages/", views.messages, name="messages"),
+    path("messages/", views.chat_dashboard, name="messages"),
+    path("messages/<int:pk>/", views.chat_room, name="chat_room"),
+    path("messages/start/<int:user_id>/", views.chat_start, name="chat_start"),
+    path("messages/delete/<int:pk>/", views.chat_delete, name="chat_delete"),
     path("profile/", views.profile, name="profile"),
 
     path("projects/", views.projects, name="projects"),
@@ -32,8 +34,6 @@ urlpatterns = [
     path("api/profile/update/", views.api_profile_update, name="api_profile_update"),
     path("api/profile/remove-photo/", views.api_profile_remove_photo, name="api_profile_remove_photo"),
 
-    path("events/", views.client_events, name="events"),
-    path("api/events/", views.client_events_api, name="client_events_api"),
 
     path("knowledge-base/", views.knowledge_base, name="knowledge_base"),
 ]

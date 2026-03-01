@@ -13,7 +13,10 @@
         <thead>
             <tr>
                 <th>Task</th>
+                <th>Project</th>
+                <th>Priority</th>
                 <th>Due Date</th>
+                <th>Description</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -21,7 +24,10 @@
             {% for task in tasks %}
             <tr>
                 <td>{{ task.title }}</td>
+                <td>{{ task.project.name|default:"-" }}</td>
+                <td>{{ task.priority|default:"Medium" }}</td>
                 <td>{{ task.due_date|date:"M d, Y" }}</td>
+                <td>{{ task.description|default:"-"|truncatewords:20 }}</td>
                 <td>
                     <span class="status {{ task.status|lower }}">
                         {{ task.status }}
@@ -30,7 +36,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3" style="text-align:center;">
+                <td colspan="6" style="text-align:center;">
                     No tasks assigned.
                 </td>
             </tr>

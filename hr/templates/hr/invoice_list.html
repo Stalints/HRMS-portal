@@ -10,7 +10,9 @@
 <div class="card border-0 shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h2 class="h6 mb-0">Invoices</h2>
-    <span class="badge bg-secondary-subtle text-secondary">{{ invoices|length }} invoice{{ invoices|length|pluralize }}</span>
+    <span class="badge bg-secondary-subtle text-secondary">
+      {{ invoices|length }} invoice{{ invoices|length|pluralize }}
+    </span>
   </div>
   <div class="card-body p-0">
     <div class="table-responsive">
@@ -29,7 +31,8 @@
           {% for invoice in invoices %}
           <tr>
             <td>{{ invoice.invoice_number }}</td>
-            <td>{{ invoice.client.company_name }}</td>
+            <td>{% if invoice.client %}{{ invoice.client.company_name }}{% else %}{{ invoice.project.client.company_name
+              }}{% endif %}</td>
             <td>{{ invoice.project.name }}</td>
             <td>{{ invoice.total_amount }}</td>
             <td>{{ invoice.get_status_display }}</td>

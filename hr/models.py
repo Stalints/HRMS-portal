@@ -25,6 +25,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
+    is_online = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -249,6 +250,7 @@ class NotificationType(models.TextChoices):
 
 
 class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications", null=True, blank=True)
     title = models.CharField(max_length=255)
     message = models.TextField()
     type = models.CharField(max_length=20, choices=NotificationType.choices)
@@ -315,239 +317,6 @@ class Payroll(models.Model):
         return f"{self.employee_name} - {self.month}"
 
 
-# -------------------------
-# PROJECTS
-# -------------------------
-
-class ProjectStatus(models.TextChoices):
-    PENDING = "Pending", "Pending"
-    IN_PROGRESS = "In Progress", "In Progress"
-    COMPLETED = "Completed", "Completed"
-
-
-class Project(models.Model):
-    name = models.CharField(max_length=255)
-    client_name = models.CharField(max_length=255)
-    start_date = models.DateField()
-    deadline = models.DateField()
-    status = models.CharField(max_length=20, choices=ProjectStatus.choices, default=ProjectStatus.PENDING)
-    progress_percentage = models.IntegerField(default=0)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.name
-
-
-# -------------------------
-# TASKS
-# -------------------------
-
-class TaskPriority(models.TextChoices):
-    LOW = "Low", "Low"
-    MEDIUM = "Medium", "Medium"
-    HIGH = "High", "High"
-
-
-class TaskStatus(models.TextChoices):
-    PENDING = "Pending", "Pending"
-    IN_PROGRESS = "In Progress", "In Progress"
-    COMPLETED = "Completed", "Completed"
-
-
-class Task(models.Model):
-    title = models.CharField(max_length=255)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
-    assigned_to = models.CharField(max_length=255)
-    due_date = models.DateField()
-    priority = models.CharField(max_length=10, choices=TaskPriority.choices, default=TaskPriority.MEDIUM)
-    status = models.CharField(max_length=20, choices=TaskStatus.choices, default=TaskStatus.PENDING)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.title
-
-
-class ClientStatus(models.TextChoices):
-    ACTIVE = "Active", "Active"
-    INACTIVE = "Inactive", "Inactive"
-
-
-class Client(models.Model):
-    company_name = models.CharField(max_length=255)
-    contact_person = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone = models.CharField(max_length=50)
-    address = models.TextField()
-    status = models.CharField(max_length=10, choices=ClientStatus.choices, default=ClientStatus.ACTIVE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.company_name
-
-
-# -------------------------
-# INVOICES & PAYMENTS
-# -------------------------
-
-class InvoiceStatus(models.TextChoices):
-    PAID = "PAID", "Paid"
-    UNPAID = "UNPAID", "Unpaid"
-    PARTIAL = "PARTIAL", "Partial"
-
-
-class Invoice(models.Model):
-    invoice_number = models.CharField(max_length=20, unique=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="invoices")
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="invoices")
-    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    tax_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    tax_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, editable=False)
-    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, editable=False)
-    due_date = models.DateField()
-    status = models.CharField(max_length=10, choices=InvoiceStatus.choices, default=InvoiceStatus.UNPAID)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.invoice_number
-
-    def save(self, *args, **kwargs):
-        if not self.invoice_number:
-            last_invoice = Invoice.objects.order_by("-id").first()
-            next_number = 1
-            if last_invoice and last_invoice.invoice_number.startswith("INV"):
-                numeric_part = last_invoice.invoice_number.replace("INV", "")
-                if numeric_part.isdigit():
-                    next_number = int(numeric_part) + 1
-            self.invoice_number = f"INV{next_number:04d}"
-
-        self.tax_amount = (self.amount * self.tax_percentage / Decimal("100")).quantize(Decimal("0.01"))
-        self.total_amount = (self.amount + self.tax_amount).quantize(Decimal("0.01"))
-        super().save(*args, **kwargs)
-
-    def refresh_payment_status(self):
-        paid_total = self.payments.aggregate(total=Sum("amount_paid"))["total"] or Decimal("0")
-        if paid_total >= self.total_amount and self.total_amount > 0:
-            new_status = InvoiceStatus.PAID
-        elif paid_total > 0:
-            new_status = InvoiceStatus.PARTIAL
-        else:
-            new_status = InvoiceStatus.UNPAID
-
-        if self.status != new_status:
-            self.status = new_status
-            self.save(update_fields=["status"])
-
-
-class PaymentMethod(models.TextChoices):
-    CASH = "CASH", "Cash"
-    BANK = "BANK", "Bank"
-    UPI = "UPI", "UPI"
-    CARD = "CARD", "Card"
-
-
-class Payment(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="payments")
-    amount_paid = models.DecimalField(max_digits=12, decimal_places=2)
-    payment_date = models.DateField()
-    payment_method = models.CharField(max_length=10, choices=PaymentMethod.choices)
-    reference_number = models.CharField(max_length=255, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-payment_date", "-created_at"]
-
-    def __str__(self):
-        return f"{self.invoice.invoice_number} - {self.amount_paid}"
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.invoice.refresh_payment_status()
-
-    def delete(self, *args, **kwargs):
-        invoice = self.invoice
-        super().delete(*args, **kwargs)
-        invoice.refresh_payment_status()
-
-
-# -------------------------
-# SUPPORT TICKETS
-# -------------------------
-
-class TicketPriority(models.TextChoices):
-    LOW = "LOW", "Low"
-    MEDIUM = "MEDIUM", "Medium"
-    HIGH = "HIGH", "High"
-
-
-class TicketStatus(models.TextChoices):
-    OPEN = "OPEN", "Open"
-    IN_PROGRESS = "IN_PROGRESS", "In Progress"
-    RESOLVED = "RESOLVED", "Resolved"
-    CLOSED = "CLOSED", "Closed"
-
-
-class Ticket(models.Model):
-    ticket_id = models.CharField(max_length=20, unique=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="tickets")
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name="tickets")
-    subject = models.CharField(max_length=255)
-    description = models.TextField()
-    priority = models.CharField(max_length=10, choices=TicketPriority.choices, default=TicketPriority.MEDIUM)
-    status = models.CharField(max_length=20, choices=TicketStatus.choices, default=TicketStatus.OPEN)
-    assigned_to = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="assigned_tickets",
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.ticket_id
-
-    def save(self, *args, **kwargs):
-        if not self.ticket_id:
-            last_ticket = Ticket.objects.order_by("-id").first()
-            next_number = 1
-            if last_ticket and last_ticket.ticket_id.startswith("TKT"):
-                numeric_part = last_ticket.ticket_id.replace("TKT", "")
-                if numeric_part.isdigit():
-                    next_number = int(numeric_part) + 1
-            self.ticket_id = f"TKT{next_number:04d}"
-        if not self.status:
-            self.status = TicketStatus.OPEN
-        super().save(*args, **kwargs)
-
-
-class TicketComment(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comments")
-    comment_text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["created_at"]
-
-    def __str__(self):
-        return f"{self.ticket.ticket_id} comment"
 
 
 # -------------------------
@@ -683,3 +452,26 @@ User = get_user_model()
 def create_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
+# ==========================================
+# Chat System Models
+# ==========================================
+
+class Conversation(models.Model):
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="conversations")
+    is_group = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_last_message(self):
+        return self.messages.order_by('-timestamp').first()
+
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    file = models.FileField(upload_to="chat_files/", blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['timestamp']

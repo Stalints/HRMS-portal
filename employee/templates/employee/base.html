@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,59 +13,115 @@
 
 <body>
 
-<div class="sidebar">
-    <h2>HR Portal</h2>
+    <div class="sidebar">
+        <h2>HR Portal</h2>
 
-    <a href="{% url 'employee:employee_dashboard' %}" class="nav-link">Dashboard</a>
-    <a href="{% url 'employee:employee_profile' %}" class="nav-link">My Profile</a>
-    <a href="{% url 'employee:employee_tasks' %}" class="nav-link">Tasks</a>
-    <a href="{% url 'employee:attendance_history' %}" class="nav-link">Attendance</a>
-    <a href="{% url 'employee:employee_leaves' %}" class="nav-link">Leaves</a>
-    <a href="{% url 'employee:employee_announcements' %}" class="nav-link">Announcements</a>
-    <a href="{% url 'employee:employee_events' %}" class="nav-link">Events</a>
-    <a href="{% url 'employee:employee_logout' %}" class="logout">Logout</a>
-</div>
-
-<div class="main">
-
-    <div class="topbar">
-        <h2>{% block page_title %}{% endblock %}</h2>
-        <div>{{ request.user.username }}</div>
+        <a href="{% url 'employee:employee_dashboard' %}" class="nav-link">Dashboard</a>
+        <a href="{% url 'employee:employee_profile' %}" class="nav-link">My Profile</a>
+        <a href="{% url 'employee:employee_tasks' %}" class="nav-link">Tasks</a>
+        <a href="{% url 'employee:chat_dashboard' %}" class="nav-link">Chat <span class="global-chat-badge"
+                style="display:none; background:#ff4444; color:white; border-radius:10px; padding:2px 6px; font-size:11px; margin-left:5px; font-weight:bold;">0</span></a>
+        <a href="{% url 'employee:attendance_history' %}" class="nav-link">Attendance</a>
+        <a href="{% url 'employee:employee_leaves' %}" class="nav-link">Leaves</a>
+        <a href="{% url 'employee:employee_announcements' %}" class="nav-link">Announcements</a>
+        <a href="{% url 'employee:employee_events' %}" class="nav-link">Events</a>
+        <a href="{% url 'employee:employee_logout' %}" class="logout">Logout</a>
     </div>
 
-    <!-- Messages -->
-    {% if messages %}
+    <div class="main">
+
+        <div class="topbar">
+            <h2>{% block page_title %}{% endblock %}</h2>
+            <div>{{ request.user.username }}</div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
         {% for message in messages %}
-            <div class="alert {{ message.tags }}">
-                {{ message }}
-            </div>
+        <div class="alert {{ message.tags }}">
+            {{ message }}
+        </div>
         {% endfor %}
-    {% endif %}
+        {% endif %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
 
-</div>
+    </div>
 
-<script>
-    // highlight active sidebar link
-    (function () {
-        const currentPath = window.location.pathname;
-        document.querySelectorAll(".sidebar a.nav-link").forEach(a => {
-            if (a.getAttribute("href") === currentPath) {
-                a.classList.add("active");
+    <script>
+        // highlight active sidebar link
+        (function () {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll(".sidebar a.nav-link").forEach(a => {
+                if (a.getAttribute("href") === currentPath) {
+                    a.classList.add("active");
+                }
+            });
+        })();
+
+        // auto-hide messages
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(function (alert) {
+                alert.style.transition = "opacity 0.5s";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 3000);
+    </script>
+
+    <!-- Notification System JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const notifySocket = new WebSocket(wsProtocol + window.location.host + '/ws/notifications/');
+
+            function updateBadge(count) {
+                const badges = document.querySelectorAll('.global-chat-badge');
+                badges.forEach(b => {
+                    if (count > 0) {
+                        b.textContent = count;
+                        b.style.display = 'inline-block';
+                    } else {
+                        b.style.display = 'none';
+                    }
+                });
             }
-        });
-    })();
 
-    // auto-hide messages
-    setTimeout(function() {
-        document.querySelectorAll('.alert').forEach(function(alert) {
-            alert.style.transition = "opacity 0.5s";
-            alert.style.opacity = "0";
-            setTimeout(() => alert.remove(), 500);
-        });
-    }, 3000);
-</script>
+            function showToast(sender, preview) {
+                const toast = document.createElement('div');
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.background = '#4f46e5';
+                toast.style.color = 'white';
+                toast.style.padding = '12px 20px';
+                toast.style.borderRadius = '12px';
+                toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                toast.style.zIndex = '9999';
+                toast.style.transition = 'opacity 0.3s';
+                toast.style.fontFamily = 'system-ui, sans-serif';
+                toast.innerHTML = `<div style="font-weight:bold; margin-bottom:4px;">New Message from ${sender} <span style="font-size:16px;">💬</span></div><div style="font-size:0.9em; opacity:0.9;">${preview}</div>`;
+                document.body.appendChild(toast);
 
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            notifySocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                if (data.type === 'unread_count_init') {
+                    updateBadge(data.unread_count);
+                } else if (data.type === 'chat_notification') {
+                    updateBadge(data.unread_count);
+                    if (!window.location.pathname.includes('/chat/') && !window.location.pathname.includes('/messages/')) {
+                        showToast(data.sender_name, data.message_preview);
+                    }
+                }
+            };
+        });
+    </script>
 </body>
+
 </html>

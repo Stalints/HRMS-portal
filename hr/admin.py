@@ -17,17 +17,8 @@ from .models import (
     Notification,
     AdminProfile,
 
-    # Payroll / Projects / Tasks / Clients / Billing
+    # Payroll
     Payroll,
-    Project,
-    Task,
-    Client,
-    Invoice,
-    Payment,
-
-    # Support
-    Ticket,
-    TicketComment,
 
     # Notes / Timeline / Help / Personal
     Note,
@@ -180,7 +171,7 @@ class AdminProfileAdmin(admin.ModelAdmin):
 
 
 # -----------------------------
-# Payroll / Project / Task
+# Payroll
 # -----------------------------
 @admin.register(Payroll)
 class PayrollAdmin(admin.ModelAdmin):
@@ -189,74 +180,6 @@ class PayrollAdmin(admin.ModelAdmin):
     search_fields = ("employee_name", "month")
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-
-
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("name", "client_name", "start_date", "deadline", "status", "progress_percentage", "created_at")
-    list_filter = ("status",)
-    search_fields = ("name", "client_name")
-    date_hierarchy = "created_at"
-    ordering = ("-created_at",)
-
-
-@admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
-    list_display = ("title", "project", "assigned_to", "due_date", "priority", "status", "created_at")
-    list_filter = ("priority", "status", "due_date")
-    search_fields = ("title", "assigned_to", "project__name")
-    date_hierarchy = "created_at"
-    ordering = ("-created_at",)
-
-
-# -----------------------------
-# Client / Invoice / Payment
-# -----------------------------
-@admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
-    list_display = ("company_name", "contact_person", "email", "phone", "status", "created_at")
-    list_filter = ("status",)
-    search_fields = ("company_name", "contact_person", "email", "phone")
-    date_hierarchy = "created_at"
-    ordering = ("-created_at",)
-
-
-@admin.register(Invoice)
-class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ("invoice_number", "client", "project", "total_amount", "status", "due_date", "created_at")
-    list_filter = ("status", "due_date")
-    search_fields = ("invoice_number", "client__company_name", "project__name")
-    date_hierarchy = "created_at"
-    ordering = ("-created_at",)
-
-
-@admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
-    list_display = ("invoice", "amount_paid", "payment_date", "payment_method", "created_at")
-    list_filter = ("payment_method", "payment_date")
-    search_fields = ("invoice__invoice_number", "reference_number")
-    date_hierarchy = "payment_date"
-    ordering = ("-payment_date", "-created_at")
-
-
-# -----------------------------
-# Tickets
-# -----------------------------
-@admin.register(Ticket)
-class TicketAdmin(admin.ModelAdmin):
-    list_display = ("ticket_id", "client", "subject", "priority", "status", "assigned_to", "created_at")
-    list_filter = ("priority", "status")
-    search_fields = ("ticket_id", "subject", "client__company_name", "assigned_to__username")
-    date_hierarchy = "created_at"
-    ordering = ("-created_at",)
-
-
-@admin.register(TicketComment)
-class TicketCommentAdmin(admin.ModelAdmin):
-    list_display = ("ticket", "created_at")
-    search_fields = ("ticket__ticket_id", "comment_text")
-    date_hierarchy = "created_at"
-    ordering = ("created_at",)
 
 
 # -----------------------------

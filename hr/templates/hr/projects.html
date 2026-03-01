@@ -1,109 +1,133 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HR Portal | Projects</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Portal | Projects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-  <body>
-    <div class="d-flex">
-      <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation" style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
-        <div class="mb-4">
-          <div class="d-flex align-items-center mb-2">
-            <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2" style="width: 36px; height: 36px">HR</div>
-            <div>
-              <div class="fw-semibold small">HR Portal</div>
-              <div class="text-secondary small">Projects</div>
-            </div>
+
+<body>
+  <div class="d-flex">
+    <nav class="sidebar p-3 d-flex flex-column" aria-label="HR navigation"
+      style="width: 280px; min-width: 280px; max-width: 280px; flex: 0 0 280px;">
+      <div class="mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2"
+            style="width: 36px; height: 36px">HR</div>
+          <div>
+            <div class="fw-semibold small">HR Portal</div>
+            <div class="text-secondary small">Projects</div>
           </div>
         </div>
+      </div>
 
-        <div class="mb-2 sidebar-heading">Main</div>
-        <ul class="nav nav-pills flex-column mb-3 gap-1">
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}"><span class="me-2" aria-hidden="true">&#127968;</span> Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}"><span class="me-2" aria-hidden="true">&#128101;</span> Employee Management</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
-              <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}"><span class="me-2" aria-hidden="true">&#9201;</span> Time Cards / Attendance</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}"><span class="me-2" aria-hidden="true">&#128221;</span> Leave Management</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}"><span class="me-2" aria-hidden="true">&#128227;</span> Announcements</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active d-flex align-items-center" href="#"><span class="me-2" aria-hidden="true">&#128193;</span> Projects</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}"><span class="me-2" aria-hidden="true">&#9989;</span> Tasks</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}"><span class="me-2" aria-hidden="true">&#127970;</span> Clients</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}"><span class="me-2" aria-hidden="true">&#128197;</span> Event Calendar</a>
-          </li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}"><span class="me-2" aria-hidden="true">&#128176;</span> Payroll</a></li>
-        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}"><span class="me-2" aria-hidden="true">&#129534;</span> Invoices</a></li>
-        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}"><span class="me-2" aria-hidden="true">&#128179;</span> Payments</a></li>
+      <div class="mb-2 sidebar-heading">Main</div>
+      <ul class="nav nav-pills flex-column mb-3 gap-1">
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:dashboard' %}"><span class="me-2"
+              aria-hidden="true">&#127968;</span> Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:employee_list' %}"><span class="me-2"
+              aria-hidden="true">&#128101;</span> Employee Management</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:team_list' %}">
+            <span class="me-2" aria-hidden="true">&#129309;</span> Team Management
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:attendance_list' %}"><span class="me-2"
+              aria-hidden="true">&#9201;</span> Time Cards / Attendance</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:leave_dashboard' %}"><span class="me-2"
+              aria-hidden="true">&#128221;</span> Leave Management</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:announcement_list' %}"><span class="me-2"
+              aria-hidden="true">&#128227;</span> Announcements</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active d-flex align-items-center" href="#"><span class="me-2"
+              aria-hidden="true">&#128193;</span> Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:task_list' %}"><span class="me-2"
+              aria-hidden="true">&#9989;</span> Tasks</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'chat_dashboard' or request.resolver_match.url_name == 'chat_room' %}active{% endif %}"
+            href="{% url 'hr:chat_dashboard' %}">
+            <span class="me-2" aria-hidden="true">&#128172;</span> Chat <span class="global-chat-badge badge bg-danger ms-2" style="display:none;">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:client_list' %}"><span class="me-2"
+              aria-hidden="true">&#127970;</span> Clients</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'hr:events' %}"><span class="me-2"
+              aria-hidden="true">&#128197;</span> Event Calendar</a>
+        </li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:payroll_list' %}"><span
+              class="me-2" aria-hidden="true">&#128176;</span> Payroll</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:invoice_list' %}"><span
+              class="me-2" aria-hidden="true">&#129534;</span> Invoices</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:payment_list' %}"><span
+              class="me-2" aria-hidden="true">&#128179;</span> Payments</a></li>
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center" href="{% url 'hr:ticket_list' %}">
             <span class="me-2" aria-hidden="true">&#127915;</span> Support Tickets
           </a>
         </li>
-        </ul>
+      </ul>
 
-        <div class="mb-2 sidebar-heading">Personal & Tools</div>
-        <ul class="nav nav-pills flex-column mb-3 gap-1">
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}"><span class="me-2" aria-hidden="true">&#128221;</span> Notes</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}"><span class="me-2" aria-hidden="true">&#128200;</span> Timeline</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}"><span class="me-2" aria-hidden="true">&#128218;</span> Help Articles</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}"><span class="me-2" aria-hidden="true">&#9989;</span> Personal To-Do List</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}"><span class="me-2" aria-hidden="true">&#128276;</span> Notifications</a></li>
-          <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}"><span class="me-2" aria-hidden="true">&#9881;</span> Settings / Security</a></li>
-        </ul>
-      </nav>
+      <div class="mb-2 sidebar-heading">Personal & Tools</div>
+      <ul class="nav nav-pills flex-column mb-3 gap-1">
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notes' %}"><span
+              class="me-2" aria-hidden="true">&#128221;</span> Notes</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:timeline' %}"><span
+              class="me-2" aria-hidden="true">&#128200;</span> Timeline</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:help' %}"><span class="me-2"
+              aria-hidden="true">&#128218;</span> Help Articles</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:todo' %}"><span class="me-2"
+              aria-hidden="true">&#9989;</span> Personal To-Do List</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:notifications' %}"><span
+              class="me-2" aria-hidden="true">&#128276;</span> Notifications</a></li>
+        <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{% url 'hr:settings' %}"><span
+              class="me-2" aria-hidden="true">&#9881;</span> Settings / Security</a></li>
+      </ul>
+    </nav>
 
-      <div class="flex-grow-1 content-wrapper d-flex flex-column">
-        <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
-          <div class="container-fluid px-0">
-            <button
-              class="navbar-toggler me-2"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#topNav"
-              aria-controls="topNav"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
-              <span>HR Portal</span>
-            </a>
-            <div class="collapse navbar-collapse" id="topNav">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <span class="nav-link disabled">
-                    Logged in as: <strong>HR</strong>
-                  </span>
-                </li>
-              </ul>
-              <div class="d-flex align-items-center gap-3">
-                <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2" aria-label="Notifications">
+    <div class="flex-grow-1 content-wrapper d-flex flex-column">
+      <nav class="navbar navbar-expand-lg bg-white border-bottom px-3 px-lg-4">
+        <div class="container-fluid px-0">
+          <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+            aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand d-lg-none" href="{% url 'hr:dashboard' %}">
+            <span>HR Portal</span>
+          </a>
+          <div class="collapse navbar-collapse" id="topNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <span class="nav-link disabled">
+                  Logged in as: <strong>HR</strong>
+                </span>
+              </li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+              <a href="{% url 'hr:notifications' %}" class="btn btn-light position-relative rounded-circle p-2"
+                aria-label="Notifications">
                 <i class="fa-solid fa-bell"></i>
                 {% if navbar_unread_notifications > 0 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -111,291 +135,397 @@
                 </span>
                 {% endif %}
               </a>
-                <div class="dropdown">
-                  <button
-                    class="btn btn-outline-secondary d-flex align-items-center gap-2"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <span
-                      class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
-                      style="width: 32px; height: 32px"
-                    >
-                      HR
-                    </span>
-                    <span class="d-none d-sm-inline small">HR Admin</span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><h6 class="dropdown-header">HR Admin</h6></li>
-                    <li>
-                      <a class="dropdown-item" href="{% url 'hr:settings' %}">
-                        Settings &amp; Security
-                      </a>
-                    </li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li>
-                      <a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a>
-                    </li>
-                  </ul>
-                </div>
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary d-flex align-items-center gap-2" type="button"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  <span
+                    class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center"
+                    style="width: 32px; height: 32px">
+                    HR
+                  </span>
+                  <span class="d-none d-sm-inline small">HR Admin</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <h6 class="dropdown-header">HR Admin</h6>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'hr:settings' %}">
+                      Settings &amp; Security
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider" />
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'hr:logout' %}">Sign out</a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
-        </nav>
+        </div>
+      </nav>
 
-        <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <h1 class="h4 mb-1"><span class="me-2" aria-hidden="true">&#128193;</span>Projects</h1>
-              <p class="text-muted small mb-0">Track projects, status and progress</p>
-            </div>
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addProjectModal">
-              <i class="fa-solid fa-plus me-1"></i>Add Project
-            </button>
+      <main class="flex-grow-1 py-3 py-md-4 px-3 px-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h1 class="h4 mb-1"><span class="me-2" aria-hidden="true">&#128193;</span>Projects</h1>
+            <p class="text-muted small mb-0">Track projects, status and progress</p>
           </div>
+          <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+            <i class="fa-solid fa-plus me-1"></i>Add Project
+          </button>
+        </div>
 
-          {% if messages %}
-            <div class="mb-3">
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
+        {% if messages %}
+        <div class="mb-3">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-          <div class="card border-0 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h2 class="h6 mb-0">All Projects</h2>
-              <span class="badge bg-secondary-subtle text-secondary">{{ projects|length }} item{{ projects|length|pluralize }}</span>
-            </div>
-            <div class="card-body p-0">
-              <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Name</th>
-                      <th>Client</th>
-                      <th>Start</th>
-                      <th>Deadline</th>
-                      <th>Status</th>
-                      <th>Progress</th>
-                      <th class="text-end">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody class="small">
-                    {% for p in projects %}
-                    <tr>
-                      <td><strong>{{ p.name }}</strong></td>
-                      <td>{{ p.client_name }}</td>
-                      <td>{{ p.start_date }}</td>
-                      <td>{{ p.deadline }}</td>
-                      <td>
-                        {% if p.status == 'Completed' %}
-                          <span class="badge bg-success-subtle text-success">Completed</span>
-                        {% elif p.status == 'In Progress' %}
-                          <span class="badge bg-info-subtle text-info">In Progress</span>
-                        {% else %}
-                          <span class="badge bg-warning-subtle text-warning">Pending</span>
-                        {% endif %}
-                      </td>
-                      <td style="min-width:160px;">
-                        <div class="progress" style="height: 8px;">
-                          <div class="progress-bar" role="progressbar" style="width: {{ p.progress_percentage }}%;" aria-valuenow="{{ p.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <span class="small text-muted">{{ p.progress_percentage }}%</span>
-                      </td>
-                      <td class="text-end">
-                        <div class="btn-group btn-group-sm" role="group">
-                          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewProjectModal{{ p.pk }}"><i class="fa-solid fa-eye"></i></button>
-                          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProjectModal{{ p.pk }}"><i class="fa-solid fa-pen"></i></button>
-                          <form method="post" action="{% url 'hr:project_delete' p.pk %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
-                    <div class="modal fade" id="viewProjectModal{{ p.pk }}" tabindex="-1" aria-hidden="true">
-                      <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title">Project Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="card border-0 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h6 mb-0">All Projects</h2>
+            <span class="badge bg-secondary-subtle text-secondary">
+              {{ projects|length }} item{% if projects|length != 1 %}s{% endif %}
+            </span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Client</th>
+                    <th>Start</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="small">
+                  {% for p in projects %}
+                  <tr>
+                    <td><strong>{{ p.name }}</strong></td>
+                    <td>{{ p.client.company|default:p.client.full_name }}</td>
+                    <td>{{ p.start_date }}</td>
+                    <td>{{ p.end_date }}</td>
+                    <td>
+                      {% if p.status == 'Completed' %}
+                      <span class="badge bg-success-subtle text-success">Completed</span>
+                      {% elif p.status == 'In Progress' %}
+                      <span class="badge bg-info-subtle text-info">In Progress</span>
+                      {% else %}
+                      <span class="badge bg-warning-subtle text-warning">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td style="min-width:160px;">
+                      <div class="d-flex align-items-center gap-2 mt-1">
+                        <div class="progress flex-grow-1" style="height: 6px;">
+                          <!-- THIS IS THE EXACT LINE YOU CHANGE -->
+                          <div class="progress-bar" role="progressbar"
+                            style="width: {{ p.progress_percentage|default:0 }}%;"
+                            aria-valuenow="{{ p.progress_percentage|default:0 }}" aria-valuemin="0" aria-valuemax="100">
                           </div>
-                          <div class="modal-body small">
-                            <div class="row g-3">
+                        </div>
+                        <span class="small text-muted">{{ p.progress_percentage|default:0 }}%</span>
+                      </div>
+                    </td>
+                    <td class="text-end">
+                      <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                          data-bs-target="#viewProjectModal{{ p.pk }}"><i class="fa-solid fa-eye"></i></button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                          data-bs-target="#editProjectModal{{ p.pk }}"><i class="fa-solid fa-pen"></i></button>
+                        <form method="post" action="{% url 'hr:project_delete' p.pk %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-danger"><i
+                              class="fa-solid fa-trash"></i></button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <div class="modal fade" id="viewProjectModal{{ p.pk }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Project Details</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body small">
+                          <div class="row g-3">
+                            <div class="col-md-6">
+                              <div class="text-muted mb-1">Project Name</div>
+                              <div class="fw-semibold">{{ p.name }}</div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="text-muted mb-1">Client</div>
+                              <div>{{ p.client.company|default:p.client.full_name }}</div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="text-muted mb-1">Start Date</div>
+                              <div>{{ p.start_date }}</div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="text-muted mb-1">Deadline</div>
+                              <div>{{ p.end_date }}</div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="text-muted mb-1">Status</div>
+                              <div>{{ p.status }}</div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="text-muted mb-1">Progress</div>
+                              <div>{{ p.progress_percentage }}%</div>
+                            </div>
+                            <div class="col-12">
+                              <div class="text-muted mb-1">Description</div>
+                              <div>{{ p.description|default:"No description" }}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-outline-secondary btn-sm"
+                            data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal fade" id="editProjectModal{{ p.pk }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Edit Project</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" action="{% url 'hr:project_update' p.pk %}">
+                          {% csrf_token %}
+                          <div class="modal-body">
+                            <div class="row g-3 small">
                               <div class="col-md-6">
-                                <div class="text-muted mb-1">Project Name</div>
-                                <div class="fw-semibold">{{ p.name }}</div>
+                                <label class="form-label">Project Name</label>
+                                <input type="text" name="name" class="form-control form-control-sm" value="{{ p.name }}"
+                                  required>
                               </div>
+
                               <div class="col-md-6">
-                                <div class="text-muted mb-1">Client</div>
-                                <div>{{ p.client_name }}</div>
+                                <label class="form-label">Client</label>
+                                <select name="client" class="form-select form-select-sm" required>
+                                  {% for c in clients %}
+                                  {% if p.client.id == c.id %}
+                                  <option value="{{ c.id }}" selected>
+                                    {{ c.company|default:c.full_name }}
+                                  </option>
+                                  {% else %}
+                                  <option value="{{ c.id }}">
+                                    {{ c.company|default:c.full_name }}
+                                  </option>
+                                  {% endif %}
+                                  {% endfor %}
+                                </select>
                               </div>
+
                               <div class="col-md-6">
-                                <div class="text-muted mb-1">Start Date</div>
-                                <div>{{ p.start_date }}</div>
+                                <label class="form-label">Start Date</label>
+                                <input type="date" name="start_date" class="form-control form-control-sm"
+                                  value="{{ p.start_date|date:'Y-m-d' }}" required>
                               </div>
+
                               <div class="col-md-6">
-                                <div class="text-muted mb-1">Deadline</div>
-                                <div>{{ p.deadline }}</div>
+                                <label class="form-label">Deadline</label>
+                                <input type="date" name="end_date" class="form-control form-control-sm"
+                                  value="{{ p.end_date|date:'Y-m-d' }}" required>
                               </div>
+
                               <div class="col-md-6">
-                                <div class="text-muted mb-1">Status</div>
-                                <div>{{ p.status }}</div>
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select form-select-sm">
+                                  {% if p.status == "Pending" %}
+                                  <option value="Pending" selected>Pending</option>
+                                  {% else %}
+                                  <option value="Pending">Pending</option>
+                                  {% endif %}
+
+                                  {% if p.status == "In Progress" %}
+                                  <option value="In Progress" selected>In Progress</option>
+                                  {% else %}
+                                  <option value="In Progress">In Progress</option>
+                                  {% endif %}
+
+                                  {% if p.status == "Completed" %}
+                                  <option value="Completed" selected>Completed</option>
+                                  {% else %}
+                                  <option value="Completed">Completed</option>
+                                  {% endif %}
+                                </select>
                               </div>
+
                               <div class="col-md-6">
-                                <div class="text-muted mb-1">Progress</div>
-                                <div>{{ p.progress_percentage }}%</div>
+                                <label class="form-label">Progress (%)</label>
+                                <input type="number" name="progress_percentage" min="0" max="100"
+                                  class="form-control form-control-sm" value="{{ p.progress_percentage }}" required>
                               </div>
+
                               <div class="col-12">
-                                <div class="text-muted mb-1">Description</div>
-                                <div>{{ p.description|default:"No description" }}</div>
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control form-control-sm"
+                                  rows="4">{{ p.description }}</textarea>
                               </div>
                             </div>
                           </div>
                           <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                              data-bs-dismiss="modal">Cancel</button>
                           </div>
-                        </div>
+                        </form>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="modal fade" id="editProjectModal{{ p.pk }}" tabindex="-1" aria-hidden="true">
-                      <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title">Edit Project</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <form method="post" action="{% url 'hr:project_update' p.pk %}">
-                            {% csrf_token %}
-                            <div class="modal-body">
-                              <div class="row g-3 small">
-                                <div class="col-md-6">
-                                  <label class="form-label">Project Name</label>
-                                  <input type="text" name="name" class="form-control form-control-sm" value="{{ p.name }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                  <label class="form-label">Client Name</label>
-                                  <input type="text" name="client_name" class="form-control form-control-sm" value="{{ p.client_name }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                  <label class="form-label">Start Date</label>
-                                  <input type="date" name="start_date" class="form-control form-control-sm" value="{{ p.start_date|date:'Y-m-d' }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                  <label class="form-label">Deadline</label>
-                                  <input type="date" name="deadline" class="form-control form-control-sm" value="{{ p.deadline|date:'Y-m-d' }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                  <label class="form-label">Status</label>
-                                  <select name="status" class="form-select form-select-sm">
-                                    <option value="Pending" {% if p.status == "Pending" %}selected{% endif %}>Pending</option>
-                                    <option value="In Progress" {% if p.status == "In Progress" %}selected{% endif %}>In Progress</option>
-                                    <option value="Completed" {% if p.status == "Completed" %}selected{% endif %}>Completed</option>
-                                  </select>
-                                </div>
-                                <div class="col-md-6">
-                                  <label class="form-label">Progress (%)</label>
-                                  <input type="number" name="progress_percentage" min="0" max="100" class="form-control form-control-sm" value="{{ p.progress_percentage }}" required>
-                                </div>
-                                <div class="col-12">
-                                  <label class="form-label">Description</label>
-                                  <textarea name="description" class="form-control form-control-sm" rows="4">{{ p.description }}</textarea>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
-                              <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                    {% empty %}
-                    <tr>
-                      <td colspan="7" class="text-center text-muted py-4">
-                        No projects yet.
-                        <button type="button" class="btn btn-link p-0 align-baseline" data-bs-toggle="modal" data-bs-target="#addProjectModal">Add your first project</button>.
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                      No projects yet.
+                      <button type="button" class="btn btn-link p-0 align-baseline" data-bs-toggle="modal"
+                        data-bs-target="#addProjectModal">Add your first project</button>.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+        </div>
 
-          <div class="modal fade" id="addProjectModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Add Project</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal fade" id="addProjectModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form method="post" action="{% url 'hr:project_create' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                  <div class="row g-3 small">
+                    <div class="col-md-6">
+                      <label for="{{ project_form.name.id_for_label }}" class="form-label">Project Name</label>
+                      {{ project_form.name }}
+                    </div>
+                    <div class="col-md-6">
+                      <label for="{{ project_form.client_name.id_for_label }}" class="form-label">Client Name</label>
+                      {{ project_form.client_name }}
+                    </div>
+                    <div class="col-md-6">
+                      <label for="{{ project_form.start_date.id_for_label }}" class="form-label">Start Date</label>
+                      {{ project_form.start_date }}
+                    </div>
+                    <div class="col-md-6">
+                      <label for="{{ project_form.deadline.id_for_label }}" class="form-label">Deadline</label>
+                      {{ project_form.deadline }}
+                    </div>
+                    <div class="col-md-6">
+                      <label for="{{ project_form.status.id_for_label }}" class="form-label">Status</label>
+                      {{ project_form.status }}
+                    </div>
+                    <div class="col-md-6">
+                      <label for="{{ project_form.progress_percentage.id_for_label }}" class="form-label">Progress
+                        (%)</label>
+                      {{ project_form.progress_percentage }}
+                    </div>
+                    <div class="col-12">
+                      <label for="{{ project_form.description.id_for_label }}" class="form-label">Description</label>
+                      {{ project_form.description }}
+                    </div>
+                  </div>
                 </div>
-                <form method="post" action="{% url 'hr:project_create' %}">
-                  {% csrf_token %}
-                  <div class="modal-body">
-                    <div class="row g-3 small">
-                      <div class="col-md-6">
-                        <label for="{{ project_form.name.id_for_label }}" class="form-label">Project Name</label>
-                        {{ project_form.name }}
-                      </div>
-                      <div class="col-md-6">
-                        <label for="{{ project_form.client_name.id_for_label }}" class="form-label">Client Name</label>
-                        {{ project_form.client_name }}
-                      </div>
-                      <div class="col-md-6">
-                        <label for="{{ project_form.start_date.id_for_label }}" class="form-label">Start Date</label>
-                        {{ project_form.start_date }}
-                      </div>
-                      <div class="col-md-6">
-                        <label for="{{ project_form.deadline.id_for_label }}" class="form-label">Deadline</label>
-                        {{ project_form.deadline }}
-                      </div>
-                      <div class="col-md-6">
-                        <label for="{{ project_form.status.id_for_label }}" class="form-label">Status</label>
-                        {{ project_form.status }}
-                      </div>
-                      <div class="col-md-6">
-                        <label for="{{ project_form.progress_percentage.id_for_label }}" class="form-label">Progress (%)</label>
-                        {{ project_form.progress_percentage }}
-                      </div>
-                      <div class="col-12">
-                        <label for="{{ project_form.description.id_for_label }}" class="form-label">Description</label>
-                        {{ project_form.description }}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary btn-sm">Create Project</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                  </div>
-                </form>
-              </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary btn-sm">Create Project</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                </div>
+              </form>
             </div>
           </div>
-        </main>
+        </div>
+      </main>
 
-        <footer class="border-top bg-white py-2 px-3 px-lg-4">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span>© <span id="year"></span> HR Portal</span>
-            <span class="text-muted">Secure access · Bootstrap 5</span>
-          </div>
-        </footer>
-      </div>
+      <footer class="border-top bg-white py-2 px-3 px-lg-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span>© <span id="year"></span> HR Portal</span>
+          <span class="text-muted">Secure access · Bootstrap 5</span>
+        </div>
+      </footer>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
-  </body>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
+    <!-- Notification System JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const notifySocket = new WebSocket(wsProtocol + window.location.host + '/ws/notifications/');
+
+            function updateBadge(count) {
+                const badges = document.querySelectorAll('.global-chat-badge');
+                badges.forEach(b => {
+                    if(count > 0) {
+                        b.textContent = count;
+                        b.style.display = 'inline-block';
+                    } else {
+                        b.style.display = 'none';
+                    }
+                });
+            }
+
+            function showToast(sender, preview) {
+                const toast = document.createElement('div');
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.background = '#4f46e5';
+                toast.style.color = 'white';
+                toast.style.padding = '12px 20px';
+                toast.style.borderRadius = '12px';
+                toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                toast.style.zIndex = '9999';
+                toast.style.transition = 'opacity 0.3s';
+                toast.style.fontFamily = 'system-ui, sans-serif';
+                toast.innerHTML = `<div style="font-weight:bold; margin-bottom:4px;">New Message from ${sender} <span style="font-size:16px;">💬</span></div><div style="font-size:0.9em; opacity:0.9;">${preview}</div>`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            notifySocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.type === 'unread_count_init') {
+                    updateBadge(data.unread_count);
+                } else if (data.type === 'chat_notification') {
+                    updateBadge(data.unread_count);
+                    if (!window.location.pathname.includes('/chat/') && !window.location.pathname.includes('/messages/')) {
+                        showToast(data.sender_name, data.message_preview);
+                    }
+                }
+            };
+        });
+    </script>
+</body>
+
+
 </html>
-
-
-
-
-

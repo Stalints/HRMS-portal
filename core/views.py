@@ -11,8 +11,10 @@ from .models import (
     PaymentStatus, PaymentMethod
 )
 
-from hr.models import Event
+from hr.models import Event, Conversation
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+from django.contrib import messages as django_messages
 from django.utils import timezone
 
 from datetime import date, timedelta
@@ -130,12 +132,10 @@ def index(request):
 
     projects_count = Project.objects.filter(client=client).count()
 
-    # Invoices Due = PENDING and due_date <= today
+    # Invoices Due = PENDING, OVERDUE, or PARTIAL
     invoices_due = Invoice.objects.filter(
-        project__client=client,
-        status="PENDING",
-        due_date__isnull=False,
-        due_date__lte=today,
+        Q(client=client) | Q(project__client=client),
+        status__in=["PENDING", "OVERDUE", "PARTIAL"],
     ).count()
 
     # If you actually want ALL pending invoices (not only due):
@@ -262,7 +262,9 @@ def invoices(request):
         )
         return redirect("core:invoices")
 
-    invoices_qs = Invoice.objects.filter(project__client=client).order_by("-created_at")
+    invoices_qs = Invoice.objects.filter(
+        Q(client=client) | Q(project__client=client)
+    ).order_by("-created_at")
     return render(request, "core/invoices.html", {"invoices": invoices_qs, "projects": projects_qs})
 
 
@@ -274,11 +276,11 @@ def payments(request):
     client = get_client_profile(request.user)
 
     payments_qs = Payment.objects.filter(
-        invoice__project__client=client
+        Q(invoice__client=client) | Q(invoice__project__client=client)
     ).select_related("invoice", "invoice__project").order_by("-created_at")
 
     invoices_qs = Invoice.objects.filter(
-        project__client=client
+        Q(client=client) | Q(project__client=client)
     ).select_related("project").order_by("-created_at")
 
     total_paid = payments_qs.filter(status=PaymentStatus.COMPLETED).aggregate(s=Sum("amount_paid"))["s"] or 0
@@ -308,7 +310,7 @@ def payment_create(request):
     amount_paid = request.POST.get("amount_paid") or 0
     payment_date = request.POST.get("payment_date") or timezone.now().date()
 
-    invoice = get_object_or_404(Invoice, id=invoice_id, project__client=client)
+    invoice = get_object_or_404(Invoice.objects.filter(Q(client=client) | Q(project__client=client)), id=invoice_id)
 
     Payment.objects.create(
         invoice=invoice,
@@ -327,7 +329,7 @@ def payment_pay_now(request, pk):
         return JsonResponse({"ok": False, "message": "Not allowed"}, status=403)
 
     client = get_client_profile(request.user)
-    payment = get_object_or_404(Payment, pk=pk, invoice__project__client=client)
+    payment = get_object_or_404(Payment.objects.filter(Q(invoice__client=client) | Q(invoice__project__client=client)), pk=pk)
 
     method = request.POST.get("method")
 
@@ -389,7 +391,7 @@ def invoice_pay_now(request):
     if not invoice_id:
         return JsonResponse({"ok": False, "message": "Invoice id missing."}, status=400)
 
-    invoice = get_object_or_404(Invoice, id=invoice_id, project__client=client)
+    invoice = get_object_or_404(Invoice.objects.filter(Q(client=client) | Q(project__client=client)), id=invoice_id)
 
     method = request.POST.get("method")
     if method not in [PaymentMethod.CARD, PaymentMethod.UPI, PaymentMethod.BANK]:
@@ -467,14 +469,101 @@ def payment_delete(request, pk):
     return redirect("core:payments")
 
 
+# ==========================================
+# Client Chat System
+# ==========================================
+
 @login_required
-def messages(request):
-    if not is_client(request.user):
+def chat_dashboard(request):
+    user = request.user
+    if not is_client(user):
         return redirect("login")
 
-    client = get_client_profile(request.user)
-    msgs = Message.objects.filter(client=client).order_by("-created_at")
-    return render(request, "core/messages.html", {"messages": msgs})
+    conversations = user.conversations.all().order_by('-created_at')
+    
+    User = get_user_model()
+    # Client can chat with Active HR and Active Employees
+    available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+        Q(profile__role='HR') | 
+        Q(profile__role='EMPLOYEE', profile__status='ACTIVE')
+    ).distinct()
+
+    context = {
+        'conversations': conversations,
+        'active_conversation': None,
+        'messages': [],
+        'available_users': available_users,
+        'page_title': 'Messages'
+    }
+    return render(request, 'core/messages.html', context)
+
+@login_required
+def chat_room(request, pk):
+    user = request.user
+    if not is_client(user):
+        return redirect("login")
+
+    conversation = get_object_or_404(user.conversations, pk=pk)
+    
+    # We do not use core.Message, we use our Django Channels message.
+    # We must import the correct Message model locally or at top.
+    from hr.models import Message as ChatMessage
+
+    # Mark messages as read
+    ChatMessage.objects.filter(conversation=conversation).exclude(sender=user).update(is_read=True)
+    
+    conversations = user.conversations.all().order_by('-created_at')
+    messages = conversation.messages.all()
+    
+    User = get_user_model()
+    available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+        Q(profile__role='HR') | 
+        Q(profile__role='EMPLOYEE', profile__status='ACTIVE')
+    ).distinct()
+    
+    context = {
+        'conversations': conversations,
+        'active_conversation': conversation,
+        'messages': messages,
+        'available_users': available_users,
+        'page_title': 'Messages'
+    }
+    return render(request, 'core/messages.html', context)
+
+@login_required
+def chat_start(request, user_id):
+    user = request.user
+    if not is_client(user):
+        return redirect("login")
+
+    User = get_user_model()
+    other_user = get_object_or_404(User, id=user_id)
+    
+    target_is_hr = hasattr(other_user, 'profile') and other_user.profile.role == 'HR'
+    if getattr(other_user, 'is_superuser', False) and not target_is_hr and not hasattr(other_user, 'profile'): 
+        target_is_hr = True
+        
+    target_is_emp = hasattr(other_user, 'profile') and other_user.profile.role == 'EMPLOYEE'
+    
+    if not (target_is_hr or target_is_emp):
+        django_messages.error(request, "You do not have permission to chat with this user.")
+        return redirect('core:messages')
+
+    conv = Conversation.objects.filter(is_group=False, participants=user).filter(participants=other_user).first()
+    
+    if not conv:
+        conv = Conversation.objects.create(is_group=False)
+        conv.participants.add(user, other_user)
+        
+    return redirect('core:chat_room', pk=conv.id)
+
+@login_required
+def chat_delete(request, pk):
+    if not is_client(request.user):
+        return redirect("login")
+    conversation = get_object_or_404(request.user.conversations, pk=pk)
+    conversation.delete()
+    return redirect('core:messages')
 
 
 @login_required
@@ -509,7 +598,7 @@ def support(request):
             )
         return redirect("core:support")
 
-    tickets = SupportTicket.objects.filter(client=client).order_by("-created_at")
+    tickets = SupportTicket.objects.filter(client=client).prefetch_related("comments", "comments__author").order_by("-created_at")
     return render(request, "core/support.html", {"tickets": tickets})
 
 

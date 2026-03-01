@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 import calendar
 
 from django.contrib import messages
@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
 
-from hr.models import Event
-from .models import EmployeeProfile, Leave, Task, Attendance, Announcement
+from .models import EmployeeProfile
+from hr.models import LeaveRequest as Leave, Announcement, LeaveCategory, Attendance, Event
+from core.models import Task
 
 
 def employee_login(request):
@@ -40,7 +41,7 @@ def employee_logout(request):
 
 @login_required
 def employee_dashboard(request):
-    leaves = Leave.objects.filter(employee=request.user)
+    leaves = Leave.objects.filter(user=request.user)
 
     context = {
         "pending_leaves": leaves.filter(status="Pending").count(),
@@ -83,12 +84,22 @@ def employee_profile(request):
 @login_required
 def employee_leaves(request):
     if request.method == "POST":
-        start_date = request.POST.get("start_date")
-        end_date = request.POST.get("end_date")
+        start_str = request.POST.get("start_date")
+        end_str = request.POST.get("end_date")
         reason = request.POST.get("reason")
 
+        start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_str, "%Y-%m-%d").date()
+
+        # Get or create a default category to avoid FK errors
+        default_category, _ = LeaveCategory.objects.get_or_create(
+            name="General",
+            defaults={"description": "General Leave"}
+        )
+
         Leave.objects.create(
-            employee=request.user,
+            user=request.user,
+            category=default_category,
             start_date=start_date,
             end_date=end_date,
             reason=reason
@@ -96,13 +107,13 @@ def employee_leaves(request):
         messages.success(request, "Leave request submitted.")
         return redirect("employee:employee_leaves")
 
-    leaves = Leave.objects.filter(employee=request.user).order_by("-applied_on")
+    leaves = Leave.objects.filter(user=request.user).order_by("-created_at")
     return render(request, "employee/leaves.html", {"leaves": leaves})
 
 
 @login_required
 def employee_tasks(request):
-    tasks = Task.objects.filter(employee=request.user)
+    tasks = Task.objects.filter(assigned_to=request.user)
     return render(request, "employee/tasks.html", {"tasks": tasks})
 
 
@@ -116,15 +127,15 @@ def employee_announcements(request):
 def clock_in(request):
     today = timezone.now().date()
 
-    existing = Attendance.objects.filter(employee=request.user, date=today).first()
+    existing = Attendance.objects.filter(user=request.user, date=today).first()
 
     if existing:
         messages.error(request, "Today's attendance already marked.")
     else:
         Attendance.objects.create(
-            employee=request.user,
+            user=request.user,
             date=today,
-            clock_in=timezone.now()
+            check_in=timezone.now().time()
         )
         messages.success(request, "Clock In marked successfully.")
 
@@ -135,14 +146,14 @@ def clock_in(request):
 def clock_out(request):
     today = timezone.now().date()
 
-    attendance = Attendance.objects.filter(employee=request.user, date=today).first()
+    attendance = Attendance.objects.filter(user=request.user, date=today).first()
 
     if not attendance:
         messages.error(request, "You must Clock In first.")
-    elif attendance.clock_out:
+    elif attendance.check_out:
         messages.error(request, "You have already Clocked Out today.")
     else:
-        attendance.clock_out = timezone.now()
+        attendance.check_out = timezone.now().time()
         attendance.save()
         messages.success(request, "Clock Out saved successfully.")
 
@@ -151,7 +162,7 @@ def clock_out(request):
 
 @login_required
 def attendance_history(request):
-    attendances = Attendance.objects.filter(employee=request.user).order_by("-date")
+    attendances = Attendance.objects.filter(user=request.user).order_by("-date")
     return render(request, "employee/attendance.html", {"attendances": attendances})
 
 
@@ -185,6 +196,11 @@ def employee_events(request):
     event_dict = {}
     for event in events:
         event_dict.setdefault(event.event_date.day, []).append(event)
+        
+    prev_month = month - 1 if month > 1 else 12
+    prev_year  = year if month > 1 else year - 1
+    next_month = month + 1 if month < 12 else 1
+    next_year  = year if month < 12 else year + 1
 
     context = {
         "calendar": cal,
@@ -194,5 +210,98 @@ def employee_events(request):
         "event_dict": event_dict,
         "months": range(1, 13),
         "years": range(today.year - 5, today.year + 6),
+        "prev_month": prev_month,
+        "prev_year":  prev_year,
+        "next_month": next_month,
+        "next_year":  next_year,
     }
     return render(request, "employee/events.html", context)
+
+
+# ==========================================
+# Chat System Views
+# ==========================================
+from hr.models import Conversation, Message
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+
+@login_required
+def chat_dashboard(request):
+    user = request.user
+    conversations = user.conversations.all().order_by('-created_at')
+    
+    User = get_user_model()
+    # Employee can chat with HR Admins, Active Employees, And Clients
+    available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+        Q(profile__role='HR') | 
+        Q(profile__role='EMPLOYEE', profile__status='ACTIVE') |
+        Q(client_profile__isnull=False, client_profile__is_active=True)
+    ).distinct()
+
+    context = {
+        'conversations': conversations,
+        'active_conversation': None,
+        'messages': [],
+        'available_users': available_users
+    }
+    return render(request, "employee/chat.html", context)
+
+@login_required
+def chat_room(request, pk):
+    user = request.user
+    conversation = get_object_or_404(user.conversations, pk=pk)
+    
+    # Mark messages as read
+    Message.objects.filter(conversation=conversation).exclude(sender=user).update(is_read=True)
+    
+    conversations = user.conversations.all().order_by('-created_at')
+    messages = conversation.messages.all()
+    
+    User = get_user_model()
+    available_users = User.objects.filter(is_active=True).exclude(id=user.id).filter(
+        Q(profile__role='HR') | 
+        Q(profile__role='EMPLOYEE', profile__status='ACTIVE') |
+        Q(client_profile__isnull=False, client_profile__is_active=True)
+    ).distinct()
+    
+    context = {
+        'conversations': conversations,
+        'active_conversation': conversation,
+        'messages': messages,
+        'available_users': available_users
+    }
+    return render(request, "employee/chat.html", context)
+
+@login_required
+def chat_start(request, user_id):
+    User = get_user_model()
+    other_user = get_object_or_404(User, id=user_id)
+    
+    user = request.user
+    is_employee = hasattr(user, 'profile') and user.profile.role == 'EMPLOYEE'
+    
+    target_is_hr = hasattr(other_user, 'profile') and other_user.profile.role == 'HR'
+    if getattr(other_user, 'is_superuser', False) and not target_is_hr and not hasattr(other_user, 'profile'): 
+        target_is_hr = True
+        
+    target_is_emp = hasattr(other_user, 'profile') and other_user.profile.role == 'EMPLOYEE'
+    target_is_client = hasattr(other_user, 'client_profile')
+    
+    if not (is_employee and (target_is_hr or target_is_emp or target_is_client)):
+        messages.error(request, "You do not have permission to chat with this user.")
+        return redirect('employee:chat_dashboard')
+
+    conv = Conversation.objects.filter(is_group=False, participants=request.user).filter(participants=other_user).first()
+    
+    if not conv:
+        conv = Conversation.objects.create(is_group=False)
+        conv.participants.add(request.user, other_user)
+        
+    return redirect('employee:chat_room', pk=conv.id)
+
+@login_required
+def chat_delete(request, pk):
+    conversation = get_object_or_404(request.user.conversations, pk=pk)
+    conversation.delete()
+    return redirect('employee:chat_dashboard')
